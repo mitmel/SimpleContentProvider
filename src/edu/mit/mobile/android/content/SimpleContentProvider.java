@@ -103,6 +103,21 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	}
 
 	/**
+	 * Adds an entry for a directory of a given type. This should be called in
+	 * the constructor of any subclasses.
+	 *
+	 * Defaults to handle all method types.
+	 *
+	 * @param dbHelper
+	 *            the DBHelper to associate with the given path.
+	 * @param path
+	 *            a complete path on top of the content provider's authority.
+	 */
+	public void addDirUri(DBHelper dbHelper, String path) {
+		addDirUri(dbHelper, path, DBHelperMapper.TYPE_ALL);
+	}
+
+	/**
 	 * Adds an entry for an item of a given type. This should be called in the
 	 * constructor of any subclasses.
 	 *
@@ -122,6 +137,22 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, dbHelperType);
 		MATCHER.addURI(mAuthority, path, mMatcherID);
 		mMatcherID++;
+	}
+
+	/**
+	 * Adds an entry for an item of a given type. This should be called in the
+	 * constructor of any subclasses.
+	 *
+	 * Defaults to handle all method types.
+	 *
+	 * @param dbHelper
+	 *            the DBHelper to associate with the given path.
+	 * @param path
+	 *            a complete path on top of the content provider's authority.
+	 *            <strong>This must end in <code>"/#"</code></strong>
+	 */
+	public void addItemUri(DBHelper dbHelper, String path) {
+		addItemUri(dbHelper, path, DBHelperMapper.TYPE_ALL);
 	}
 
 	@Override
