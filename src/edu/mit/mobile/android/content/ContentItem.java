@@ -16,17 +16,13 @@ package edu.mit.mobile.android.content;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import android.database.Cursor;
+import android.provider.BaseColumns;
+import edu.mit.mobile.android.content.column.DBColumn;
+import edu.mit.mobile.android.content.column.IntegerColumn;
 
-public class TextColumn extends DBColumnType<String> {
+public abstract interface ContentItem extends BaseColumns {
 
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "TEXT");
-	}
+	@DBColumn(type=IntegerColumn.class, primaryKey=true, autoIncrement=true)
+	public static final String _ID = BaseColumns._ID;
 
-	@Override
-	public String get(Cursor c, int colNumber) {
-		return c.getString(colNumber);
-	}
 }

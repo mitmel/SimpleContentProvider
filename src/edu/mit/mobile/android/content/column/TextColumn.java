@@ -1,4 +1,4 @@
-package edu.mit.mobile.android.content;
+package edu.mit.mobile.android.content.column;
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -16,24 +16,18 @@ package edu.mit.mobile.android.content;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import edu.mit.mobile.android.content.column.DBColumnType;
+import android.database.Cursor;
 
-@Retention(RetentionPolicy.RUNTIME)
-public @interface DBColumn {
+public class TextColumn extends DBColumnType<String> {
 
-	// this is required because Java doesn't allow null as a default value.
-	public static final String NULL = "██████NULL██████";
+	@Override
+	public String toCreateColumn(String colName) {
+		return toColumnDef(colName, "TEXT");
+	}
 
-	@SuppressWarnings("rawtypes")
-	Class<? extends DBColumnType> type();
-
-	boolean notnull() default false;
-
-	boolean primaryKey() default false;
-
-	boolean autoIncrement() default false;
-
-	String defaultValue() default NULL;
-
+	@Override
+	public String get(Cursor c, int colNumber) {
+		return c.getString(colNumber);
+	}
 }

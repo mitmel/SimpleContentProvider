@@ -1,4 +1,5 @@
-package edu.mit.mobile.android.content;
+package edu.mit.mobile.android.content.column;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -18,17 +19,25 @@ package edu.mit.mobile.android.content;
  */
 import android.database.Cursor;
 
-public class DateColumn extends DBColumnType<java.util.Date> {
+public abstract class DBColumnType<T> {
+	/**
+	 *
+	 * @param colName
+	 * @return
+	 */
+	public abstract String toCreateColumn(String colName);
 
-	public final static String CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP";
+	public abstract T get(Cursor c, int colNumber);
 
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "INTEGER");
+	protected String toColumnDef(String colName, String type) {
+		return "'" + colName + "' " + type;
 	}
 
-	@Override
-	public java.util.Date get(Cursor c, int colNumber) {
-		return new java.util.Date(c.getLong(colNumber));
-	}
+	/**
+	 * Prefix the default value with this character in order to prevent
+	 * auto-quoting. Prefix the default value with this character twice to
+	 * insert it literally. This character only needs to be escaped if it's
+	 * at the beginning of the string.
+	 */
+	public static final String DEFAULT_VALUE_ESCAPE = "\\";
 }

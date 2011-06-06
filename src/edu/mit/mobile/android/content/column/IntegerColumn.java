@@ -1,4 +1,4 @@
-package edu.mit.mobile.android.content;
+package edu.mit.mobile.android.content.column;
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -16,6 +16,7 @@ package edu.mit.mobile.android.content;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import edu.mit.mobile.android.content.column.DBColumnType;
 import android.database.Cursor;
 
 public class IntegerColumn extends DBColumnType<java.lang.Integer> {

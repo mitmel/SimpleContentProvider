@@ -29,6 +29,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import edu.mit.mobile.android.content.column.DBColumn;
+import edu.mit.mobile.android.content.column.DBColumnType;
 
 /**
  * Provides basic CRUD database calls to handle very simple object types, eg:
@@ -38,14 +40,14 @@ import android.provider.BaseColumns;
  *
  *
  *
- * @author steve
+ * @author Steve Pomeroy <spomeroy@mit.edu>
  *
  */
 public class GenericDBHelper implements DBHelper {
 
 	private final String mTable;
 	private final Uri mContentUri;
-	private final Class<? extends DataItem> mDataItem;
+	private final Class<? extends ContentItem> mDataItem;
 
 	/**
 	 * @param table
@@ -54,8 +56,8 @@ public class GenericDBHelper implements DBHelper {
 	 * @param contentUri
 	 *            the URI of the content directory. Eg. content://AUTHORITY/item
 	 */
-	public GenericDBHelper(Class<? extends DataItem> dataItem, Uri contentUri) {
-		mDataItem = dataItem;
+	public GenericDBHelper(Class<? extends ContentItem> contentItem, Uri contentUri) {
+		mDataItem = contentItem;
 		mTable = extractTableName();
 		mContentUri = contentUri;
 	}
@@ -97,7 +99,19 @@ public class GenericDBHelper implements DBHelper {
 		return mTable;
 	}
 
+	private static final String DOUBLE_ESCAPE = DBColumnType.DEFAULT_VALUE_ESCAPE + DBColumnType.DEFAULT_VALUE_ESCAPE;
+
 	public void createTables(SQLiteDatabase db){
+		try {
+			db.execSQL(getTableCreation());
+
+		} catch (final SQLGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public String getTableCreation() throws SQLGenerationException {
 		try{
 			final StringBuilder table = new StringBuilder();
 
@@ -122,7 +136,11 @@ public class GenericDBHelper implements DBHelper {
 					if (needSep){
 						table.append(',');
 					}
-					final String dbColumnName = (String) field.get(null);
+					final Object fieldValue = field.get(null);
+					if (!(fieldValue instanceof String)){
+						throw new SQLGenerationException("static field '"+field.getName()+"' must be type String." );
+					}
+					final String dbColumnName = (String) fieldValue;
 
 					table.append(typeInstance.toCreateColumn(dbColumnName));
 					if (t.primaryKey()){
@@ -137,11 +155,18 @@ public class GenericDBHelper implements DBHelper {
 					}
 
 					final String defaultValue = t.defaultValue();
+
 					if (! DBColumn.NULL.equals(defaultValue)){
 						table.append(" DEFAULT ");
-						if (DateColumn.CURRENT_TIMESTAMP == defaultValue){
-							table.append(defaultValue);
+						// double-escape to insert the escape character literally.
+						if (defaultValue.startsWith(DOUBLE_ESCAPE)){
+							DatabaseUtils.appendValueToSql(table, defaultValue.substring(1));
+
+						}else if(defaultValue.startsWith(DBColumnType.DEFAULT_VALUE_ESCAPE)){
+							table.append(defaultValue.substring(1));
+
 						}else{
+
 							DatabaseUtils.appendValueToSql(table, defaultValue);
 						}
 					}
@@ -152,20 +177,20 @@ public class GenericDBHelper implements DBHelper {
 			table.append(")");
 
 			final String result = table.toString();
-			db.execSQL(result);
+
+			return result;
 
 		} catch (final IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLGenerationException("field claimed to be static, but something went wrong on invocation", e);
+
 		} catch (final IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLGenerationException("default constructor not visible", e);
+
 		} catch (final SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLGenerationException("cannot access class fields", e);
+
 		} catch (final InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLGenerationException("cannot instantiate field type class", e);
 		}
 	}
 
