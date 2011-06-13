@@ -43,6 +43,11 @@ public @interface DBColumn {
 	// this is required because Java doesn't allow null as a default value.
 	public static final String NULL = "██████NULL██████";
 
+	public static final long NULL_LONG = Long.MIN_VALUE;
+	public static final int NULL_INT = Integer.MIN_VALUE;
+	public static final float  NULL_FLOAT = Float.MIN_VALUE;
+	public static final double NULL_DOUBLE = Double.MIN_VALUE;
+
 	/**
 	 * Specify one of the column types by passing its class object.
 	 *
@@ -85,5 +90,29 @@ public @interface DBColumn {
 	 * @return
 	 */
 	String defaultValue() default NULL;
+
+	/**
+	 * Sets the default value for the column.
+	 * @return
+	 */
+	int defaultValueInt() default NULL_INT;
+
+	/**
+	 * Sets the default value for the column.
+	 * @return
+	 */
+	long defaultValueLong() default NULL_LONG;
+
+	/**
+	 * Sets the default value for the column.
+	 * @return
+	 */
+	float defaultValueFloat() default NULL_FLOAT;
+
+	/**
+	 * Sets the default value for the column.
+	 * @return
+	 */
+	double defaultValueDouble() default NULL_DOUBLE;
 
 }

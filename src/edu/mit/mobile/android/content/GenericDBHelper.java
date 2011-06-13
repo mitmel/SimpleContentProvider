@@ -155,6 +155,11 @@ public class GenericDBHelper implements DBHelper {
 					}
 
 					final String defaultValue = t.defaultValue();
+					final int defaultValueInt = t.defaultValueInt();
+					final long defaultValueLong = t.defaultValueLong();
+					final float defaultValueFloat = t.defaultValueFloat();
+					final double defaultValueDouble = t.defaultValueDouble();
+
 
 					if (! DBColumn.NULL.equals(defaultValue)){
 						table.append(" DEFAULT ");
@@ -169,6 +174,21 @@ public class GenericDBHelper implements DBHelper {
 
 							DatabaseUtils.appendValueToSql(table, defaultValue);
 						}
+					}else if (defaultValueInt != DBColumn.NULL_INT){
+						table.append(" DEFAULT ");
+						table.append(defaultValueInt);
+
+					}else if (defaultValueLong != DBColumn.NULL_LONG){
+						table.append(" DEFAULT ");
+						table.append(defaultValueLong);
+
+					}else if (defaultValueFloat != DBColumn.NULL_FLOAT){
+						table.append(" DEFAULT ");
+						table.append(defaultValueFloat);
+
+					}else if (defaultValueDouble != DBColumn.NULL_DOUBLE){
+						table.append(" DEFAULT ");
+						table.append(defaultValueDouble);
 					}
 
 					needSep = true;

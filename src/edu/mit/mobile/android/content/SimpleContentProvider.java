@@ -33,6 +33,12 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	private final String mDBName;
 	private final int mDBVersion;
 
+	/**
+	 * This is the starting value for the automatically-generated URI mapper entries.
+	 * You can freely use any numbers below this without any risk of conflict.
+	 */
+	public static final int URI_MATCHER_CODE_START = 0x100000;
+
 	private final DBHelperMapper mDBHelperMapper;
 
 	private static final UriMatcher MATCHER = new UriMatcher(
@@ -79,7 +85,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		mDBHelpers.add(dbHelper);
 	}
 
-	private int mMatcherID = 0;
+	private int mMatcherID = URI_MATCHER_CODE_START;
 
 	/**
 	 * Adds an entry for a directory of a given type. This should be called in
