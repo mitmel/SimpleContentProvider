@@ -208,7 +208,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	public SimpleContentProvider(String authority, String dbName, int dbVersion) {
 		super();
 		mAuthority = authority;
-		mDBHelperMapper = new DBHelperMapper(mAuthority);
+		mDBHelperMapper = new DBHelperMapper();
 		mDBName = dbName;
 		mDBVersion = dbVersion;
 	}

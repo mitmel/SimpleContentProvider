@@ -42,14 +42,8 @@ import android.net.Uri;
  *
  */
 public final class DBHelperMapper {
-
-	private final String mAuthority;
-
 	private final Map<Integer, DBHelperMapItem> mDbhMap = new HashMap<Integer, DBHelperMapItem>();
 
-	public DBHelperMapper(String authority) {
-		mAuthority = authority;
-	}
 
 	/**
 	 * Makes a mapping from the code to the given DBHelper. This helper will be
