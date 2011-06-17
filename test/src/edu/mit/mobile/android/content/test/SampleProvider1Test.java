@@ -48,8 +48,8 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 		assertEquals(TEST_MESSAGE_1, c.getString(c.getColumnIndex(Message.BODY)));
 
 		assertFalse(c.isNull(c.getColumnIndex(Message.CREATED_DATE)));
-		final int createdDate = c.getInt(c.getColumnIndex(Message.CREATED_DATE));
-		assertTrue(createdDate > 0);
+		final String createdTimestamp = c.getString(c.getColumnIndex(Message.CREATED_DATE));
+		assertFalse("".equals(createdTimestamp));
 
 		// Update
 
@@ -67,7 +67,7 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 		assertTrue(c.moveToFirst());
 
 		assertEquals(TEST_MESSAGE_1_MOD, c.getString(c.getColumnIndex(Message.BODY)));
-		assertEquals(createdDate, c.getInt(c.getColumnIndex(Message.CREATED_DATE))); // this shouldn't update
+		assertEquals(createdTimestamp, c.getString(c.getColumnIndex(Message.CREATED_DATE))); // this shouldn't update
 
 		// Delete
 

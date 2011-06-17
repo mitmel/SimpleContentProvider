@@ -4,7 +4,7 @@ import android.net.Uri;
 import edu.mit.mobile.android.content.ContentItem;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.column.DBColumn;
-import edu.mit.mobile.android.content.column.DateColumn;
+import edu.mit.mobile.android.content.column.TimestampColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.content.test.SampleProvider1;
 
@@ -19,7 +19,7 @@ public class Message implements ContentItem {
 
 	// Column definitions below. ContentItem contains one column definition
 	// for the BaseColumns._ID which defines the primary key.
-	@DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
+	@DBColumn(type = TimestampColumn.class, defaultValue = TimestampColumn.CURRENT_TIMESTAMP)
 	public static final String CREATED_DATE = "created";
 
 	@DBColumn(type = TextColumn.class)

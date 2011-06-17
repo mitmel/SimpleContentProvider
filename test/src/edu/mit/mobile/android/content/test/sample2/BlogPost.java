@@ -1,5 +1,21 @@
 package edu.mit.mobile.android.content.test.sample2;
-
+/*
+ * Copyright (C) 2011  MIT Mobile Experience Lab
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -8,7 +24,7 @@ import edu.mit.mobile.android.content.DBTable;
 import edu.mit.mobile.android.content.OnSaveListener;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.column.DBColumn;
-import edu.mit.mobile.android.content.column.DateColumn;
+import edu.mit.mobile.android.content.column.DatetimeColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.content.test.SampleProvider2;
 
@@ -29,10 +45,10 @@ public class BlogPost implements ContentItem {
 
 	// Column definitions below. ContentItem contains one column definition
 	// for the BaseColumns._ID which defines the primary key.
-	@DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
+	@DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
 	public static final String CREATED_DATE = "created";
 
-	@DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
+	@DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
 	public static final String MODIFIED_DATE = "modified";
 
 	@DBColumn(type = TextColumn.class, notnull = true)

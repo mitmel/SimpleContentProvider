@@ -16,10 +16,15 @@ package edu.mit.mobile.android.content.column;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import edu.mit.mobile.android.content.column.DBColumnType;
 import android.database.Cursor;
 
-public class DateColumn extends DBColumnType<java.util.Date> {
+/**
+ * A string-based timestamp.
+ *
+ * @author steve
+ *
+ */
+public class TimestampColumn extends DBColumnType<String> {
 
 	public final static String
 		CURRENT_TIMESTAMP = DEFAULT_VALUE_ESCAPE + "CURRENT_TIMESTAMP",
@@ -28,11 +33,11 @@ public class DateColumn extends DBColumnType<java.util.Date> {
 
 	@Override
 	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "INTEGER");
+		return toColumnDef(colName, "TIMESTAMP");
 	}
 
 	@Override
-	public java.util.Date get(Cursor c, int colNumber) {
-		return new java.util.Date(c.getLong(colNumber));
+	public String get(Cursor c, int colNumber) {
+		return c.getString(colNumber);
 	}
 }
