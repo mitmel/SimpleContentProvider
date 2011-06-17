@@ -62,7 +62,8 @@ public @interface DBColumn {
 	 *
 	 * @see IntegerColumn
 	 * @see TextColumn
-	 * @see TimestampColumnolumn
+	 * @see TimestampColumn
+	 * @see DatetimeColumn
 	 *
 	 * @return the column type
 	 */
