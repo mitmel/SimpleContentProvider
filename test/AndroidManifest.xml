@@ -8,5 +8,9 @@
     <application android:icon="@drawable/icon" android:label="@string/app_name">
 
     <uses-library android:name="android.test.runner" />
+    <!-- not needed for the tests, but you should put this in your application's manifest
+    <provider android:name="SampleProvider1"  android:authorities="edu.mit.mobile.android.content.test.sampleprovider1" />
+    <provider android:name="SampleProvider2"  android:authorities="edu.mit.mobile.android.content.test.sampleprovider2" />
+    -->
     </application>
 </manifest>

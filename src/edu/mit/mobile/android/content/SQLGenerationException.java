@@ -1,6 +1,6 @@
 package edu.mit.mobile.android.content;
 
-public class SQLGenerationException extends Exception {
+public class SQLGenerationException extends RuntimeException {
 	/**
 	 *
 	 */

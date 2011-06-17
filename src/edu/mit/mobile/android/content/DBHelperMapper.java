@@ -62,17 +62,17 @@ public final class DBHelperMapper {
 	 *            {@link UriMatcher} code
 	 * @param helper
 	 *            The helper that should be used for this code.
-	 * @param type
-	 *            The type of requests that should be handled by the helper. Any
-	 *            other requests will throw an error. Types can be joined
-	 *            together, eg. <code>TYPE_INSERT | TYPE_QUERY</code>
+	 * @param verb
+	 *            The SQL verbs that should be handled by the helper. Any
+	 *            other requests will throw an error. Verbs can be joined
+	 *            together, eg. <code>VERB_INSERT | VERB_QUERY</code>
 	 */
-	public void addDirMapping(int code, DBHelper helper, int type){
-		mDbhMap.put(code, new DBHelperMapItem(type, false, helper));
+	public void addDirMapping(int code, DBHelper helper, int verb, String type){
+		mDbhMap.put(code, new DBHelperMapItem(verb, false, type, helper));
 	}
 
-	public void addItemMapping(int code, DBHelper helper, int type){
-		mDbhMap.put(code, new DBHelperMapItem(type, true, helper));
+	public void addItemMapping(int code, DBHelper helper, int verb, String type){
+		mDbhMap.put(code, new DBHelperMapItem(verb, true, type, helper));
 	}
 
 	public boolean canHandle(int code){
@@ -81,73 +81,73 @@ public final class DBHelperMapper {
 
 	public boolean canInsert(int code){
 		final DBHelperMapItem item = mDbhMap.get(code);
-		return item != null && item.allowType(TYPE_INSERT);
+		return item != null && item.allowVerb(VERB_INSERT);
 	}
 
 	public boolean canQuery(int code){
 		final DBHelperMapItem item = mDbhMap.get(code);
-		return item != null && item.allowType(TYPE_QUERY);
+		return item != null && item.allowVerb(VERB_QUERY);
 	}
 
 	public boolean canUpdate(int code){
 		final DBHelperMapItem item = mDbhMap.get(code);
-		return item != null && item.allowType(TYPE_UPDATE);
+		return item != null && item.allowVerb(VERB_UPDATE);
 	}
 
 	public boolean canDelete(int code){
 		final DBHelperMapItem item = mDbhMap.get(code);
-		return item != null && item.allowType(TYPE_DELETE);
+		return item != null && item.allowVerb(VERB_DELETE);
 	}
 
+	/**
+	 * @param code
+	 * @return the MIME type for the given item.
+	 */
 	public String getType(int code){
 		final DBHelperMapItem dbhmi = mDbhMap.get(code);
 		if (dbhmi == null){
 			throw new IllegalArgumentException("no mapping for code " + code);
 		}
-		if (dbhmi.isItem){
-			return ProviderUtils.TYPE_ITEM_PREFIX + mAuthority + "." + dbhmi.dbHelper.getPath();
-		}else{
-			return ProviderUtils.TYPE_DIR_PREFIX + mAuthority + "." + dbhmi.dbHelper.getPath();
-		}
+		return dbhmi.type;
 	}
 
-	private String getTypeDescription(int type){
-		String typeString = null;
-		if      ((type & TYPE_INSERT) != 0){
-			typeString = "insert";
+	private String getVerbDescription(int verb){
+		String verbString = null;
+		if      ((verb & VERB_INSERT) != 0){
+			verbString = "insert";
 
-		}else if ((type & TYPE_QUERY) != 0){
-			typeString = "query";
+		}else if ((verb & VERB_QUERY) != 0){
+			verbString = "query";
 
-		}else if ((type & TYPE_UPDATE) != 0){
-			typeString = "update";
+		}else if ((verb & VERB_UPDATE) != 0){
+			verbString = "update";
 
-		}else if ((type & TYPE_DELETE) != 0){
-			typeString = "delete";
+		}else if ((verb & VERB_DELETE) != 0){
+			verbString = "delete";
 		}
-		return typeString;
+		return verbString;
 	}
 
-	private DBHelperMapItem getMap(int type, int code){
+	private DBHelperMapItem getMap(int verb, int code){
 		final DBHelperMapItem dbhmi = mDbhMap.get(code);
 
 		if (dbhmi == null){
 			throw new IllegalArgumentException("No mapping for code "+ code);
 		}
-		if ((dbhmi.type & type) == 0){
-			throw new IllegalArgumentException("Cannot "+getTypeDescription(type)+" for code " + code);
+		if ((dbhmi.verb & verb) == 0){
+			throw new IllegalArgumentException("Cannot "+getVerbDescription(verb)+" for code " + code);
 		}
 		return dbhmi;
 	}
 
 	public Uri insert(int code, ContentProvider provider, SQLiteDatabase db, Uri uri, ContentValues values) throws SQLException {
-		final DBHelperMapItem dbhmi = getMap(TYPE_INSERT, code);
+		final DBHelperMapItem dbhmi = getMap(VERB_INSERT, code);
 
 		return dbhmi.dbHelper.insertDir(db, provider, uri, values);
 	}
 
 	public Cursor query(int code, ContentProvider provider, SQLiteDatabase db, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
-		final DBHelperMapItem dbhmi = getMap(TYPE_QUERY, code);
+		final DBHelperMapItem dbhmi = getMap(VERB_QUERY, code);
 
 		if (dbhmi.isItem){
 			return dbhmi.dbHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
@@ -157,7 +157,7 @@ public final class DBHelperMapper {
 	}
 
 	public int update(int code, ContentProvider provider, SQLiteDatabase db, Uri uri, ContentValues cv, String selection, String[] selectionArgs){
-		final DBHelperMapItem dbhmi = getMap(TYPE_QUERY, code);
+		final DBHelperMapItem dbhmi = getMap(VERB_QUERY, code);
 
 		if (dbhmi.isItem){
 			return dbhmi.dbHelper.updateItem(db, provider, uri, cv, selection, selectionArgs);
@@ -167,7 +167,7 @@ public final class DBHelperMapper {
 	}
 
 	public int delete(int code, ContentProvider provider, SQLiteDatabase db, Uri uri, String selection, String[] selectionArgs){
-		final DBHelperMapItem dbhmi = getMap(TYPE_QUERY, code);
+		final DBHelperMapItem dbhmi = getMap(VERB_QUERY, code);
 
 		if (dbhmi.isItem){
 			return dbhmi.dbHelper.deleteItem(db, provider,uri, selection, selectionArgs);
@@ -177,26 +177,28 @@ public final class DBHelperMapper {
 	}
 
 	private class DBHelperMapItem {
-		public DBHelperMapItem(int type, boolean isItem, DBHelper dbHelper) {
-			this.type = type;
+		public DBHelperMapItem(int verb, boolean isItem, String type, DBHelper dbHelper) {
+			this.verb = verb;
 			this.dbHelper = dbHelper;
 			this.isItem = isItem;
+			this.type = type;
 		}
 
-		public boolean allowType(int type){
-			return (this.type & type) != 0;
+		public boolean allowVerb(int verb){
+			return (this.verb & verb) != 0;
 		}
 
 		final DBHelper dbHelper;
-		final int type;
+		final int verb;
 		final boolean isItem;
+		final String type;
 
 	}
 
 	public static final int
-		TYPE_INSERT = 1,
-		TYPE_QUERY  = 2,
-		TYPE_UPDATE = 4,
-		TYPE_DELETE = 8,
-		TYPE_ALL = TYPE_INSERT | TYPE_QUERY | TYPE_UPDATE | TYPE_DELETE;
+		VERB_INSERT = 1,
+		VERB_QUERY  = 2,
+		VERB_UPDATE = 4,
+		VERB_DELETE = 8,
+		VERB_ALL = VERB_INSERT | VERB_QUERY | VERB_UPDATE | VERB_DELETE;
 }

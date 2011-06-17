@@ -53,7 +53,7 @@ public class ManyToMany {
 		FROM_ID = "from_id";
 	}
 
-	public static class M2MDBHelper implements DBHelper {
+	public static class M2MDBHelper extends DBHelper {
 		private final String mFromTable, mToTable, mJoinTable;
 		private final Uri mToContentUri;
 
@@ -93,27 +93,36 @@ public class ManyToMany {
 			mIdenticalChildFinder = identicalChildFinder;
 		}
 
+		@Override
 		public String getPath(){
 			return mJoinTable;
 		}
 
+		/**
+		 * @return the name of the join table
+		 */
 		public String getJoinTableName(){
 			return mJoinTable;
 		}
 
+		/**
+		 * @return the name of the from table
+		 */
 		public String getFromTable(){
 			return mFromTable;
 		}
 
+		/**
+		 * @return the name of the to table
+		 */
 		public String getToTable() {
 			return mToTable;
 		}
 
 		/**
 		 * Generates a join table.
-		 *
-		 * @return
 		 */
+		@Override
 		public void createTables(SQLiteDatabase db){
 			db.execSQL("CREATE TABLE "+mJoinTable + " ("
 					+ ManyToManyColumns._ID 			+ " INTEGER PRIMARY KEY,"
@@ -128,7 +137,6 @@ public class ManyToMany {
 		/**
 		 * Deletes the join table.
 		 *
-		 * @param db
 		 */
 		public void deleteJoinTable(SQLiteDatabase db){
 			db.execSQL("DROP TABLE IF EXISTS "+mJoinTable);
@@ -166,7 +174,7 @@ public class ManyToMany {
 		 * Inserts a child into the database and adds a relation to its parent. If the item described by values is already present, only adds the relation.
 		 *
 		 * @param db
-		 * @param uri URI to insert into. This must be a be a hierarchical URI that points to the directory of the desired parent's children. Eg. "/itinerary/1/casts/"
+		 * @param parentChildDir URI to insert into. This must be a be a hierarchical URI that points to the directory of the desired parent's children. Eg. "/itinerary/1/casts/"
 		 * @param values values for the child
 		 * @param childFinder a finder that will look for
 		 * @return the URI of the child that was either related or inserted.
@@ -227,7 +235,7 @@ public class ManyToMany {
 		 * @param values
 		 * @param where
 		 * @param whereArgs
-		 * @return
+		 * @return the number of items that have been updated
 		 */
 		@Override
 		public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values, String where, String[] whereArgs){
@@ -311,7 +319,7 @@ public class ManyToMany {
 		 * @param selection any extra selection query or null
 		 * @param selectionArgs any extra selection arguments or null
 		 * @param sortOrder the desired sort order or null
-		 * @return
+		 * @return a cursor whose content represents the to table
 		 */
 		public Cursor queryTo(long fromId, SQLiteDatabase db, String[] toProjection, String selection, String[] selectionArgs, String sortOrder){
 			// XXX hack to get around ambiguous column names. Is there a better way to write this query?

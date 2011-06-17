@@ -1,5 +1,4 @@
 package edu.mit.mobile.android.content.column;
-
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -19,31 +18,16 @@ package edu.mit.mobile.android.content.column;
  */
 import android.database.Cursor;
 
-public abstract class DBColumnType<T> {
-	/**
-	 * Generates the SQL necessary to create a column
-	 *
-	 * @param colName
-	 * @return the column creation SQL code
-	 */
-	public abstract String toCreateColumn(String colName);
+public class BlobColumn extends DBColumnType<byte[]> {
 
-	/**
-	 * @param c
-	 * @param colNumber
-	 * @return the value of the given column on the supplied cursor
-	 */
-	public abstract T get(Cursor c, int colNumber);
-
-	protected String toColumnDef(String colName, String type) {
-		return "'" + colName + "' " + type;
+	@Override
+	public String toCreateColumn(String colName) {
+		return toColumnDef(colName, "BLOB");
 	}
 
-	/**
-	 * Prefix the default value with this character in order to prevent
-	 * auto-quoting. Prefix the default value with this character twice to
-	 * insert it literally. This character only needs to be escaped if it's
-	 * at the beginning of the string.
-	 */
-	public static final String DEFAULT_VALUE_ESCAPE = "\\";
+	@Override
+	public byte[] get(Cursor c, int colNumber) {
+
+		return c.getBlob(colNumber);
+	}
 }

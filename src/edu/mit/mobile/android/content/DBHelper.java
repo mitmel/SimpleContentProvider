@@ -23,7 +23,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-public interface DBHelper {
+public abstract class DBHelper {
 
 	public abstract Uri insertDir(SQLiteDatabase db, ContentProvider provider,
 			Uri uri, ContentValues values) throws SQLException;
@@ -55,13 +55,22 @@ public interface DBHelper {
 	 *
 	 * @param db
 	 */
-	public abstract void createTables(SQLiteDatabase db);
+	public abstract void createTables(SQLiteDatabase db) throws SQLGenerationException;
 
 	/**
 	 * Upgrades the tables for the times of this helper.
 	 * @param db
-	 * @param oldVersion TODO
-	 * @param newVersion TODO
+	 * @param oldVersion the old version number of the database
+	 * @param newVersion the new, current version number
 	 */
-	public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion);
+	public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) throws SQLGenerationException;
+
+	protected OnSaveListener mOnSaveListener;
+
+	public void setOnSaveListener(OnSaveListener onSaveListener){
+		mOnSaveListener = onSaveListener;
+	}
+	public void removeOnSaveListener(){
+		mOnSaveListener = null;
+	}
 }
