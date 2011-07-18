@@ -355,8 +355,12 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		if (!mDBHelperMapper.canDelete(match)) {
 			throw new IllegalArgumentException("delete note supported");
 		}
-		return mDBHelperMapper.delete(match, this, db, uri, selection,
+		final int count = mDBHelperMapper.delete(match, this, db, uri, selection,
 				selectionArgs);
+
+		getContext().getContentResolver().notifyChange(uri, null);
+
+		return count;
 	}
 
 	@Override
