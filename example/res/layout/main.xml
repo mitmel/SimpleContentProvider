@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+>
+	
+	<TextView
+		android:id="@android:id/empty"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="center"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:textStyle="italic"
+		android:text="There are no items in the list."
+		android:layout_above="@+id/button_bar"
+		android:visibility="gone"
+		 />
+		
+	<ListView android:id="@android:id/list" 
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/button_bar"
+	/>
+
+	<LinearLayout android:id="@+id/button_bar"
+		style="@android:style/ButtonBar" 
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+	>
+		<Button android:id="@+id/add" 
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Add"
+			android:drawableLeft="@android:drawable/ic_menu_add" 
+		/>
+		
+		<Button android:id="@+id/clear" 
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Clear"
+			android:drawableLeft="@android:drawable/ic_menu_delete"			
+		/>
+	
+	</LinearLayout>
+
+</RelativeLayout>

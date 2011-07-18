@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	package="edu.mit.mobile.android.content.example"
+	android:versionCode="1"
+	android:versionName="1.0"
+>
+	<uses-sdk
+		android:minSdkVersion="8" />
+
+	<application
+		android:icon="@drawable/icon"
+		android:label="@string/app_name">
+		
+		<activity android:name=".SimpleContentProviderExample"
+			android:label="@string/app_name">
+			
+			<intent-filter>
+				<action	android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		
+		<!-- MessageDetails displays the contents of one message. Android will automatically
+			associate the intent with this class due to this manifest declaration. -->
+		<activity android:name=".MessageDetail">
+			<intent-filter>
+				<!-- The DEFAULT category must be specified for the system to 
+					automatically handle this MIME type + action. -->
+				<category android:name="android.intent.category.DEFAULT"/>
+				
+				<!-- This Activity will display a message, so we use the VIEW action. -->
+				<action android:name="android.intent.action.VIEW" />
+				
+				<!-- The MIME type defaults to:
+					multiple items:
+					vnd.android.cursor.dir/vnd.AUTHORITY.PATH
+					
+					a single item:
+					vnd.android.cursor.item/vnd.AUTHORITY.PATH
+				 -->
+				<data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.content.example.sampleprovider.message" />
+			</intent-filter>
+		</activity>
+
+		<!-- Each ContentProvider must be defined in the manifest, so that Android 
+			knows how to find the Provider given the authority. -->
+		<provider
+			android:name="SampleProvider"
+			android:authorities="edu.mit.mobile.android.content.example.sampleprovider" />
+
+	</application>
+</manifest>
