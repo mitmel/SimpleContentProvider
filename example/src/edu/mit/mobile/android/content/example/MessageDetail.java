@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ public class MessageDetail extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.detail);
 
@@ -42,13 +45,8 @@ public class MessageDetail extends Activity {
 		// to alert of any programmer errors.
 		if (Intent.ACTION_VIEW.equals(action) && message != null) {
 
-			// NOTE: In a production Activity, loadContent should be called from
-			// a
-			// background thread so that any DB calls don't slow down the
-			// loading of the Activity.
-			//
-			// For brevity, it is simply run on the UI thread here.
-			loadContent(message);
+			// load the content on a background thread
+			new ContentLoadTask().execute(message);
 		} else {
 			Toast.makeText(
 					this,
@@ -60,15 +58,19 @@ public class MessageDetail extends Activity {
 
 	}
 
+	private Cursor queryDatabase(Uri message){
+		final Cursor c = managedQuery(message, PROJECTION, null,
+				null, null);
+		return c;
+	}
+
 	/**
 	 * Loads the content into the Activity.
 	 *
 	 * @param message
-	 *            the URI of the message to load.
+	 *            a cursor which contains the content of the message to load.
 	 */
-	private void loadContent(Uri message) {
-		final Cursor c = getContentResolver().query(message, PROJECTION, null,
-				null, null);
+	private void loadContent(Cursor c) {
 
 		// One should always check that the returned cursor has content. The
 		// cursor will automatically seek to the first position, so
@@ -100,6 +102,31 @@ public class MessageDetail extends Activity {
 			// resolves. The most common reason for this is that the content was
 			// deleted.
 			finish();
+		}
+	}
+
+	/**
+	 * A background thread that shows an indeterminate progress bar in the window title
+	 * while the content is loading.
+	 *
+	 */
+	private class ContentLoadTask extends AsyncTask<Uri, Void, Cursor> {
+
+		@Override
+		protected void onPreExecute() {
+			setProgressBarIndeterminateVisibility(true);
+		}
+
+		@Override
+		protected Cursor doInBackground(Uri... params) {
+			return queryDatabase(params[0]);
+		}
+
+		@Override
+		protected void onPostExecute(Cursor result) {
+			// load content always needs to be run on a UI thread as it modifies UI widgets
+			loadContent(result);
+			setProgressBarIndeterminateVisibility(false);
 		}
 	}
 }

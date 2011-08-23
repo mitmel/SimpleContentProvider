@@ -9,8 +9,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -76,6 +80,8 @@ public class SimpleContentProviderExample extends ListActivity implements
 		// A ListActivity has a simple ListView by default and this tells it
 		// which adapter to use
 		setListAdapter(mListAdapter);
+
+		registerForContextMenu(getListView());
 	}
 
 	@Override
@@ -91,6 +97,44 @@ public class SimpleContentProviderExample extends ListActivity implements
 		// item by looking through the Manifest to find the right Activity for the given
 		// content MIME type and action. If more than one activity is found, it will prompt
 		// the user and ask which Activity they would like to use for this type.
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		getMenuInflater().inflate(R.menu.item_context, menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	      AdapterView.AdapterContextMenuInfo info;
+	        try {
+	            info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+	       } catch (final ClassCastException e) {
+
+	           return false;
+	       }
+
+	    final Uri itemUri = ContentUris.withAppendedId(Message.CONTENT_URI, info.id);
+
+		switch (item.getItemId()){
+		case R.id.view:
+			startActivity(new Intent(Intent.ACTION_VIEW, itemUri));
+			return true;
+
+		case R.id.edit:
+			startActivity(new Intent(Intent.ACTION_EDIT, itemUri));
+			return true;
+
+		case R.id.delete:
+			deleteItem(itemUri);
+			return true;
+
+		default:
+			return super.onContextItemSelected(item);
+		}
+
 	}
 
 	/**
@@ -115,13 +159,23 @@ public class SimpleContentProviderExample extends ListActivity implements
 	/**
 	 * Deletes all the items from the database.
 	 */
-	private void clearAllItems() {
-		// delete() with null in the where and selectionArgs parameters will
-		// delete all the content.
-		final int count = getContentResolver().delete(Message.CONTENT_URI,
+	private void deleteItem(Uri item) {
+		// the second two arguments are null here, as the row is specified using the URI
+		final int count = getContentResolver().delete(item,
 				null, null);
 		Toast.makeText(this, count + " rows deleted", Toast.LENGTH_SHORT)
 				.show();
+
+	}
+
+	/**
+	 * Deletes all the items from the database.
+	 */
+	private void clearAllItems() {
+		// delete() with null in the where and selectionArgs parameters will
+		// delete all the content.
+		deleteItem(Message.CONTENT_URI);
+
 	}
 
 	@Override
@@ -134,6 +188,7 @@ public class SimpleContentProviderExample extends ListActivity implements
 		case R.id.clear:
 			clearAllItems();
 			break;
+
 		}
 	}
 }
