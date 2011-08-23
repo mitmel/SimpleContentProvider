@@ -127,8 +127,9 @@ public class ManyToMany {
 			db.execSQL("CREATE TABLE "+mJoinTable + " ("
 					+ ManyToManyColumns._ID 			+ " INTEGER PRIMARY KEY,"
 					+ ManyToManyColumns.TO_ID   		+ " INTEGER"
-					// TODO foreign keys are not supported in 2.1 or below. Dynamically enable this feature.
-					// + " REFERENCES "+ mToTable + "("+BaseColumns._ID+")"
+					+ (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ?
+							" REFERENCES "+ mToTable + "("+BaseColumns._ID+")"
+							: "")
 					+ ","
 					+ ManyToManyColumns.FROM_ID 		+ " INTEGER"
 					+ ");");
@@ -156,6 +157,19 @@ public class ManyToMany {
 			relation.put(ManyToManyColumns.FROM_ID, from);
 			relation.put(ManyToManyColumns.TO_ID, to);
 			return db.insert(mJoinTable, null, relation);
+		}
+
+		/**
+		 * Removes all relations from a given item.
+		 *
+		 * @param db
+		 * @param from
+		 * @return the count of deleted relations
+		 */
+		public int removeRelation(SQLiteDatabase db, long from){
+			return db.delete(mJoinTable,
+					ManyToManyColumns.FROM_ID + "=?",
+					new String[]{Long.toString(from)});
 		}
 
 		public int removeRelation(SQLiteDatabase db, long from, long to){
@@ -252,8 +266,13 @@ public class ManyToMany {
 		// TODO does not yet verify a relationship.
 		@Override
 		public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values, String where, String[] whereArgs){
-			throw new RuntimeException("not implemented yet");
-			//return provider.update(mToContentUri, values, where, whereArgs);
+			int count;
+			if (mToContentUri != null){
+				count = provider.update(mToContentUri, values, where, whereArgs);
+			}else{
+				count = db.update(mToTable, values, where, whereArgs);
+			}
+			return count;
 		}
 
 		/* (non-Javadoc)
@@ -279,20 +298,38 @@ public class ManyToMany {
 					throw new IllegalArgumentException("There is no relation between "+ parent + " and " + mToTable + ": ID "+ childId);
 				}
 
+				db.setTransactionSuccessful();
+
 			}finally{
 				db.endTransaction();
 			}
 			return count;
 		}
 
-		// TODO implement me!
 		/* (non-Javadoc)
 		 * @see edu.mit.mobile.android.content.DBHelper##deleteDir(android.database.sqlite.SQLiteDatabase, android.content.ContentProvider, android.net.Uri, java.lang.String, java.lang.String[])
 		 */
 		@Override
 		public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,String where, String[] whereArgs){
-			throw new RuntimeException("not implemented yet");
-			//return db.delete(mToTable, where, whereArgs);
+			int count;
+			try {
+				db.beginTransaction();
+				final Uri parent = ProviderUtils.removeLastPathSegment(uri);
+
+				if (mToContentUri != null){
+					count = provider.delete(mToContentUri, where, whereArgs);
+				}else{
+					count = db.delete(mToTable, where, whereArgs);
+				}
+
+				removeRelation(db, ContentUris.parseId(parent));
+
+				db.setTransactionSuccessful();
+
+			}finally{
+				db.endTransaction();
+			}
+			return count;
 		}
 
 

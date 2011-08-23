@@ -137,6 +137,8 @@ import edu.mit.mobile.android.content.column.DBColumn;
  */
 public abstract class SimpleContentProvider extends ContentProvider {
 
+	private static final String TAG = SimpleContentProvider.class.getSimpleName();
+
 	///////////////////// public API constants
 
 	/**
@@ -345,6 +347,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 			mDBName = extractDBName();
 		}
 		mDatabaseHelper = new DatabaseHelper(getContext(), mDBName, mDBVersion);
+
 		return true;
 	}
 
@@ -471,6 +474,15 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			for (final DBHelper dbHelper : mDBHelpers) {
 				dbHelper.upgradeTables(db, oldVersion, newVersion);
+			}
+		}
+
+		@Override
+		public void onOpen(SQLiteDatabase db) {
+			super.onOpen(db);
+
+			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
+				db.execSQL("PRAGMA foreign_keys = ON;");
 			}
 		}
 	}
