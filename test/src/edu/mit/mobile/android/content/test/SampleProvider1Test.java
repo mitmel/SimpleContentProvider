@@ -30,6 +30,8 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 		// the cursor (and DB) should be empty
 		assertFalse(c.moveToFirst());
 
+		c.close();
+
 		ContentValues cv = new ContentValues();
 
 		cv.put(Message.BODY, TEST_MESSAGE_1);
@@ -37,6 +39,7 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 		final Uri test1 = cr.insert(Message.CONTENT_URI, cv);
 
 		assertNotNull(test1);
+
 
 		// make sure that querying works
 		c = cr.query(test1, null, null, null, null);
@@ -51,6 +54,7 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 		final String createdTimestamp = c.getString(c.getColumnIndex(Message.CREATED_DATE));
 		assertFalse("".equals(createdTimestamp));
 
+		c.close();
 		// Update
 
 		cv = new ContentValues();
@@ -68,6 +72,8 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 
 		assertEquals(TEST_MESSAGE_1_MOD, c.getString(c.getColumnIndex(Message.BODY)));
 		assertEquals(createdTimestamp, c.getString(c.getColumnIndex(Message.CREATED_DATE))); // this shouldn't update
+
+		c.close();
 
 		// Delete
 

@@ -46,11 +46,13 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 	public void testCRUD(){
 		final MockContentResolver cr = getMockContentResolver();
 
-		Cursor c = cr.query(BlogPost.CONTENT_URI, null, null, null, null);
+		final Cursor c = cr.query(BlogPost.CONTENT_URI, null, null, null, null);
 
 		assertNotNull(c);
 		// the cursor (and DB) should be empty
 		assertFalse(c.moveToFirst());
+
+		c.close();
 
 		ContentValues cv;
 
@@ -67,8 +69,9 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		// ok, now let's try with a title added:
 		final Uri test1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 
-		c = testQueryItem(cr, test1, TEST_TITLE, TEST_BODY_1);
+		testQueryItem(cr, test1, TEST_TITLE, TEST_BODY_1).close();
 		// Update
+
 
 		cv = new ContentValues();
 		cv.put(BlogPost.BODY, TEST_BODY_1_MOD);
@@ -77,7 +80,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		assertEquals(1, count);
 
 		// check to see that it's updated properly.
-		c = testQueryItem(cr, test1, TEST_TITLE, TEST_BODY_1_MOD);
+		testQueryItem(cr, test1, TEST_TITLE, TEST_BODY_1_MOD).close();
 
 		// now try two parameters
 
@@ -142,37 +145,38 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		final Uri item = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 
-		testQueryItem(cr, item, TEST_TITLE, TEST_BODY_1);
+		testQueryItem(cr, item, TEST_TITLE, TEST_BODY_1).close();
 
 		final Uri queryTitle = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).build();
 
-		testQueryItem(cr, queryTitle, TEST_TITLE, TEST_BODY_1);
+		testQueryItem(cr, queryTitle, TEST_TITLE, TEST_BODY_1).close();
 
 		createTestPost(cr, TEST_TITLE_2, TEST_BODY_2);
 
 		// should stay the same
-		testQueryItem(cr, queryTitle, TEST_TITLE, TEST_BODY_1);
+		testQueryItem(cr, queryTitle, TEST_TITLE, TEST_BODY_1).close();
 
 		final Uri queryTitle2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
 		// should get the new item
-		testQueryItem(cr, queryTitle2, TEST_TITLE_2, TEST_BODY_2);
+		testQueryItem(cr, queryTitle2, TEST_TITLE_2, TEST_BODY_2).close();
 
 
 		final Uri queryTitle1Or2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter("|"+BlogPost.TITLE, TEST_TITLE_2).build();
-		testQuery(cr, queryTitle1Or2, null, null, null, null, 2);
+		testQuery(cr, queryTitle1Or2, null, null, null, null, 2).close();
+
 
 		final Uri queryTitle1And2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
-		testQuery(cr, queryTitle1And2, null, null, null, null, 0);
+		testQuery(cr, queryTitle1And2, null, null, null, null, 0).close();
 
 		final Uri queryTitle1AndBody1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.BODY, TEST_BODY_1).build();
-		testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1);
+		testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1).close();
 
 
 		final Uri queryIllegalName = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter("foo'; '", TEST_TITLE).build();
 
 		boolean exceptionThrown = false;
 		try {
-			testQuery(cr, queryIllegalName, null, null, null, null, 1);
+			testQuery(cr, queryIllegalName, null, null, null, null, 1).close();
 		}catch (final SQLGenerationException e) {
 			exceptionThrown = true;
 		}
