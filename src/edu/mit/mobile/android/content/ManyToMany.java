@@ -40,7 +40,7 @@ import android.provider.BaseColumns;
  *
  * To use, first {@link ManyToMany#createJoinTable(SQLiteDatabase)}. Then you
  * can create relations between between tables by
- * {@link #addRelation(SQLiteDatabase, long, long)}.
+ * {@link M2MDBHelper#addRelation(SQLiteDatabase, long, long)}.
  *
  * @author steve
  *

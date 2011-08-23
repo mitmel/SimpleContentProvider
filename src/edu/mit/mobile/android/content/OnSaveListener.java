@@ -4,16 +4,23 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+/**
+ * This hook runs right before insert or update, allowing the data to be
+ * modified before being saved to the database.
+ *
+ * @author Steve Pomeroy
+ *
+ */
 public interface OnSaveListener {
 
     /**
      * This hook runs right before insert or update, allowing the data to be
      * modified before being saved to the database.
      *
-     * @param db 
+     * @param db
      *
      * @param uri the uri of the item being updated or null if the item is
-     * being inserted. 
+     * being inserted.
      *
      * @param cv the requested data to be updated or inserted. There is no
      * guarantee that any of the values will be present.

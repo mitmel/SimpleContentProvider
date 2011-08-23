@@ -48,6 +48,9 @@ public abstract class DBHelper {
 			String[] projection, String selection, String[] selectionArgs,
 			String sortOrder);
 
+	/**
+	 * @return the path within a content URI that represents the dir index of an item.
+	 */
 	public abstract String getPath();
 
 	/**
@@ -67,9 +70,18 @@ public abstract class DBHelper {
 
 	protected OnSaveListener mOnSaveListener;
 
+	/**
+	 * Registers an {@link OnSaveListener} to be called right before insert/update.
+	 *
+	 * @param onSaveListener
+	 */
 	public void setOnSaveListener(OnSaveListener onSaveListener){
 		mOnSaveListener = onSaveListener;
 	}
+
+	/**
+	 * Removes any {@link OnSaveListener} formerly registered with {@link #setOnSaveListener(OnSaveListener)}.
+	 */
 	public void removeOnSaveListener(){
 		mOnSaveListener = null;
 	}
