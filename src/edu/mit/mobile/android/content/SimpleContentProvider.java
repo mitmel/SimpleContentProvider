@@ -270,7 +270,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	/**
 	 * Adds dir and item entries for the given helper at the given path. The
 	 * types are generated using {@link #getDirType(String)} and
-	 * {@link #getItemType(String)}.
+	 * {@link #getItemType(String)} passing path in for the suffix.
 	 *
 	 * @param dbHelper
 	 * @param path
