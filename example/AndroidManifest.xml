@@ -43,6 +43,22 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".MessageEdit">
+			<intent-filter>
+				<!-- The DEFAULT category must be specified for the system to automatically 
+					handle this MIME type + action. -->
+				<category android:name="android.intent.category.DEFAULT" />
+	
+				<!-- This Activity will display a message, so we use the VIEW action. -->
+				<action android:name="android.intent.action.EDIT" />
+	
+				<!-- The MIME type defaults to: multiple items: vnd.android.cursor.dir/vnd.AUTHORITY.PATH 
+					a single item: vnd.android.cursor.item/vnd.AUTHORITY.PATH -->
+				<data
+					android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.content.example.sampleprovider.message" />
+			</intent-filter>
+		</activity>
+
 		<!-- Each ContentProvider must be defined in the manifest, so that Android 
 			knows how to find the Provider given the authority. -->
 		<provider

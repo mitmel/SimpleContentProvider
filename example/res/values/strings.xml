@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SimpleContentProvider Example</string>
+    <string name="column_title">Title</string>
+    <string name="column_body">Body</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="column_id">ID</string>
 </resources>
