@@ -50,6 +50,7 @@ public class SimpleContentProviderExample extends ListActivity implements
 		getListView().setEmptyView(findViewById(android.R.id.empty));
 
 		findViewById(R.id.add).setOnClickListener(this);
+		findViewById(R.id.add_random).setOnClickListener(this);
 		findViewById(R.id.clear).setOnClickListener(this);
 
 		// the column names that data will be loaded from
@@ -137,6 +138,15 @@ public class SimpleContentProviderExample extends ListActivity implements
 
 	}
 
+
+	/**
+	 * Starts a new activity to prompt the user with the contents of a new item.
+	 */
+	private void createNewItem(){
+		// the URI must be specified here, so we know what needs have a new item.
+		startActivity(new Intent(Intent.ACTION_INSERT, Message.CONTENT_URI));
+	}
+
 	/**
 	 * Generates and adds a random item.
 	 */
@@ -182,6 +192,10 @@ public class SimpleContentProviderExample extends ListActivity implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.add:
+			createNewItem();
+			break;
+
+		case R.id.add_random:
 			addItem();
 			break;
 

@@ -49,13 +49,22 @@
 					handle this MIME type + action. -->
 				<category android:name="android.intent.category.DEFAULT" />
 	
-				<!-- This Activity will display a message, so we use the VIEW action. -->
+				<!-- This Activity will edit an existing message, so we use the EDIT action. -->
 				<action android:name="android.intent.action.EDIT" />
-	
-				<!-- The MIME type defaults to: multiple items: vnd.android.cursor.dir/vnd.AUTHORITY.PATH 
-					a single item: vnd.android.cursor.item/vnd.AUTHORITY.PATH -->
+
 				<data
 					android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.content.example.sampleprovider.message" />
+			</intent-filter>
+			
+			<intent-filter>
+				<category android:name="android.intent.category.DEFAULT" />
+	
+				<!-- This Activity will allow us to create a new message, so we use the INSERT action. -->
+				<action android:name="android.intent.action.INSERT" />
+	
+				<!-- We need to specify the mime type for the 'dir' of messages for INSERT -->
+				<data
+					android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.content.example.sampleprovider.message" />
 			</intent-filter>
 		</activity>
 

@@ -15,31 +15,31 @@ import android.widget.Toast;
 
 public class MessageEdit extends Activity implements OnClickListener{
 	private EditText mId, mTitle, mBody;
-	private Button mSave, mCancel;	
-	
+	private Button mSave, mCancel;
+
 	private static final String[] PROJECTION = { Message._ID, Message.TITLE,
 		Message.BODY };
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.edit);
-		
+
 		mTitle = (EditText) findViewById(R.id.edtTitle);
 		mBody = (EditText) findViewById(R.id.edtBody);
 		mId = (EditText) findViewById(R.id.edtId);
-		
+
 		mSave = (Button) findViewById(R.id.btn_save);
 		mCancel = (Button) findViewById(R.id.btn_cancel);
-		
+
 		mCancel.setOnClickListener(this);
 		mSave.setOnClickListener(this);
-		
+
 		final Intent intent = getIntent();
 		final Uri message = intent.getData();
 		final String action = intent.getAction();
-		
+
 		// While we declared an intent filter in the manifest specifying the
 		// EDIT action and the message content type, it's still possible that
 		// the activity might be started explicitly using the classname. This is
@@ -48,6 +48,10 @@ public class MessageEdit extends Activity implements OnClickListener{
 		if (Intent.ACTION_EDIT.equals(action) && message != null) {
 			// load the content on a background thread
 			new ContentLoadTask().execute(message);
+
+		} else if (Intent.ACTION_INSERT.equals(action)){
+			// nothing to do, this is a valid action. See the save method.
+
 		} else {
 			Toast.makeText(
 					this,
@@ -59,7 +63,7 @@ public class MessageEdit extends Activity implements OnClickListener{
 	}
 
 	@Override
-	public void onClick(View v) {	
+	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_save:
 			saveChanges();
@@ -77,7 +81,7 @@ public class MessageEdit extends Activity implements OnClickListener{
 				null, null);
 		return c;
 	}
-	
+
 	/**
 	 * TODO:
 	 *   - Use only one ContentLoadTask to MessageEdit and MessageDetail
@@ -105,29 +109,53 @@ public class MessageEdit extends Activity implements OnClickListener{
 			finish();
 		}
 	}
-	
+
 	private void saveChanges() {
 		// place your content inside a ContentValues object.
 		final ContentValues cv = new ContentValues();
 		cv.put(Message.TITLE, mTitle.getText().toString());
 		cv.put(Message.BODY, mBody.getText().toString());
 
-		// updating the register
-		String id = mId.getText().toString();
-		int count = getContentResolver().update(Message.CONTENT_URI, cv, Message._ID + "=" + id, null);
-		
-		if (count <= 0) {
-			Toast.makeText(this,
-					"Error updating item. update() returned " + count,
-					Toast.LENGTH_LONG).show();
-		}else{
-			Toast.makeText(this,
-					"Register was updated" ,
-					Toast.LENGTH_LONG).show();
+		// The URI of the message (eg content://.../message/4) is stored in the intent
+		// that we used when starting this activity.
+		final Intent intent = getIntent();
+		final Uri message = intent.getData();
+		final String action = intent.getAction();
+
+		if (Intent.ACTION_EDIT.equals(action) && message != null){
+			final int count = getContentResolver().update(message, cv, null, null);
+
+			if (count <= 0) {
+				Toast.makeText(this,
+						"Error updating item. update() returned " + count,
+						Toast.LENGTH_LONG).show();
+			}else{
+				Toast.makeText(this,
+						"Message was updated" ,
+						Toast.LENGTH_LONG).show();
+				finish();
+			}
+
+		// the URI for ACTION_INSERT should be the index that the content should be inserted into.
+		}else if (Intent.ACTION_INSERT.equals(action)){
+			final Uri newUri = getContentResolver().insert(message, cv);
+			if (newUri == null){
+				Toast.makeText(this, "Error creating new message", Toast.LENGTH_LONG).show();
+				return;
+			}
+			Toast.makeText(this, "New message created at: " + newUri, Toast.LENGTH_LONG).show();
+
+			// the below isn't needed, but it will make it so that we could potentially get the newly created URI
+			// if we needed it using startActivityForResult()
+			setResult(RESULT_OK, new Intent().setData(newUri));
+
 			finish();
+
+		}else{
+			Toast.makeText(this, "saveChanges() was called for an unhandled intent:" + intent, Toast.LENGTH_LONG).show();
 		}
 	}
-	
+
 	// TODO: Use only one ContentLoadTask to MessageEdit and MessageDetail
 	/**
 	 * A background thread that shows an indeterminate progress bar in the window title

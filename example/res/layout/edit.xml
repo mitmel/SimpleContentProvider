@@ -2,21 +2,32 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent" android:layout_height="match_parent"
 	android:padding="10dp">
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="match_parent" android:layout_height="match_parent">
-		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextView03" android:text="@string/column_id"></TextView>
-		<EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/edtId" android:enabled="false"/>
-		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/TextView02"
-			android:text="@string/column_title"></TextView>
-		<EditText android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:id="@+id/edtTitle"></EditText>
-		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/TextView01"
-			android:text="@string/column_body"></TextView>
-		<EditText android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:id="@+id/edtBody"></EditText>
-	</LinearLayout>
+	<ScrollView android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:layout_above="@+id/buttonbar_edit">
+		<LinearLayout android:orientation="vertical"
+			android:layout_width="match_parent" android:layout_height="wrap_content">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextView03" android:text="@string/column_id"></TextView>
+			<EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/edtId" android:enabled="false"/>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/TextView02"
+				android:text="@string/column_title"></TextView>
+	<EditText
+		android:layout_width="match_parent"
+		android:inputType="textEmailSubject|textAutoCorrect|textCapSentences|textImeMultiLine"
+		android:imeOptions="actionNext"
+		android:layout_height="wrap_content"
+		android:id="@+id/edtTitle"
+	>
+		<requestFocus></requestFocus>
+	</EditText>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/TextView01"
+				android:text="@string/column_body"></TextView>
+			<EditText android:layout_width="match_parent"
+			android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
+				android:layout_height="wrap_content" android:id="@+id/edtBody"></EditText>
+		</LinearLayout>
+	</ScrollView>
 
 
 	<LinearLayout android:id="@+id/buttonbar_edit" style="@android:style/ButtonBar"
