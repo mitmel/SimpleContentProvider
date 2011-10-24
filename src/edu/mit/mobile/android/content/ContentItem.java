@@ -20,7 +20,14 @@ import android.provider.BaseColumns;
 import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.IntegerColumn;
 
-public abstract interface ContentItem extends BaseColumns {
+/**
+ * A simple extension of {@link BaseColumns} that tags {@link #_ID} as an
+ * integer primary key.
+ * 
+ * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
+ * 
+ */
+public interface ContentItem extends BaseColumns {
 
 	@DBColumn(type=IntegerColumn.class, primaryKey=true, autoIncrement=true)
 	public static final String _ID = BaseColumns._ID;

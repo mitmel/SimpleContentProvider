@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * Specifies the table name for the given {@link ContentItem}. Pass a string, which will be used as the table name.
  *
- * @author steve
+ * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

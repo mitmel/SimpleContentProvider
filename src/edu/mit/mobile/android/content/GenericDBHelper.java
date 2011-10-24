@@ -40,7 +40,7 @@ import edu.mit.mobile.android.content.column.DBColumnType;
  *
  *
  *
- * @author Steve Pomeroy <spomeroy@mit.edu>
+ * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
 public class GenericDBHelper extends DBHelper {
@@ -61,6 +61,14 @@ public class GenericDBHelper extends DBHelper {
 		mContentUri = contentUri;
 	}
 
+	/**
+	 * This default implementation drops existing tables and recreates them.
+	 * If you want to preserve the user's data, please override this and handle
+	 * migrations more carefully.
+	 * 
+	 * @see edu.mit.mobile.android.content.DBHelper#upgradeTables(android.database.sqlite.SQLiteDatabase,
+	 *      int, int)
+	 */
 	@Override
 	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion){
 		db.execSQL("DROP TABLE IF EXISTS " + mTable);
@@ -107,6 +115,17 @@ public class GenericDBHelper extends DBHelper {
 	}
 
 
+	/**
+	 * Generates SQL code for creating this object's table. Creation is done by
+	 * inspecting the static strings that are marked with {@link DBColumn}
+	 * annotations.
+	 * 
+	 * @return CREATE TABLE code for creating this table.
+	 * @throws SQLGenerationException
+	 *             if there were any problems creating the table
+	 * @see DBColumn
+	 * @see DBTable
+	 */
 	public String getTableCreation() throws SQLGenerationException {
 		try{
 			final StringBuilder table = new StringBuilder();

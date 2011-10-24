@@ -137,6 +137,7 @@ import edu.mit.mobile.android.content.column.DBColumn;
  */
 public abstract class SimpleContentProvider extends ContentProvider {
 
+	@SuppressWarnings("unused")
 	private static final String TAG = SimpleContentProvider.class.getSimpleName();
 
 	///////////////////// public API constants
