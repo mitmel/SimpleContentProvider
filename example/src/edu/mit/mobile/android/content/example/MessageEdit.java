@@ -7,23 +7,29 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MessageEdit extends Activity implements OnClickListener{
 	private EditText mId, mTitle, mBody;
 	private Button mSave, mCancel;
-
+	private String mAction = "";
+	private TextView mLabelId;
+	
 	private static final String[] PROJECTION = { Message._ID, Message.TITLE,
 		Message.BODY };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
+		mAction = this.getIntent().getAction();
+		
 		setContentView(R.layout.edit);
 
 		mTitle = (EditText) findViewById(R.id.edtTitle);
@@ -32,6 +38,20 @@ public class MessageEdit extends Activity implements OnClickListener{
 
 		mSave = (Button) findViewById(R.id.btn_save);
 		mCancel = (Button) findViewById(R.id.btn_cancel);
+		
+		mLabelId = (TextView)findViewById(R.id.TextView03);
+		
+		boolean isInsertAction = mAction.contains("INSERT"); 
+		
+		if (isInsertAction) {
+			mId.setVisibility(View.GONE);
+			mLabelId.setVisibility(View.GONE);
+			mSave.setText(R.string.button_add);
+			mSave.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_add, 0, 0, 0);
+		}
+		
+		
+		
 
 		mCancel.setOnClickListener(this);
 		mSave.setOnClickListener(this);
@@ -111,6 +131,15 @@ public class MessageEdit extends Activity implements OnClickListener{
 	}
 
 	private void saveChanges() {
+		String title = mTitle.getText().toString();
+		String body = mBody.getText().toString();
+		
+		if(TextUtils.isEmpty(title) || TextUtils.isEmpty(body)){
+			Toast.makeText(this,
+					"Cannot save empty items.",
+					Toast.LENGTH_SHORT).show();
+			return;
+		}
 		// place your content inside a ContentValues object.
 		final ContentValues cv = new ContentValues();
 		cv.put(Message.TITLE, mTitle.getText().toString());

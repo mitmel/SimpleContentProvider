@@ -1,45 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent" android:layout_height="match_parent"
-	android:padding="10dp">
-	<ScrollView android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:layout_above="@+id/buttonbar_edit">
-		<LinearLayout android:orientation="vertical"
-			android:layout_width="match_parent" android:layout_height="wrap_content">
-			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextView03" android:text="@string/column_id"></TextView>
-			<EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/edtId" android:enabled="false"/>
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/TextView02"
-				android:text="@string/column_title"></TextView>
-	<EditText
-		android:layout_width="match_parent"
-		android:inputType="textEmailSubject|textAutoCorrect|textCapSentences|textImeMultiLine"
-		android:imeOptions="actionNext"
-		android:layout_height="wrap_content"
-		android:id="@+id/edtTitle"
-	>
-		<requestFocus></requestFocus>
-	</EditText>
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/TextView01"
-				android:text="@string/column_body"></TextView>
-			<EditText android:layout_width="match_parent"
-			android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
-				android:layout_height="wrap_content" android:id="@+id/edtBody"></EditText>
-		</LinearLayout>
-	</ScrollView>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp" >
 
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/buttonbar_edit" >
 
-	<LinearLayout android:id="@+id/buttonbar_edit" style="@android:style/ButtonBar"
-		android:layout_width="match_parent" android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true" android:weightSum="2">
-		<Button android:id="@+id/btn_save" android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:drawableLeft="@android:drawable/ic_menu_save" android:text="@string/button_save" android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-		<Button android:id="@+id/btn_cancel" android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel" android:text="@string/button_cancel" android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/TextView03"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/column_id" >
+            </TextView>
 
-	</LinearLayout>
+            <EditText
+                android:id="@+id/edtId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false" />
+
+            <TextView
+                android:id="@+id/TextView02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/column_title" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/edtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailSubject|textAutoCorrect|textCapSentences|textImeMultiLine" >
+
+                <requestFocus >
+                </requestFocus>
+            </EditText>
+
+            <TextView
+                android:id="@+id/TextView01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/column_body" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/edtBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine|textAutoCorrect|textCapSentences" >
+            </EditText>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttonbar_edit"
+        style="@android:style/ButtonBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="2" >
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@android:drawable/ic_menu_save"
+            android:text="@string/button_save" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+            android:text="@string/button_cancel" />
+    </LinearLayout>
+
 </RelativeLayout>
-
-
