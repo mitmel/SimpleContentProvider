@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -20,16 +19,16 @@ public class MessageEdit extends Activity implements OnClickListener{
 	private Button mSave, mCancel;
 	private String mAction = "";
 	private TextView mLabelId;
-	
+
 	private static final String[] PROJECTION = { Message._ID, Message.TITLE,
 		Message.BODY };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		mAction = this.getIntent().getAction();
-		
+
 		setContentView(R.layout.edit);
 
 		mTitle = (EditText) findViewById(R.id.edtTitle);
@@ -38,20 +37,17 @@ public class MessageEdit extends Activity implements OnClickListener{
 
 		mSave = (Button) findViewById(R.id.btn_save);
 		mCancel = (Button) findViewById(R.id.btn_cancel);
-		
-		mLabelId = (TextView)findViewById(R.id.TextView03);
-		
-		boolean isInsertAction = mAction.contains("INSERT"); 
-		
+
+		mLabelId = (TextView)findViewById(R.id.id_label);
+
+		final boolean isInsertAction = Intent.ACTION_INSERT.equals(mAction);
+
 		if (isInsertAction) {
 			mId.setVisibility(View.GONE);
 			mLabelId.setVisibility(View.GONE);
 			mSave.setText(R.string.button_add);
 			mSave.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_add, 0, 0, 0);
 		}
-		
-		
-		
 
 		mCancel.setOnClickListener(this);
 		mSave.setOnClickListener(this);
@@ -130,20 +126,52 @@ public class MessageEdit extends Activity implements OnClickListener{
 		}
 	}
 
-	private void saveChanges() {
-		String title = mTitle.getText().toString();
-		String body = mBody.getText().toString();
-		
-		if(TextUtils.isEmpty(title) || TextUtils.isEmpty(body)){
-			Toast.makeText(this,
-					"Cannot save empty items.",
-					Toast.LENGTH_SHORT).show();
-			return;
+	/**
+	 * Validates the form and alerts the user to any invalid data
+	 *
+	 * @return true if the filled-in form is valid
+	 */
+	private boolean validate(){
+
+		// setError is a great way to display error messages to users, as it
+		// keeps the message close to the source of the error.
+		if(mTitle.getText().length() == 0){
+			mTitle.setError("Please enter a title");
+			mTitle.requestFocus();
+			return false;
 		}
+
+		if(mBody.getText().length() == 0){
+			mBody.setError("Please enter a body");
+			mBody.requestFocus();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Convert the currently filled-in form to a ContentValues object that can be saved
+	 *
+	 * @return the current user-entered data as ContentValues
+	 */
+	private ContentValues toContentValues(){
 		// place your content inside a ContentValues object.
 		final ContentValues cv = new ContentValues();
 		cv.put(Message.TITLE, mTitle.getText().toString());
 		cv.put(Message.BODY, mBody.getText().toString());
+
+		return cv;
+	}
+
+	private void saveChanges() {
+		// validate the form
+		if (!validate()){
+			return;
+		}
+
+		// get the user-entered data
+		final ContentValues cv = toContentValues();
 
 		// The URI of the message (eg content://.../message/4) is stored in the intent
 		// that we used when starting this activity.

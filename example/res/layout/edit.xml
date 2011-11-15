@@ -15,7 +15,7 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/TextView03"
+                android:id="@+id/id_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/column_id" >
@@ -28,7 +28,7 @@
                 android:enabled="false" />
 
             <TextView
-                android:id="@+id/TextView02"
+                android:id="@+id/title_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/column_title" >
@@ -46,7 +46,7 @@
             </EditText>
 
             <TextView
-                android:id="@+id/TextView01"
+                android:id="@+id/body_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/column_body" >
