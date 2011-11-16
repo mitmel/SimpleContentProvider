@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SimpleContentProvider"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="src" path="SimpleContentProvider_src"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
