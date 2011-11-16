@@ -29,7 +29,6 @@ public class SampleProvider2 extends SimpleContentProvider {
 		super(AUTHORITY, 1);
 
 		final DBHelper blogPostHelper = new QuerystringDBHelper(BlogPost.class, BlogPost.CONTENT_URI);
-		addDBHelper(blogPostHelper);
 
 		blogPostHelper.setOnSaveListener(BlogPost.ON_SAVE_LISTENER);
 

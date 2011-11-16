@@ -70,9 +70,6 @@ public class SampleProvider extends SimpleContentProvider {
 		final DBHelper messageHelper = new GenericDBHelper(Message.class,
 				Message.CONTENT_URI);
 
-		// This binds the helper to this provider.
-		addDBHelper(messageHelper);
-
 		// This adds a mapping between the given content:// URI path and the
 		// helper.
 		addDirAndItemUri(messageHelper, Message.PATH);

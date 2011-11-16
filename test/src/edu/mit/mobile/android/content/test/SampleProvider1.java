@@ -16,9 +16,6 @@ public class SampleProvider1 extends SimpleContentProvider {
 		// use the dir/item scheme with the BaseColumns._ID integer primary key.
 		final DBHelper messageHelper = new GenericDBHelper(Message.class, Message.CONTENT_URI);
 
-		// This binds the helper to the provider.
-		addDBHelper(messageHelper);
-
 		// Adds a mapping between the given content:// URI path and the
 		// helper.
 		//

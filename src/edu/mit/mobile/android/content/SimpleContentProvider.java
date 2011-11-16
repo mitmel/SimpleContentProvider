@@ -112,9 +112,6 @@ import edu.mit.mobile.android.content.column.DBColumn;
  * 		final DBHelper messageHelper = new GenericDBHelper(Message.class,
  * 				Message.CONTENT_URI);
  *
- * 		// This binds the helper to the provider.
- * 		addDBHelper(messageHelper);
- *
  * 		// Adds a mapping between the given content:// URI path and the
  * 		// helper.
  * 		//
@@ -220,11 +217,18 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 * constructor of any subclasses.
 	 *
 	 * @param dbHelper
+	 * @deprecated no longer needed; helpers will be implicitly added when calling {@link #addDirAndItemUri(DBHelper, String)} and friends.
 	 */
+	@Deprecated
 	public void addDBHelper(DBHelper dbHelper) {
 		mDBHelpers.add(dbHelper);
 	}
 
+	private void addIfMissing(DBHelper dbHelper){
+		if (!mDBHelpers.contains(dbHelper)){
+			mDBHelpers.add(dbHelper);
+		}
+	}
 
 	/**
 	 * Adds an entry for a directory of a given type. This should be called in
@@ -244,6 +248,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
 	 */
 	public void addDirUri(DBHelper dbHelper, String path, String type, int verb) {
+		addIfMissing(dbHelper);
 		mDBHelperMapper.addDirMapping(mMatcherID, dbHelper, verb, type);
 		MATCHER.addURI(mAuthority, path, mMatcherID);
 		mMatcherID++;
@@ -319,6 +324,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
 	 */
 	public void addItemUri(DBHelper dbHelper, String path, String type, int verb) {
+		addIfMissing(dbHelper);
 		mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, verb, type);
 		MATCHER.addURI(mAuthority, path, mMatcherID);
 		mMatcherID++;
