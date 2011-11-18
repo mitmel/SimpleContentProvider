@@ -65,7 +65,7 @@ public class GenericDBHelper extends DBHelper {
 	 * This default implementation drops existing tables and recreates them.
 	 * If you want to preserve the user's data, please override this and handle
 	 * migrations more carefully.
-	 * 
+	 *
 	 * @see edu.mit.mobile.android.content.DBHelper#upgradeTables(android.database.sqlite.SQLiteDatabase,
 	 *      int, int)
 	 */
@@ -104,7 +104,7 @@ public class GenericDBHelper extends DBHelper {
 
 	@Override
 	public String getPath(){
-		return mTable;
+		return mContentUri.getLastPathSegment();
 	}
 
 	private static final String DOUBLE_ESCAPE = DBColumnType.DEFAULT_VALUE_ESCAPE + DBColumnType.DEFAULT_VALUE_ESCAPE;
@@ -119,7 +119,7 @@ public class GenericDBHelper extends DBHelper {
 	 * Generates SQL code for creating this object's table. Creation is done by
 	 * inspecting the static strings that are marked with {@link DBColumn}
 	 * annotations.
-	 * 
+	 *
 	 * @return CREATE TABLE code for creating this table.
 	 * @throws SQLGenerationException
 	 *             if there were any problems creating the table

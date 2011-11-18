@@ -16,10 +16,12 @@ package edu.mit.mobile.android.content.test;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import edu.mit.mobile.android.content.DBHelper;
+import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.QuerystringDBHelper;
 import edu.mit.mobile.android.content.SimpleContentProvider;
+import edu.mit.mobile.android.content.m2m.M2MDBHelper;
 import edu.mit.mobile.android.content.test.sample2.BlogPost;
+import edu.mit.mobile.android.content.test.sample2.Comment;
 
 public class SampleProvider2 extends SimpleContentProvider {
 	public static final String AUTHORITY = "edu.mit.mobile.android.content.test.sampleprovider2";
@@ -28,10 +30,17 @@ public class SampleProvider2 extends SimpleContentProvider {
 		//    authority   DB ver
 		super(AUTHORITY, 1);
 
-		final DBHelper blogPostHelper = new QuerystringDBHelper(BlogPost.class, BlogPost.CONTENT_URI);
+		final GenericDBHelper blogPostHelper = new QuerystringDBHelper(BlogPost.class, BlogPost.CONTENT_URI);
 
 		blogPostHelper.setOnSaveListener(BlogPost.ON_SAVE_LISTENER);
 
 		addDirAndItemUri(blogPostHelper, BlogPost.PATH);
+
+		final GenericDBHelper commentHelper = new GenericDBHelper(Comment.class, null);
+
+		final M2MDBHelper m2m = new M2MDBHelper(blogPostHelper, commentHelper);
+
+		addChildDirAndItemUri(m2m, commentHelper, BlogPost.PATH, Comment.PATH);
+
 	}
 }

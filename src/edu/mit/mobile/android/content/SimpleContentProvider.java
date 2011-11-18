@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -29,6 +30,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import edu.mit.mobile.android.content.column.DBColumn;
+import edu.mit.mobile.android.content.m2m.M2MDBHelper;
 
 /**
  * <h2>A simplified content provider.</h2>
@@ -217,15 +219,27 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 * constructor of any subclasses.
 	 *
 	 * @param dbHelper
-	 * @deprecated no longer needed; helpers will be implicitly added when calling {@link #addDirAndItemUri(DBHelper, String)} and friends.
+	 * @deprecated no longer needed; helpers will be implicitly added when
+	 *             calling {@link #addDirAndItemUri(DBHelper, String)} and
+	 *             friends.
+	 * @see SimpleContentProvider#registerDBHelper(DBHelper)
 	 */
 	@Deprecated
 	public void addDBHelper(DBHelper dbHelper) {
 		mDBHelpers.add(dbHelper);
 	}
 
-	private void addIfMissing(DBHelper dbHelper){
-		if (!mDBHelpers.contains(dbHelper)){
+	/**
+	 * Registers a {@link DBHelper} with the provider. This is only needed when
+	 * you don't call {@link #addDirAndItemUri(DBHelper, String)} and friends,
+	 * as they will implicitly register for you. This can be called multiple
+	 * times without issue.
+	 *
+	 * @param dbHelper
+	 *            the helper you wish to have registered with this provider
+	 */
+	public void registerDBHelper(DBHelper dbHelper) {
+		if (!mDBHelpers.contains(dbHelper)) {
 			mDBHelpers.add(dbHelper);
 		}
 	}
@@ -248,7 +262,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
 	 */
 	public void addDirUri(DBHelper dbHelper, String path, String type, int verb) {
-		addIfMissing(dbHelper);
+		registerDBHelper(dbHelper);
 		mDBHelperMapper.addDirMapping(mMatcherID, dbHelper, verb, type);
 		MATCHER.addURI(mAuthority, path, mMatcherID);
 		mMatcherID++;
@@ -305,6 +319,27 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	}
 
 	/**
+	 * Functionally equivalent to {@link #addDirAndItemUri(DBHelper, String)}
+	 * with a path of parentPath/#/childPath and registering the child helper
+	 * using {@link #registerDBHelper(DBHelper)}
+	 *
+	 * @param helper
+	 *            the helper that will handle this request. Usually, this is an
+	 *            {@link M2MDBHelper}.
+	 * @param parentPath
+	 *            the path of the parent. This should not end in an "#" as it
+	 *            will be added for you
+	 * @param childPath
+	 *            the path of the child within an item of the parent.
+	 */
+	public void addChildDirAndItemUri(DBHelper helper, DBHelper childDBHelper,
+			String parentPath, String childPath) {
+		registerDBHelper(childDBHelper);
+		final String path = parentPath + "/#/" + childPath;
+		addDirAndItemUri(helper, path);
+	}
+
+	/**
 	 * Adds an entry for an item of a given type. This should be called in the
 	 * constructor of any subclasses.
 	 *
@@ -324,7 +359,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
 	 */
 	public void addItemUri(DBHelper dbHelper, String path, String type, int verb) {
-		addIfMissing(dbHelper);
+		registerDBHelper(dbHelper);
 		mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, verb, type);
 		MATCHER.addURI(mAuthority, path, mMatcherID);
 		mMatcherID++;
@@ -364,8 +399,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		if (!mDBHelperMapper.canDelete(match)) {
 			throw new IllegalArgumentException("delete note supported");
 		}
-		final int count = mDBHelperMapper.delete(match, this, db, uri, selection,
-				selectionArgs);
+		final int count = mDBHelperMapper.delete(match, this, db, uri,
+				selection, selectionArgs);
 
 		getContext().getContentResolver().notifyChange(uri, null);
 
@@ -487,7 +522,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		public void onOpen(SQLiteDatabase db) {
 			super.onOpen(db);
 
-			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
+			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
 				db.execSQL("PRAGMA foreign_keys = ON;");
 			}
 		}

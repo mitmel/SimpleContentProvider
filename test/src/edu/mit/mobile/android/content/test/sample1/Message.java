@@ -4,18 +4,15 @@ import android.net.Uri;
 import edu.mit.mobile.android.content.ContentItem;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.column.DBColumn;
-import edu.mit.mobile.android.content.column.TimestampColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
+import edu.mit.mobile.android.content.column.TimestampColumn;
 import edu.mit.mobile.android.content.test.SampleProvider1;
 
-//     The table name defaults to the classname, lowercased. If you wish to
-//     override the default name, you can specify it directly:
-// @DBTable(Message.TABLE)
-public class Message implements ContentItem {
 
-	//     Defining the table name as a static string will let you use it in your
-	//     content provider if you ever need to do custom DB queries.
-	// public static final String TABLE = "mymessage";
+/**
+ * A simple message with a body and creation date.
+ */
+public class Message implements ContentItem {
 
 	// Column definitions below. ContentItem contains one column definition
 	// for the BaseColumns._ID which defines the primary key.
