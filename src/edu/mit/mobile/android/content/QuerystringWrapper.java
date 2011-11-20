@@ -25,7 +25,10 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
+import android.content.ContentProvider;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
@@ -60,14 +63,15 @@ import edu.mit.mobile.android.utils.ListUtils;
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  */
 // TODO provide ability to limit columns that can be queried.
-public class QuerystringDBHelper extends GenericDBHelper {
-	public static final String TAG = QuerystringDBHelper.class.getSimpleName();
+public class QuerystringWrapper extends DBHelper {
+	public static final String TAG = QuerystringWrapper.class.getSimpleName();
 
 	public static final String QUERY_PREFIX_OR = "|";
 
-	public QuerystringDBHelper(Class<? extends ContentItem> contentItem,
-			Uri contentUri) {
-		super(contentItem, contentUri);
+	private final DBHelper mWrappedHelper;
+
+	public QuerystringWrapper(DBHelper wrappedHelper) {
+		mWrappedHelper = wrappedHelper;
 	}
 
 	@Override
@@ -126,7 +130,71 @@ public class QuerystringDBHelper extends GenericDBHelper {
 		}
 
 
-		return super.queryDir(db, uri, projection, newSelection,
+		return mWrappedHelper.queryDir(db, uri, projection, newSelection,
 				newSelectionArgs, sortOrder);
+	}
+
+	@Override
+	public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+			ContentValues values) throws SQLException {
+
+		return mWrappedHelper.insertDir(db, provider, uri, values);
+	}
+
+	@Override
+	public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+			ContentValues values, String where, String[] whereArgs) {
+		return mWrappedHelper.updateItem(db, provider, uri, values, where, whereArgs);
+	}
+
+	@Override
+	public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+			ContentValues values, String where, String[] whereArgs) {
+		return mWrappedHelper.updateDir(db, provider, uri, values, where, whereArgs);
+	}
+
+	@Override
+	public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+			String where, String[] whereArgs) {
+		return mWrappedHelper.deleteItem(db, provider, uri, where, whereArgs);
+	}
+
+	@Override
+	public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+			String where, String[] whereArgs) {
+		return mWrappedHelper.deleteDir(db, provider, uri, where, whereArgs);
+	}
+
+	@Override
+	public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
+			String selection, String[] selectionArgs, String sortOrder) {
+		return mWrappedHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
+	}
+
+	@Override
+	public String getPath() {
+
+		return mWrappedHelper.getPath();
+	}
+
+	@Override
+	public void createTables(SQLiteDatabase db) throws SQLGenerationException {
+		mWrappedHelper.createTables(db);
+	}
+
+	@Override
+	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
+			throws SQLGenerationException {
+		mWrappedHelper.upgradeTables(db, oldVersion, newVersion);
+	}
+
+	@Override
+	public void setOnSaveListener(OnSaveListener onSaveListener) {
+		mWrappedHelper.setOnSaveListener(onSaveListener);
+	}
+
+	@Override
+	public void removeOnSaveListener() {
+		mWrappedHelper.removeOnSaveListener();
 	}
 }

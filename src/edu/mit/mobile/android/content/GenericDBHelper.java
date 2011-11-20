@@ -17,20 +17,15 @@ package edu.mit.mobile.android.content;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import edu.mit.mobile.android.content.column.DBColumn;
-import edu.mit.mobile.android.content.column.DBColumnType;
 
 /**
  * Provides basic CRUD database calls to handle very simple object types, eg:
@@ -46,7 +41,6 @@ import edu.mit.mobile.android.content.column.DBColumnType;
 public class GenericDBHelper extends DBHelper {
 
 	private final String mTable;
-	private final Uri mContentUri;
 	private final Class<? extends ContentItem> mDataItem;
 
 	/**
@@ -55,10 +49,9 @@ public class GenericDBHelper extends DBHelper {
 	 * @param contentUri
 	 *            the URI of the content directory. Eg. content://AUTHORITY/item
 	 */
-	public GenericDBHelper(Class<? extends ContentItem> contentItem, Uri contentUri) {
+	public GenericDBHelper(Class<? extends ContentItem> contentItem) {
 		mDataItem = contentItem;
-		mTable = extractTableName();
-		mContentUri = contentUri;
+		mTable = DBColumn.Extractor.extractTableName(contentItem);
 	}
 
 	/**
@@ -75,193 +68,42 @@ public class GenericDBHelper extends DBHelper {
 		createTables(db);
 	}
 
-	/**
-	 * Inspects the {@link ContentItem} and extracts a table name from it. If
-	 * there is a @DBTable annotation, uses that name. Otherwise, uses a
-	 * lower-cased, sanitized version of the classname.
-	 *
-	 * @return a valid table name
-	 * @throws SQLGenerationException
-	 */
-	private String extractTableName() throws SQLGenerationException {
-		String tableName = null;
-		final DBTable tableNameAnnotation = mDataItem.getAnnotation(DBTable.class);
-		if (tableNameAnnotation != null){
-
-			tableName = tableNameAnnotation.value();
-			if (! SQLGenUtils.isValidName(tableName)){
-				throw new SQLGenerationException("Illegal table name: '"+tableName+"'");
-			}
-		}else{
-			tableName = SQLGenUtils.toValidName(mDataItem);
-		}
-		return tableName;
-	}
 
 	public String getTable(){
 		return mTable;
 	}
 
-	@Override
-	public String getPath(){
-		return mContentUri.getLastPathSegment();
+	public Class<? extends ContentItem> getContentItem(){
+		return mDataItem;
 	}
 
-	private static final String DOUBLE_ESCAPE = DBColumnType.DEFAULT_VALUE_ESCAPE + DBColumnType.DEFAULT_VALUE_ESCAPE;
+	@Override
+	public String getPath(){
+		return null; // XXX is this used? Paths need to be fixed.
+	}
+
 
 	@Override
 	public void createTables(SQLiteDatabase db) throws SQLGenerationException {
-		db.execSQL(getTableCreation());
+		db.execSQL(DBColumn.Extractor.getTableCreation(mDataItem, mTable));
 	}
 
 
-	/**
-	 * Generates SQL code for creating this object's table. Creation is done by
-	 * inspecting the static strings that are marked with {@link DBColumn}
-	 * annotations.
-	 *
-	 * @return CREATE TABLE code for creating this table.
-	 * @throws SQLGenerationException
-	 *             if there were any problems creating the table
-	 * @see DBColumn
-	 * @see DBTable
-	 */
-	public String getTableCreation() throws SQLGenerationException {
-		try{
-			final StringBuilder table = new StringBuilder();
-
-			table.append("CREATE TABLE ");
-			table.append(mTable);
-			table.append(" (");
-
-			boolean needSep = false;
-			for (final Field field: mDataItem.getFields()){
-				final DBColumn t = field.getAnnotation(DBColumn.class);
-				if (t == null){
-					continue;
-				}
-
-				final int m = field.getModifiers();
-
-				if (!String.class.equals(field.getType()) || !Modifier.isStatic(m) || !Modifier.isFinal(m)){
-					throw new SQLGenerationException("Columns defined using @DBColumn must be static final Strings.");
-				}
-
-				@SuppressWarnings("rawtypes")
-				final Class<? extends DBColumnType> columnType = t.type();
-				@SuppressWarnings("rawtypes")
-				final DBColumnType typeInstance = columnType.newInstance();
-
-				if (needSep){
-					table.append(',');
-				}
-				final String dbColumnName = (String) field.get(null);
-				if (! SQLGenUtils.isValidName(dbColumnName)){
-					throw new SQLGenerationException("@DBColumn '"+dbColumnName+"' is not a valid SQLite column name.");
-				}
-
-				table.append(typeInstance.toCreateColumn(dbColumnName));
-				if (t.primaryKey()){
-					table.append(" PRIMARY KEY");
-					if (t.autoIncrement()){
-						table.append(" AUTOINCREMENT");
-					}
-				}
-
-				if (t.unique()){
-					table.append(" UNIQUE");
-				}
-
-				if (t.notnull()){
-					table.append(" NOT NULL");
-				}
-
-				switch (t.collate()){
-				case BINARY:
-					table.append(" COLLATE BINARY");
-					break;
-				case NOCASE:
-					table.append(" COLLATE NOCASE");
-					break;
-				case RTRIM:
-					table.append(" COLLATE RTRIM");
-					break;
-
-				}
-
-				final String defaultValue = t.defaultValue();
-				final int defaultValueInt = t.defaultValueInt();
-				final long defaultValueLong = t.defaultValueLong();
-				final float defaultValueFloat = t.defaultValueFloat();
-				final double defaultValueDouble = t.defaultValueDouble();
-
-
-				if (! DBColumn.NULL.equals(defaultValue)){
-					table.append(" DEFAULT ");
-					// double-escape to insert the escape character literally.
-					if (defaultValue.startsWith(DOUBLE_ESCAPE)){
-						DatabaseUtils.appendValueToSql(table, defaultValue.substring(1));
-
-					}else if(defaultValue.startsWith(DBColumnType.DEFAULT_VALUE_ESCAPE)){
-						table.append(defaultValue.substring(1));
-
-					}else{
-
-						DatabaseUtils.appendValueToSql(table, defaultValue);
-					}
-				}else if (defaultValueInt != DBColumn.NULL_INT){
-					table.append(" DEFAULT ");
-					table.append(defaultValueInt);
-
-				}else if (defaultValueLong != DBColumn.NULL_LONG){
-					table.append(" DEFAULT ");
-					table.append(defaultValueLong);
-
-				}else if (defaultValueFloat != DBColumn.NULL_FLOAT){
-					table.append(" DEFAULT ");
-					table.append(defaultValueFloat);
-
-				}else if (defaultValueDouble != DBColumn.NULL_DOUBLE){
-					table.append(" DEFAULT ");
-					table.append(defaultValueDouble);
-				}
-
-				final String extraColDef = t.extraColDef();
-				if (! DBColumn.NULL.equals(extraColDef)){
-					table.append(extraColDef);
-				}
-
-				needSep = true;
-			}
-			table.append(")");
-
-			final String result = table.toString();
-
-			return result;
-
-		} catch (final IllegalArgumentException e) {
-			throw new SQLGenerationException("field claimed to be static, but something went wrong on invocation", e);
-
-		} catch (final IllegalAccessException e) {
-			throw new SQLGenerationException("default constructor not visible", e);
-
-		} catch (final SecurityException e) {
-			throw new SQLGenerationException("cannot access class fields", e);
-
-		} catch (final InstantiationException e) {
-			throw new SQLGenerationException("cannot instantiate field type class", e);
+	protected ContentValues callOnPreSaveListener(SQLiteDatabase db, Uri uri, ContentValues values){
+		if (mOnSaveListener != null){
+			values = mOnSaveListener.onPreSave(db, null, values);
 		}
+		return values;
 	}
 
 	@Override
 	public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
 			ContentValues values) throws SQLException {
-		if (mOnSaveListener != null){
-			values = mOnSaveListener.onPreSave(db, null, values);
-		}
+		values = callOnPreSaveListener(db, uri, values);
+
 		final long id = db.insertOrThrow(mTable, null, values);
 		if (id != -1){
-			return ContentUris.withAppendedId(mContentUri, id);
+			return ContentUris.withAppendedId(uri, id);
 		}else{
 			throw new SQLException("error inserting into " + mTable);
 		}
@@ -271,9 +113,7 @@ public class GenericDBHelper extends DBHelper {
 	public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
 			ContentValues values, String where, String[] whereArgs) {
 
-		if (mOnSaveListener != null){
-			values = mOnSaveListener.onPreSave(db, uri, values);
-		}
+		values = callOnPreSaveListener(db, uri, values);
 
 		return db.update(mTable, values,
 				ProviderUtils.addExtraWhere(where, BaseColumns._ID + "=?"),
@@ -283,9 +123,8 @@ public class GenericDBHelper extends DBHelper {
 	@Override
 	public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
 			ContentValues values, String where, String[] whereArgs) {
-		if (mOnSaveListener != null){
-			values = mOnSaveListener.onPreSave(db, uri, values);
-		}
+		values = callOnPreSaveListener(db, uri, values);
+
 		return db.update(mTable, values, where, whereArgs);
 	}
 

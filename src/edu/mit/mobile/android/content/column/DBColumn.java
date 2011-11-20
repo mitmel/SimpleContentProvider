@@ -21,7 +21,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
+import android.database.DatabaseUtils;
+import edu.mit.mobile.android.content.AndroidVersions;
+import edu.mit.mobile.android.content.ContentItem;
+import edu.mit.mobile.android.content.DBTable;
+import edu.mit.mobile.android.content.SQLGenUtils;
+import edu.mit.mobile.android.content.SQLGenerationException;
 import edu.mit.mobile.android.content.SimpleContentProvider;
 
 /**
@@ -149,5 +157,206 @@ public @interface DBColumn {
 	 * @return a string of any supplemental column declarations
 	 */
 	String extraColDef() default NULL;
+
+
+	public static class Extractor {
+
+		private static final String DOUBLE_ESCAPE = DBColumnType.DEFAULT_VALUE_ESCAPE + DBColumnType.DEFAULT_VALUE_ESCAPE;
+
+		/**
+		 * Inspects the {@link ContentItem} and extracts a table name from it. If
+		 * there is a @DBTable annotation, uses that name. Otherwise, uses a
+		 * lower-cased, sanitized version of the classname.
+		 *
+		 * @return a valid table name
+		 * @throws SQLGenerationException
+		 */
+		public static String extractTableName(Class<? extends ContentItem> mDataItem) throws SQLGenerationException {
+			String tableName = null;
+			final DBTable tableNameAnnotation = mDataItem.getAnnotation(DBTable.class);
+			if (tableNameAnnotation != null){
+
+				tableName = tableNameAnnotation.value();
+				if (! SQLGenUtils.isValidName(tableName)){
+					throw new SQLGenerationException("Illegal table name: '"+tableName+"'");
+				}
+			}else{
+				tableName = SQLGenUtils.toValidName(mDataItem);
+			}
+			return tableName;
+		}
+
+		private static String getDbColumnName(Field field) throws IllegalArgumentException, IllegalAccessException{
+			final String dbColumnName = (String) field.get(null);
+			if (! SQLGenUtils.isValidName(dbColumnName)){
+				throw new SQLGenerationException("@DBColumn '"+dbColumnName+"' is not a valid SQLite column name.");
+			}
+
+			return dbColumnName;
+		}
+
+		private static void appendColumnDef(StringBuilder tableSQL, DBColumn t, Field field) throws IllegalAccessException, InstantiationException{
+			@SuppressWarnings("rawtypes")
+			final Class<? extends DBColumnType> columnType = t.type();
+			@SuppressWarnings("rawtypes")
+			final DBColumnType typeInstance = columnType.newInstance();
+
+			tableSQL.append(typeInstance.toCreateColumn(getDbColumnName(field)));
+			if (t.primaryKey()){
+				tableSQL.append(" PRIMARY KEY");
+				if (t.autoIncrement()){
+					tableSQL.append(" AUTOINCREMENT");
+				}
+			}
+
+			if (t.unique()){
+				tableSQL.append(" UNIQUE");
+			}
+
+			if (t.notnull()){
+				tableSQL.append(" NOT NULL");
+			}
+
+			switch (t.collate()){
+			case BINARY:
+				tableSQL.append(" COLLATE BINARY");
+				break;
+			case NOCASE:
+				tableSQL.append(" COLLATE NOCASE");
+				break;
+			case RTRIM:
+				tableSQL.append(" COLLATE RTRIM");
+				break;
+
+			}
+
+			final String defaultValue = t.defaultValue();
+			final int defaultValueInt = t.defaultValueInt();
+			final long defaultValueLong = t.defaultValueLong();
+			final float defaultValueFloat = t.defaultValueFloat();
+			final double defaultValueDouble = t.defaultValueDouble();
+
+
+			if (! DBColumn.NULL.equals(defaultValue)){
+				tableSQL.append(" DEFAULT ");
+				// double-escape to insert the escape character literally.
+				if (defaultValue.startsWith(DOUBLE_ESCAPE)){
+					DatabaseUtils.appendValueToSql(tableSQL, defaultValue.substring(1));
+
+				}else if(defaultValue.startsWith(DBColumnType.DEFAULT_VALUE_ESCAPE)){
+					tableSQL.append(defaultValue.substring(1));
+
+				}else{
+
+					DatabaseUtils.appendValueToSql(tableSQL, defaultValue);
+				}
+			}else if (defaultValueInt != DBColumn.NULL_INT){
+				tableSQL.append(" DEFAULT ");
+				tableSQL.append(defaultValueInt);
+
+			}else if (defaultValueLong != DBColumn.NULL_LONG){
+				tableSQL.append(" DEFAULT ");
+				tableSQL.append(defaultValueLong);
+
+			}else if (defaultValueFloat != DBColumn.NULL_FLOAT){
+				tableSQL.append(" DEFAULT ");
+				tableSQL.append(defaultValueFloat);
+
+			}else if (defaultValueDouble != DBColumn.NULL_DOUBLE){
+				tableSQL.append(" DEFAULT ");
+				tableSQL.append(defaultValueDouble);
+			}
+
+			final String extraColDef = t.extraColDef();
+			if (! DBColumn.NULL.equals(extraColDef)){
+				tableSQL.append(extraColDef);
+			}
+		}
+
+		/**
+		 * Generates SQL code for creating this object's table. Creation is done by
+		 * inspecting the static strings that are marked with {@link DBColumn}
+		 * annotations.
+		 *
+		 * @return CREATE TABLE code for creating this table.
+		 * @throws SQLGenerationException
+		 *             if there were any problems creating the table
+		 * @see DBColumn
+		 * @see DBTable
+		 */
+		public static String getTableCreation(Class<? extends ContentItem> mDataItem, String mTable) throws SQLGenerationException {
+			try{
+				final StringBuilder tableSQL = new StringBuilder();
+
+				tableSQL.append("CREATE TABLE ");
+				tableSQL.append(mTable);
+				tableSQL.append(" (");
+
+				boolean needSep = false;
+				for (final Field field: mDataItem.getFields()){
+					final DBColumn t = field.getAnnotation(DBColumn.class);
+					final DBForeignKeyColumn fk = field.getAnnotation(DBForeignKeyColumn.class);
+					if (t == null && fk == null){
+						continue;
+					}
+
+					final int m = field.getModifiers();
+
+					if (!String.class.equals(field.getType()) || !Modifier.isStatic(m) || !Modifier.isFinal(m)){
+						throw new SQLGenerationException("Columns defined using @DBColumn must be static final Strings.");
+					}
+
+
+					if (needSep){
+						tableSQL.append(',');
+					}
+
+					if (t != null){
+						appendColumnDef(tableSQL, t, field);
+
+					}else if (fk != null){
+						appendFKColumnDef(tableSQL, fk, field);
+					}
+
+					needSep = true;
+				}
+				tableSQL.append(")");
+
+				final String result = tableSQL.toString();
+
+				return result;
+
+			} catch (final IllegalArgumentException e) {
+				throw new SQLGenerationException("field claimed to be static, but something went wrong on invocation", e);
+
+			} catch (final IllegalAccessException e) {
+				throw new SQLGenerationException("default constructor not visible", e);
+
+			} catch (final SecurityException e) {
+				throw new SQLGenerationException("cannot access class fields", e);
+
+			} catch (final InstantiationException e) {
+				throw new SQLGenerationException("cannot instantiate field type class", e);
+			}
+		}
+
+		private static void appendFKColumnDef(StringBuilder tableSQL,
+				DBForeignKeyColumn fk, Field field) throws IllegalArgumentException, IllegalAccessException {
+
+			tableSQL.append("'");
+			tableSQL.append(getDbColumnName(field));
+			tableSQL.append("' INTEGER NOT NULL");
+
+			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
+				tableSQL.append(" REFERENCES ");
+				final String parentTable = extractTableName(fk.value());
+				tableSQL.append("'");
+				tableSQL.append(parentTable);
+				tableSQL.append("' (");
+				tableSQL.append(ContentItem._ID);
+				tableSQL.append(") ON DELETE CASCADE"); // TODO make this configurable
+			}
+		}
+	}
 }
 

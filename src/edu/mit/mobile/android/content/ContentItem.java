@@ -23,9 +23,9 @@ import edu.mit.mobile.android.content.column.IntegerColumn;
 /**
  * A simple extension of {@link BaseColumns} that tags {@link #_ID} as an
  * integer primary key.
- * 
+ *
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
- * 
+ *
  */
 public interface ContentItem extends BaseColumns {
 

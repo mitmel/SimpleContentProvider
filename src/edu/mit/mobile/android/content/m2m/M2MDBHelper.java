@@ -23,8 +23,8 @@ import edu.mit.mobile.android.content.ProviderUtils;
  *        → [to 2]
  * </pre>
  *
- * For example, you could have an BlogPost that has a relation to multiple
- * Comments.
+ * For example, you could have an Person who has a "friend" relationship to other
+ * Person objects.
  *
  * To use,
  * @author steve

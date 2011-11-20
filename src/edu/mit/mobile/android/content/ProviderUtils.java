@@ -169,4 +169,21 @@ public class ProviderUtils {
 	public static Uri toContentUri(String authority, String path) {
 		return Uri.parse("content://" + authority + "/" + path);
 	}
+
+	/**
+	 * @param uri the uri whose path segment you wish to extract
+	 * @param nth number of path segments from the end. 0 is the last one, 1 is the second to last one, etc.
+	 * @return
+	 */
+	public static String getNthPathFromEnd(Uri uri, int nth){
+
+		final List<String> path = uri.getPathSegments();
+		final int size = path.size();
+		final int pos = size - 1 - nth;
+		if (pos < 0){
+			throw new IllegalArgumentException("there are not "+ nth+ " path segments from the end of " + uri);
+		}
+
+		return path.get(pos);
+	}
 }

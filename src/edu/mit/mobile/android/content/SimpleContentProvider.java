@@ -136,7 +136,8 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
 public abstract class SimpleContentProvider extends ContentProvider {
 
 	@SuppressWarnings("unused")
-	private static final String TAG = SimpleContentProvider.class.getSimpleName();
+	private static final String TAG = SimpleContentProvider.class
+			.getSimpleName();
 
 	///////////////////// public API constants
 
@@ -168,7 +169,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
 	private int mMatcherID = URI_MATCHER_CODE_START;
 
-	///////////////////////////////// pubilc methods
+	///////////////////////////////// public methods
 
 	/**
 	 * The database name for this provider is generated based on the provider's
@@ -282,6 +283,24 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 * @param type
 	 *            the complete MIME type for the item's directory.
 	 */
+	public void addDirUri(DBHelper dbHelper, String path) {
+		addDirUri(dbHelper, path, getDirType(path), DBHelperMapper.VERB_ALL);
+	}
+
+	/**
+	 * Adds an entry for a directory of a given type. This should be called in
+	 * the constructor of any subclasses.
+	 *
+	 * Defaults to handle all method types.
+	 *
+	 * @param dbHelper
+	 *            the DBHelper to associate with the given path.
+	 * @param path
+	 *            a complete path on top of the content provider's authority.
+	 *
+	 * @param type
+	 *            the complete MIME type for the item's directory.
+	 */
 	public void addDirUri(DBHelper dbHelper, String path, String type) {
 		addDirUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
 	}
@@ -320,8 +339,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
 	/**
 	 * Functionally equivalent to {@link #addDirAndItemUri(DBHelper, String)}
-	 * with a path of parentPath/#/childPath and registering the child helper
-	 * using {@link #registerDBHelper(DBHelper)}
+	 * with a path of parentPath/#/childPath
 	 *
 	 * @param helper
 	 *            the helper that will handle this request. Usually, this is an
@@ -332,9 +350,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	 * @param childPath
 	 *            the path of the child within an item of the parent.
 	 */
-	public void addChildDirAndItemUri(DBHelper helper, DBHelper childDBHelper,
+	public void addChildDirAndItemUri(DBHelper helper,
 			String parentPath, String childPath) {
-		registerDBHelper(childDBHelper);
 		final String path = parentPath + "/#/" + childPath;
 		addDirAndItemUri(helper, path);
 	}
