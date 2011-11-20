@@ -19,6 +19,10 @@ package edu.mit.mobile.android.content;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+/**
+ * Some helper functions to determine what database features are available on the device.
+ *
+ */
 public class AndroidVersions {
 	public static final String SQLITE_VERSION = getSqliteVersion();
 	private static final long SQLITE_VERSION_CODE = versionToCode(SQLITE_VERSION);

@@ -22,7 +22,9 @@ import edu.mit.mobile.android.content.column.DBColumn;
  * For example, you could have an BlogPost that has a relation to multiple
  * Comments.
  *
- * To use,
+ * Unfortunately, if your version of SQLite doesn't support foreign keys (see {@link AndroidVersions}),
+ * this will not automatically cascade deletes for you or verify any relationships.
+ * It will otherwise function, though, just with
  *
  * @author steve
  *

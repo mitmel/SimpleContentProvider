@@ -23,6 +23,7 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
+import edu.mit.mobile.android.content.AndroidVersions;
 import edu.mit.mobile.android.content.SQLGenerationException;
 import edu.mit.mobile.android.content.test.sample2.BlogPost;
 import edu.mit.mobile.android.content.test.sample2.Comment;
@@ -333,6 +334,17 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		// make sure we didn't delete any of post2's comments
 		testQuery(cr, post2Comments, null, null, null, null, 1).close();
+
+		// only do this if we know that cascade deletes are supported.
+		if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
+			// let's try deleting the post and ensuring that the child actually gets deleted too.
+			cr.delete(post2, null, null);
+
+			// This should work, as it only checks the foreign key field of the child (comment)
+			// and doesn't ensure that the parent exists
+			testQuery(cr, post2Comments, null, null, null, null, 0).close();
+		}
+
 	}
 
 	public void testBulkInsert(){
