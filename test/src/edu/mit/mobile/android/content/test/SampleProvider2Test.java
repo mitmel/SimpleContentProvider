@@ -178,7 +178,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 			cv.put(Comment.BODY, body);
 		}
 
-		final Uri newItem = cr.insert(Uri.withAppendedPath(post, Comment.PATH), cv);
+		final Uri newItem = cr.insert(BlogPost.COMMENTS.getUri(post), cv);
 
 		assertNotNull(newItem);
 
@@ -249,7 +249,8 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		final Uri post1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 		final Uri post2 = createTestPost(cr, TEST_TITLE_2, TEST_BODY_2);
 
-		final Uri post1Comments = Uri.withAppendedPath(post1, Comment.PATH);
+		final Uri post1Comments = BlogPost.COMMENTS.getUri(post1);
+		final Uri post2Comments = BlogPost.COMMENTS.getUri(post2);
 
 		final Uri comment1 = createTestComment(cr, post1, TEST_COMMENT_BODY_1);
 
@@ -266,15 +267,17 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		testQueryCommentItem(cr, comment2, TEST_COMMENT_BODY_2).close();
 
 		// ensure that comments are bound to their appropriate parent
-		testQuery(cr, Uri.withAppendedPath(post2, Comment.PATH), null, null, null, null, 0).close();
+		testQuery(cr, BlogPost.COMMENTS.getUri(post2), null, null, null, null, 0).close();
 
 		final Uri comment1_post2 = createTestComment(cr, post2, TEST_COMMENT_BODY_1);
 
-		// ensure that comments are bound to their appropriate parent
-		testQuery(cr, Uri.withAppendedPath(post2, Comment.PATH), null, null, null, null, 1).close();
+		testQuery(cr, comment1_post2, null, null, null, null, 1).close();
 
 		// ensure that comments are bound to their appropriate parent
-		testQuery(cr, Uri.withAppendedPath(post1, Comment.PATH), null, null, null, null, 2).close();
+		testQuery(cr, post2Comments, null, null, null, null, 1).close();
+
+		// ensure that comments are bound to their appropriate parent
+		testQuery(cr, post1Comments, null, null, null, null, 2).close();
 
 
 		//////////////////////////////////////////
@@ -303,7 +306,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		cv3.put(Comment.BODY, TEST_COMMENT_ALL_MOD);
 
-		cr.update(Uri.withAppendedPath(post1, Comment.PATH), cv3, null, null);
+		cr.update(BlogPost.COMMENTS.getUri(post1), cv3, null, null);
 
 		testQueryCommentItem(cr, comment1, TEST_COMMENT_ALL_MOD).close();
 		testQueryCommentItem(cr, comment2, TEST_COMMENT_ALL_MOD).close();
@@ -325,8 +328,11 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		assertEquals(2, deletedCount);
 
+		// make sure they're deleted.
+		testQuery(cr, post1Comments, null, null, null, null, 0).close();
+
 		// make sure we didn't delete any of post2's comments
-		testQuery(cr, Uri.withAppendedPath(post2, Comment.PATH), null, null, null, null, 1).close();
+		testQuery(cr, post2Comments, null, null, null, null, 1).close();
 	}
 
 	public void testBulkInsert(){

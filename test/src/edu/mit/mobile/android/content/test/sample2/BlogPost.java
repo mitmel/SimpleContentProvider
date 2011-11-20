@@ -20,9 +20,12 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import edu.mit.mobile.android.content.ContentItem;
+import edu.mit.mobile.android.content.DBSortOrder;
 import edu.mit.mobile.android.content.DBTable;
+import edu.mit.mobile.android.content.ForeignKeyManager;
 import edu.mit.mobile.android.content.OnSaveListener;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.DatetimeColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
@@ -37,6 +40,8 @@ import edu.mit.mobile.android.content.test.SampleProvider2;
  *
  */
 @DBTable(BlogPost.TABLE)
+@UriPath(BlogPost.PATH)
+@DBSortOrder(BlogPost.SORT_ORDER_DEFAULT)
 public class BlogPost implements ContentItem {
 
 	// Defining the table name as a static string will let you use it in your
@@ -62,6 +67,13 @@ public class BlogPost implements ContentItem {
 
 	// The path component of the content URI.
 	public static final String PATH = "posts";
+
+	// the DBSortOrder annotation on this class denotes the default sort order.
+	public static final String SORT_ORDER_DEFAULT = "DESC " + CREATED_DATE;
+
+	// This is a helpful tool connecting back to the "child" of this object. This is similar
+	// to Django's relation manager, although we need to define it ourselves.
+	public static final ForeignKeyManager COMMENTS = new ForeignKeyManager(Comment.class);
 
 	// The SimpleContentProvider constructs content URIs based on your provided
 	// path and authority.

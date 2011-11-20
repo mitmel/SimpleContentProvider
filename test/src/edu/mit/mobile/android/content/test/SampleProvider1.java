@@ -14,7 +14,7 @@ public class SampleProvider1 extends SimpleContentProvider {
 
 		// This helper creates the table and can do basic CRUD for items that
 		// use the dir/item scheme with the BaseColumns._ID integer primary key.
-		final DBHelper messageHelper = new GenericDBHelper(Message.class, Message.CONTENT_URI);
+		final DBHelper messageHelper = new GenericDBHelper(Message.class);
 
 		// Adds a mapping between the given content:// URI path and the
 		// helper.
