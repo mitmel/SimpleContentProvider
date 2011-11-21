@@ -1,8 +1,14 @@
 package edu.mit.mobile.android.content.test;
 
+import java.util.ArrayList;
+
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderOperation.Builder;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 import edu.mit.mobile.android.content.test.sample1.Message;
@@ -12,7 +18,6 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 	private static final String
 		TEST_MESSAGE_1 = "test message 1",
 		TEST_MESSAGE_1_MOD = "test message 1 modified";
-
 
 	public SampleProvider1Test() {
 		super(SampleProvider1.class, SampleProvider1.AUTHORITY);
@@ -81,5 +86,25 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 
 		assertEquals(1, count);
 
+	}
+
+	private static final int BULK_INSERTS = 100;
+
+	public void testBulkInsert(){
+		ContentResolverTestUtils.testBulkInsert(this, Message.CONTENT_URI, Message.BODY, null);
+	}
+
+	// this API was added in API level 5.
+	public void testBatchActions() throws RemoteException, OperationApplicationException {
+		final MockContentResolver cr = getMockContentResolver();
+
+		final ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+		for (int i = 0; i < BULK_INSERTS; i++){
+			final Builder ins = ContentProviderOperation.newInsert(Message.CONTENT_URI);
+			ins.withValue(Message.BODY, ContentResolverTestUtils.getRandMessage());
+			ops.add(ins.build());
+		}
+
+		cr.applyBatch(SampleProvider1.AUTHORITY, ops);
 	}
 }

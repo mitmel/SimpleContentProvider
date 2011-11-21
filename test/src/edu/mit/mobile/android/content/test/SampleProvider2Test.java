@@ -16,11 +16,18 @@ package edu.mit.mobile.android.content.test;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import java.util.ArrayList;
+
+import junit.framework.Assert;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderOperation.Builder;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 import edu.mit.mobile.android.content.AndroidVersions;
@@ -110,7 +117,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 	private Cursor testQueryItem(ContentResolver cr, Uri uri, String expectedTitle, String expectedBody){
 
 		// make sure that querying works
-		final Cursor c = testQuery(cr, uri, null, null, null, null, 1);
+		final Cursor c = ContentResolverTestUtils.testQuery(cr, uri, null, null, null, null, 1);
 
 		if (expectedBody != null){
 			assertEquals(expectedBody, c.getString(c.getColumnIndex(BlogPost.BODY)));
@@ -139,7 +146,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 	private Cursor testQueryCommentItem(ContentResolver cr, Uri uri, String expectedBody){
 
 		// make sure that querying works
-		final Cursor c = testQuery(cr, uri, null, null, null, null, 1);
+		final Cursor c = ContentResolverTestUtils.testQuery(cr, uri, null, null, null, null, 1);
 
 		if (expectedBody != null){
 			assertEquals(expectedBody, c.getString(c.getColumnIndex(Comment.BODY)));
@@ -208,40 +215,26 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 
 		final Uri queryTitle1Or2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter("|"+BlogPost.TITLE, TEST_TITLE_2).build();
-		testQuery(cr, queryTitle1Or2, null, null, null, null, 2).close();
+		ContentResolverTestUtils.testQuery(cr, queryTitle1Or2, null, null, null, null, 2).close();
 
 
 		final Uri queryTitle1And2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
-		testQuery(cr, queryTitle1And2, null, null, null, null, 0).close();
+		ContentResolverTestUtils.testQuery(cr, queryTitle1And2, null, null, null, null, 0).close();
 
 		final Uri queryTitle1AndBody1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.BODY, TEST_BODY_1).build();
-		testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1).close();
+		ContentResolverTestUtils.testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1).close();
 
 
 		final Uri queryIllegalName = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter("foo'; '", TEST_TITLE).build();
 
 		boolean exceptionThrown = false;
 		try {
-			testQuery(cr, queryIllegalName, null, null, null, null, 1).close();
+			ContentResolverTestUtils.testQuery(cr, queryIllegalName, null, null, null, null, 1).close();
 		}catch (final SQLGenerationException e) {
 			exceptionThrown = true;
 		}
 		assertTrue("expecting exception to be thrown", exceptionThrown);
 
-	}
-
-	private Cursor testQuery(ContentResolver cr, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, int expectedCount){
-		final Cursor c = cr.query(uri, projection, selection, selectionArgs, sortOrder);
-		assertNotNull(c);
-		assertEquals(expectedCount, c.getCount());
-
-		if (expectedCount == 0){
-			assertFalse("expected moveToFirst to signal an empty cursor", c.moveToFirst());
-		}else{
-			assertTrue("expected moveToFirst to return true", c.moveToFirst());
-		}
-
-		return c;
 	}
 
 	public void testForeignKeyCrud(){
@@ -261,24 +254,24 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		testQueryCommentItem(cr, comment1, TEST_COMMENT_BODY_1).close();
 
 		// ensure that we actually handle the IDs
-		testQuery(cr, Uri.withAppendedPath(post1, Comment.PATH + "/2"), null, null, null, null, 0).close();
+		ContentResolverTestUtils.testQuery(cr, Uri.withAppendedPath(post1, Comment.PATH + "/2"), null, null, null, null, 0).close();
 
 		final Uri comment2 = createTestComment(cr, post1, TEST_COMMENT_BODY_2);
 
 		testQueryCommentItem(cr, comment2, TEST_COMMENT_BODY_2).close();
 
 		// ensure that comments are bound to their appropriate parent
-		testQuery(cr, BlogPost.COMMENTS.getUri(post2), null, null, null, null, 0).close();
+		ContentResolverTestUtils.testQuery(cr, BlogPost.COMMENTS.getUri(post2), null, null, null, null, 0).close();
 
 		final Uri comment1_post2 = createTestComment(cr, post2, TEST_COMMENT_BODY_1);
 
-		testQuery(cr, comment1_post2, null, null, null, null, 1).close();
+		ContentResolverTestUtils.testQuery(cr, comment1_post2, null, null, null, null, 1).close();
 
 		// ensure that comments are bound to their appropriate parent
-		testQuery(cr, post2Comments, null, null, null, null, 1).close();
+		ContentResolverTestUtils.testQuery(cr, post2Comments, null, null, null, null, 1).close();
 
 		// ensure that comments are bound to their appropriate parent
-		testQuery(cr, post1Comments, null, null, null, null, 2).close();
+		ContentResolverTestUtils.testQuery(cr, post1Comments, null, null, null, null, 2).close();
 
 
 		//////////////////////////////////////////
@@ -319,7 +312,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		assertEquals(1, deletedCount);
 
-		testQuery(cr, post1Comments, null, null, null, null, 1).close();
+		ContentResolverTestUtils.testQuery(cr, post1Comments, null, null, null, null, 1).close();
 
 		final Uri comment3 = createTestComment(cr, post1, TEST_COMMENT_BODY_3);
 
@@ -330,10 +323,10 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		assertEquals(2, deletedCount);
 
 		// make sure they're deleted.
-		testQuery(cr, post1Comments, null, null, null, null, 0).close();
+		ContentResolverTestUtils.testQuery(cr, post1Comments, null, null, null, null, 0).close();
 
 		// make sure we didn't delete any of post2's comments
-		testQuery(cr, post2Comments, null, null, null, null, 1).close();
+		ContentResolverTestUtils.testQuery(cr, post2Comments, null, null, null, null, 1).close();
 
 		// only do this if we know that cascade deletes are supported.
 		if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
@@ -342,12 +335,45 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 			// This should work, as it only checks the foreign key field of the child (comment)
 			// and doesn't ensure that the parent exists
-			testQuery(cr, post2Comments, null, null, null, null, 0).close();
+			ContentResolverTestUtils.testQuery(cr, post2Comments, null, null, null, null, 0).close();
 		}
 
 	}
+	private static final int BULK_INSERTS = 100;
 
 	public void testBulkInsert(){
 
+		final MockContentResolver cr = getMockContentResolver();
+
+		final ContentValues[] cvs = new ContentValues[BULK_INSERTS];
+		for (int i = 0; i < BULK_INSERTS; i++){
+			final ContentValues cv = new ContentValues();
+
+			cv.put(BlogPost.BODY, ContentResolverTestUtils.getRandMessage());
+			cv.put(BlogPost.TITLE, "my title " + i);
+
+			cvs[i] = cv;
+		}
+
+		final int created = cr.bulkInsert(BlogPost.CONTENT_URI, cvs);
+
+		Assert.assertEquals(BULK_INSERTS, created);
+
+		ContentResolverTestUtils.testQuery(cr, BlogPost.CONTENT_URI, null, null, null, null, BULK_INSERTS).close();
+	}
+
+	// this API was added in API level 5.
+	public void testBatchActions() throws RemoteException, OperationApplicationException {
+		final MockContentResolver cr = getMockContentResolver();
+
+		final ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+		for (int i = 0; i < BULK_INSERTS; i++){
+			final Builder ins = ContentProviderOperation.newInsert(BlogPost.CONTENT_URI);
+			ins.withValue(BlogPost.BODY, ContentResolverTestUtils.getRandMessage());
+			ins.withValue(BlogPost.TITLE, "my title " + i);
+			ops.add(ins.build());
+		}
+
+		cr.applyBatch(SampleProvider2.AUTHORITY, ops);
 	}
 }
