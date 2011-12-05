@@ -32,7 +32,7 @@ extension if what it provides is too simple for your application.
 Using
 -----
 
-The Javadocs try to be extensive. You should start at
+The [Javadocs][9] try to be extensive. You should start at
 [SimpleContentProvider][3] which includes a brief walk-through of the system.
 
 For a complete example, please see the [example code][6]. It's probably best to
@@ -66,3 +66,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 [6]: example/
 [7]: http://mobile.mit.edu/
 [8]: http://en.wikipedia.org/wiki/Representational_State_Transfer
+[9]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/
