@@ -32,7 +32,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
-import edu.mit.mobile.android.utils.ListUtils;
+import edu.mit.mobile.android.utils.ListUtilsJoin;
 
 /**
  * <p>
@@ -121,7 +121,7 @@ public class QuerystringWrapper extends DBHelper {
 						selectionArgs, newSelectionArgs);
 				Log.d(TAG,
 						"query:" + newSelection + "; args: ["
-								+ ListUtils.join(Arrays.asList(newSelectionArgs), ",")+"]");
+								+ ListUtilsJoin.join(Arrays.asList(newSelectionArgs), ",")+"]");
 			}
 		} catch (final URISyntaxException e) {
 			final SQLGenerationException se = new SQLGenerationException("could not construct URL");

@@ -18,7 +18,7 @@ package edu.mit.mobile.android.utils;
  */
 import java.util.Collection;
 
-public class ListUtils {
+public class ListUtilsJoin {
 
 	/**
 	 * Join. Why is Collections missing this?
