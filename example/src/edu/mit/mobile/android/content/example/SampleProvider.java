@@ -67,8 +67,7 @@ public class SampleProvider extends SimpleContentProvider {
 
 		// This helper creates the table and can do basic database queries. See
 		// Message for more info.
-		final DBHelper messageHelper = new GenericDBHelper(Message.class,
-				Message.CONTENT_URI);
+		final DBHelper messageHelper = new GenericDBHelper(Message.class);
 
 		// This adds a mapping between the given content:// URI path and the
 		// helper.
