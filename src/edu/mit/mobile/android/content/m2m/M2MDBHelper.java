@@ -58,6 +58,15 @@ public class M2MDBHelper extends DBHelper {
 		mToContentUri = null;
 	}
 
+	public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder) {
+		mFromTable = fromTable;
+		mToTable = toTable;
+		mJoinTable = genJoinTableName(mFromTable, mToTable);
+
+		mIdenticalChildFinder = identicalChildFinder;
+		mToContentUri = null;
+	}
+
 	@Override
 	public String getPath(){
 		return mJoinTable;
