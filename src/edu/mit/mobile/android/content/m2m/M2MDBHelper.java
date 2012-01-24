@@ -367,7 +367,7 @@ public class M2MDBHelper extends DBHelper {
 
 	@Override
 	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLES IF EXIST " + mJoinTable);
+		db.execSQL("DROP TABLE IF EXISTS " + mJoinTable);
 		createTables(db);
 
 	}
