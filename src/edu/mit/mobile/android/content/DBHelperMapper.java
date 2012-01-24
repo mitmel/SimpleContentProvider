@@ -29,60 +29,95 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 /**
- * Handles the mapping of a numeric matcher code (usually the code that's used
- * in conjunction with {@link UriMatcher}) to a given {@link DBHelper}.
+ * Handles the mapping of a numeric matcher code (usually the code that's used in conjunction with
+ * {@link UriMatcher}) to a given {@link DBHelper}.
  *
- * This maintains the state of which verbs are permitted for the given path and
- * only executes a CRUD verb if it has permission. Permission can be checked
- * using {@link #canInsert(int)} and friends.
+ * This maintains the state of which verbs are permitted for the given path and only executes a CRUD
+ * verb if it has permission. Permission can be checked using {@link #canInsert(int)} and friends.
  *
  */
 public final class DBHelperMapper {
 	private final Map<Integer, DBHelperMapItem> mDbhMap = new HashMap<Integer, DBHelperMapItem>();
 
 	/**
-	 * Makes a mapping from the code to the given DBHelper. This helper will be
-	 * used to handle any queries for items that match the given code. All other
-	 * items will throw an error. Check {@link #canHandle(int)} and
-	 * {@link #canQuery(int)}, etc. first to ensure that a query will complete.
+	 * Makes a mapping from the code to the given DBHelper. This helper will be used to handle any
+	 * queries for items that match the given code. All other items will throw an error. Check
+	 * {@link #canHandle(int)} and {@link #canQuery(int)}, etc. first to ensure that a query will
+	 * complete.
 	 *
 	 * @param code
-	 *            A unique ID representing the given URI; usually a
-	 *            {@link UriMatcher} code
+	 *            A unique ID representing the given URI; usually a {@link UriMatcher} code
 	 * @param helper
 	 *            The helper that should be used for this code.
 	 * @param verb
-	 *            The SQL verbs that should be handled by the helper. Any other
-	 *            requests will throw an error. Verbs can be joined together,
-	 *            eg. <code>VERB_INSERT | VERB_QUERY</code>
+	 *            The SQL verbs that should be handled by the helper. Any other requests will throw
+	 *            an error. Verbs can be joined together, eg. <code>VERB_INSERT | VERB_QUERY</code>
+	 * @param type
+	 *            the MIME type of the item to add.
 	 */
 	public void addDirMapping(int code, DBHelper helper, int verb, String type) {
 		mDbhMap.put(code, new DBHelperMapItem(verb, false, type, helper));
 	}
 
+	/**
+	 * Makes a mapping from the code to the given DBHelper. This helper will be used to handle any
+	 * queries for items that match the given code. All other items will throw an error. Check
+	 * {@link #canHandle(int)} and {@link #canQuery(int)}, etc. first to ensure that a query will
+	 * complete.
+	 * 
+	 * @param code
+	 *            A unique ID representing the given URI; usually a {@link UriMatcher} code
+	 * @param helper
+	 *            The helper that should be used for this code.
+	 * @param verb
+	 *            The SQL verbs that should be handled by the helper. Any other requests will throw
+	 *            an error. Verbs can be joined together, eg. <code>VERB_INSERT | VERB_QUERY</code>
+	 * @param type
+	 *            the MIME type of the item to add.
+	 */
 	public void addItemMapping(int code, DBHelper helper, int verb, String type) {
 		mDbhMap.put(code, new DBHelperMapItem(verb, true, type, helper));
 	}
 
+	/**
+	 * @param code
+	 * @return true if this helper has a mapping for the given code
+	 */
 	public boolean canHandle(int code) {
 		return mDbhMap.containsKey(code);
 	}
 
+	/**
+	 * @param code
+	 * @return true if this helper is allowed to insert for the given code
+	 */
 	public boolean canInsert(int code) {
 		final DBHelperMapItem item = mDbhMap.get(code);
 		return item != null && item.allowVerb(VERB_INSERT);
 	}
 
+	/**
+	 * @param code
+	 * @return true if this helper is allowed to query for the given code
+	 */
 	public boolean canQuery(int code) {
 		final DBHelperMapItem item = mDbhMap.get(code);
 		return item != null && item.allowVerb(VERB_QUERY);
 	}
 
+	/**
+	 * @param code
+	 * @return true if this helper is allowed to update for the given code
+	 */
 	public boolean canUpdate(int code) {
 		final DBHelperMapItem item = mDbhMap.get(code);
 		return item != null && item.allowVerb(VERB_UPDATE);
 	}
 
+	/**
+	 * @param code
+	 * @return true if this helper is allowed to delete for the given code
+	 */
 	public boolean canDelete(int code) {
 		final DBHelperMapItem item = mDbhMap.get(code);
 		return item != null && item.allowVerb(VERB_DELETE);
@@ -124,62 +159,56 @@ public final class DBHelperMapper {
 			throw new IllegalArgumentException("No mapping for code " + code);
 		}
 		if ((dbhmi.verb & verb) == 0) {
-			throw new IllegalArgumentException("Cannot "
-					+ getVerbDescription(verb) + " for code " + code);
+			throw new IllegalArgumentException("Cannot " + getVerbDescription(verb) + " for code "
+					+ code);
 		}
 		return dbhmi;
 	}
 
-	public Uri insert(int code, ContentProvider provider, SQLiteDatabase db,
-			Uri uri, ContentValues values) throws SQLException {
+	public Uri insert(int code, ContentProvider provider, SQLiteDatabase db, Uri uri,
+			ContentValues values) throws SQLException {
 		final DBHelperMapItem dbhmi = getMap(VERB_INSERT, code);
 
 		return dbhmi.dbHelper.insertDir(db, provider, uri, values);
 	}
 
-	public Cursor query(int code, ContentProvider provider, SQLiteDatabase db,
-			Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
+	public Cursor query(int code, ContentProvider provider, SQLiteDatabase db, Uri uri,
+			String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		final DBHelperMapItem dbhmi = getMap(VERB_QUERY, code);
 
 		if (dbhmi.isItem) {
-			return dbhmi.dbHelper.queryItem(db, uri, projection, selection,
-					selectionArgs, sortOrder);
+			return dbhmi.dbHelper.queryItem(db, uri, projection, selection, selectionArgs,
+					sortOrder);
 		} else {
-			return dbhmi.dbHelper.queryDir(db, uri, projection, selection,
-					selectionArgs, sortOrder);
+			return dbhmi.dbHelper
+					.queryDir(db, uri, projection, selection, selectionArgs, sortOrder);
 		}
 	}
 
-	public int update(int code, ContentProvider provider, SQLiteDatabase db,
-			Uri uri, ContentValues cv, String selection, String[] selectionArgs) {
+	public int update(int code, ContentProvider provider, SQLiteDatabase db, Uri uri,
+			ContentValues cv, String selection, String[] selectionArgs) {
 		final DBHelperMapItem dbhmi = getMap(VERB_QUERY, code);
 
 		if (dbhmi.isItem) {
-			return dbhmi.dbHelper.updateItem(db, provider, uri, cv, selection,
-					selectionArgs);
+			return dbhmi.dbHelper.updateItem(db, provider, uri, cv, selection, selectionArgs);
 		} else {
-			return dbhmi.dbHelper.updateDir(db, provider, uri, cv, selection,
-					selectionArgs);
+			return dbhmi.dbHelper.updateDir(db, provider, uri, cv, selection, selectionArgs);
 		}
 	}
 
-	public int delete(int code, ContentProvider provider, SQLiteDatabase db,
-			Uri uri, String selection, String[] selectionArgs) {
+	public int delete(int code, ContentProvider provider, SQLiteDatabase db, Uri uri,
+			String selection, String[] selectionArgs) {
 		final DBHelperMapItem dbhmi = getMap(VERB_QUERY, code);
 
 		if (dbhmi.isItem) {
-			return dbhmi.dbHelper.deleteItem(db, provider, uri, selection,
-					selectionArgs);
+			return dbhmi.dbHelper.deleteItem(db, provider, uri, selection, selectionArgs);
 		} else {
-			return dbhmi.dbHelper.deleteDir(db, provider, uri, selection,
-					selectionArgs);
+			return dbhmi.dbHelper.deleteDir(db, provider, uri, selection, selectionArgs);
 		}
 	}
 
 	private class DBHelperMapItem {
-		public DBHelperMapItem(int verb, boolean isItem, String type,
-				DBHelper dbHelper) {
+		public DBHelperMapItem(int verb, boolean isItem, String type, DBHelper dbHelper) {
 			this.verb = verb;
 			this.dbHelper = dbHelper;
 			this.isItem = isItem;

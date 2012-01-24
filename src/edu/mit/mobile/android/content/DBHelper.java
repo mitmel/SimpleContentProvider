@@ -23,6 +23,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+/**
+ * Classes should extend this class and pass the result to {@link DBHelperMapper} to create their
+ * content providers.
+ * 
+ * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
+ * 
+ */
 public abstract class DBHelper {
 
 	public abstract Uri insertDir(SQLiteDatabase db, ContentProvider provider,
