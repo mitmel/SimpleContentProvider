@@ -1,6 +1,5 @@
 package edu.mit.mobile.android.content;
 
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -15,7 +14,7 @@ import android.net.Uri;
  * @author steve
  *
  */
-public class ForeignKeyManager {
+public class ForeignKeyManager implements Manager {
 	private final Class<? extends ContentItem> mChild;
 	private final String mPath;
 	private final String mSortOrder;
@@ -28,27 +27,27 @@ public class ForeignKeyManager {
 		mSortOrder = sortOrder != null ? sortOrder.value() : null;
 	}
 
-	public Uri getUri(Uri parent){
+	public Uri getUri(Uri parent) {
 		return Uri.withAppendedPath(parent, mPath);
 	}
 
-	public Uri getUri(Uri parent, long childId){
+	public Uri getUri(Uri parent, long childId) {
 		return ContentUris.withAppendedId(getUri(parent), childId);
 	}
 
-	public Uri insert(ContentResolver cr, Uri parent, ContentValues cv){
+	public Uri insert(ContentResolver cr, Uri parent, ContentValues cv) {
 		return cr.insert(getUri(parent), cv);
 	}
 
-	public Cursor query(ContentResolver cr, Uri parent, String[] projection){
+	public Cursor query(ContentResolver cr, Uri parent, String[] projection) {
 		return cr.query(getUri(parent), projection, null, null, mSortOrder);
 	}
 
-	public String getSortOrder(){
+	public String getSortOrder() {
 		return mSortOrder;
 	}
 
-	public String getPath(){
+	public String getPath() {
 		return mPath;
 	}
 }
