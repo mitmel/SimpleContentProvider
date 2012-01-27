@@ -46,8 +46,6 @@ public class GenericDBHelper extends DBHelper {
 	/**
 	 * @param contentItem
 	 * 			  the class that defines the content item that will be managed by this helper.
-	 * @param contentUri
-	 *            the URI of the content directory. Eg. content://AUTHORITY/item
 	 */
 	public GenericDBHelper(Class<? extends ContentItem> contentItem) {
 		mDataItem = contentItem;
