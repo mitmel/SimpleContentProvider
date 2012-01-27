@@ -72,12 +72,17 @@ public class M2MDBHelper extends DBHelper {
 	}
 
 	public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder) {
+		this(fromTable, toTable, identicalChildFinder, null);
+	}
+
+	public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder,
+			Uri toContentUri) {
 		mFromTable = fromTable;
 		mToTable = toTable;
 		mJoinTable = genJoinTableName(mFromTable, mToTable);
 
 		mIdenticalChildFinder = identicalChildFinder;
-		mToContentUri = null;
+		mToContentUri = toContentUri;
 	}
 
 	@Override
