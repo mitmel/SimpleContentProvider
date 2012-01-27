@@ -218,7 +218,6 @@ public class M2MDBHelper extends DBHelper {
 
 				// no existing child or relation
 			} else {
-				mTo.insertDir(db, provider, mToContentUri, values);
 				if (mToContentUri != null) {
 					newItem = provider.insert(mToContentUri, values);
 					childId = ContentUris.parseId(newItem);
