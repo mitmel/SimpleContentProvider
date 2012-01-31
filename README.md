@@ -10,14 +10,14 @@ all the basic CRUD operations that you'll encounter writing a basic content
 provider.
 
 By using this library, you shouldn't need to write *any* SQL for most
-applications - table creation, query generation, etc. are all handled for you.
+applications — table creation, query generation, etc. are all handled for you.
 
 This library is loosely inspired by [Django][2] and follows some of its design
 principles. It also follows the [REST][8]ful design principles that underly
 Android's data-driven activity flow and encourages the use of URIs to represent
 all data objects.
 
-One can think of this library a bit like a super stripped down ORM - similar to
+One can think of this library a bit like a super stripped down ORM — similar to
 Hibernate or ORMlite.
 
 Unlike ORMs, this library aims to have very little object creation in order to
@@ -42,7 +42,7 @@ and the accompanying activities.
 License
 -------
 Android Simple Content Provider  
-Copyright (C) 2011 [MIT Mobile Experience Lab][7]
+Copyright (C) 2011-2012 [MIT Mobile Experience Lab][7]
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
