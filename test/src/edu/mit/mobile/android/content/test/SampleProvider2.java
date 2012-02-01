@@ -41,7 +41,7 @@ public class SampleProvider2 extends SimpleContentProvider {
 		addDirAndItemUri(blogPosts, BlogPost.PATH);
 		addChildDirAndItemUri(comments, BlogPost.PATH, Comment.PATH);
 
-		addDirUri(comments, Comment.PATH_ALL_COMMENTS);
+		addDirAndItemUri(comments, Comment.PATH_ALL_COMMENTS);
 
 	}
 }

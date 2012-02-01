@@ -10,31 +10,31 @@ import android.net.Uri;
 /**
  * Database helper to make it easier to access foreign key relationships between a parent and a
  * child with a foreign key pointing to that parent.
- * 
+ *
  * <pre>
  *      relation
  *          ↓
  * [parent] → [child]
  *          → [child 2]
  * </pre>
- * 
+ *
  * For example, you could have an BlogPost that has a relation to multiple Comments.
- * 
+ *
  * Unfortunately, if your version of SQLite doesn't support foreign keys (see
  * {@link AndroidVersions}), this will not automatically cascade deletes for you or verify any
  * relationships. It will otherwise function, though; you will just need to cascade deletes by hand.
- * 
+ *
  * The query function supports wildcard parent IDs. So to select all the children with any parent,
  * you can use {@link #WILDCARD_PATH_SEGMENT} instead of the parent's ID number. Eg.a path of
- * 
+ *
  * <pre>
  * /parent/&#42;/child/
  * </pre>
- * 
+ *
  * to get a list of all the children in any parent.
- * 
+ *
  * @author steve
- * 
+ *
  */
 public class ForeignKeyDBHelper extends GenericDBHelper {
 	public static final String WILDCARD_PATH_SEGMENT = "*";
@@ -115,9 +115,13 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
 			String selection, String[] selectionArgs, String sortOrder) {
 		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
-		return super.queryItem(db, uri, projection,
-				ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
-				ProviderUtils.addExtraWhereArgs(selectionArgs, parentId),
-				sortOrder);
+		if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
+			return super.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
+
+		} else {
+			return super.queryItem(db, uri, projection,
+					ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
+					ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
+		}
 	}
 }

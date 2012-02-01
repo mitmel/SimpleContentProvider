@@ -22,6 +22,7 @@ import junit.framework.Assert;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -283,6 +284,20 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		ContentResolverTestUtils.testQuery(cr, Comment.ALL_COMMENTS, null, Comment.BODY + "=?",
 				new String[] { TEST_COMMENT_BODY_2 }, null, 1).close();
+
+		ContentResolverTestUtils.testQuery(cr, Comment.ALL_COMMENTS, null, Comment.BODY + "=?",
+				new String[] { TEST_COMMENT_BODY_3 }, null, 0).close();
+
+		// test wildcard searching with item ID
+		ContentResolverTestUtils.testQuery(cr, ContentUris.withAppendedId(Comment.ALL_COMMENTS, 1),
+				null, null, null, null, 1).close();
+
+		ContentResolverTestUtils.testQuery(cr, ContentUris.withAppendedId(Comment.ALL_COMMENTS, 2),
+				null, null, null, null, 1).close();
+
+		ContentResolverTestUtils.testQuery(cr,
+				ContentUris.withAppendedId(Comment.ALL_COMMENTS, 100), null, null, null, null, 0)
+				.close();
 
 		//////////////////////////////////////////
 		// update
