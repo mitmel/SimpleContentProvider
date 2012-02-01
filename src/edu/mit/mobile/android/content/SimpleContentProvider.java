@@ -169,6 +169,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
 	private int mMatcherID = URI_MATCHER_CODE_START;
 
+	private static final String ERR_NO_HANDLER = "uri not handled by provider";
+
 	///////////////////////////////// public methods
 
 	/**
@@ -413,6 +415,11 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 		final int match = MATCHER.match(uri);
+
+		if (UriMatcher.NO_MATCH == match) {
+			throw new IllegalArgumentException(ERR_NO_HANDLER);
+		}
+
 		if (!mDBHelperMapper.canDelete(match)) {
 			throw new IllegalArgumentException("delete note supported");
 		}
@@ -427,6 +434,11 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		final int match = MATCHER.match(uri);
+
+		if (UriMatcher.NO_MATCH == match) {
+			throw new IllegalArgumentException(ERR_NO_HANDLER);
+		}
+
 		return mDBHelperMapper.getType(match);
 	}
 
@@ -464,6 +476,11 @@ public abstract class SimpleContentProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 		final int match = MATCHER.match(uri);
+
+		if (UriMatcher.NO_MATCH == match) {
+			throw new IllegalArgumentException(ERR_NO_HANDLER);
+		}
+
 		if (!mDBHelperMapper.canInsert(match)) {
 			throw new IllegalArgumentException("insert not supported");
 		}
@@ -479,6 +496,11 @@ public abstract class SimpleContentProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
 		final int match = MATCHER.match(uri);
+
+		if (UriMatcher.NO_MATCH == match) {
+			throw new IllegalArgumentException(ERR_NO_HANDLER);
+		}
+
 		if (!mDBHelperMapper.canQuery(match)) {
 			throw new IllegalArgumentException("query not supported");
 		}
@@ -493,6 +515,11 @@ public abstract class SimpleContentProvider extends ContentProvider {
 			String[] selectionArgs) {
 		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 		final int match = MATCHER.match(uri);
+
+		if (UriMatcher.NO_MATCH == match) {
+			throw new IllegalArgumentException(ERR_NO_HANDLER);
+		}
+
 		if (!mDBHelperMapper.canUpdate(match)) {
 			throw new IllegalArgumentException("update not supported");
 		}
