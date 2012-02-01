@@ -1,11 +1,14 @@
 package edu.mit.mobile.android.content.test.sample2;
 
+import android.net.Uri;
 import edu.mit.mobile.android.content.ContentItem;
+import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.DBForeignKeyColumn;
 import edu.mit.mobile.android.content.column.DatetimeColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
+import edu.mit.mobile.android.content.test.SampleProvider2;
 
 @UriPath(Comment.PATH)
 public class Comment implements ContentItem {
@@ -24,4 +27,8 @@ public class Comment implements ContentItem {
 
 	public static final String PATH = "comment";
 
+	public static final String PATH_ALL_COMMENTS = BlogPost.PATH + "/*/" + PATH;
+
+	public static final Uri ALL_COMMENTS = ProviderUtils.toContentUri(SampleProvider2.AUTHORITY,
+			PATH_ALL_COMMENTS);
 }

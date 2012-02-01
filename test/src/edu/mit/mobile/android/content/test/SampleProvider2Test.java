@@ -273,6 +273,16 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 		// ensure that comments are bound to their appropriate parent
 		ContentResolverTestUtils.testQuery(cr, post1Comments, null, null, null, null, 2).close();
 
+		// test wildcard searching
+		ContentResolverTestUtils.testQuery(cr, Comment.ALL_COMMENTS, null, null, null, null, 3)
+				.close();
+
+		// test wildcard with a selection
+		ContentResolverTestUtils.testQuery(cr, Comment.ALL_COMMENTS, null, Comment.BODY + "=?",
+				new String[] { TEST_COMMENT_BODY_1 }, null, 2).close();
+
+		ContentResolverTestUtils.testQuery(cr, Comment.ALL_COMMENTS, null, Comment.BODY + "=?",
+				new String[] { TEST_COMMENT_BODY_2 }, null, 1).close();
 
 		//////////////////////////////////////////
 		// update
@@ -314,7 +324,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
 		ContentResolverTestUtils.testQuery(cr, post1Comments, null, null, null, null, 1).close();
 
-		final Uri comment3 = createTestComment(cr, post1, TEST_COMMENT_BODY_3);
+		createTestComment(cr, post1, TEST_COMMENT_BODY_3);
 
 		// test deleting of all comments
 		// 2 comment should remain
