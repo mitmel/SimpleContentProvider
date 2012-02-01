@@ -54,8 +54,18 @@ public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
 
 		assertPerson(person2, PERSON2_NAME);
 
+		assertPersonOnProject(person2, PROJECT1_NAME);
+
+		// person 3 is on project 2
+		final Uri person3 = Project.PEOPLE.insert(cr, project2, Person.toCv(PERSON3_NAME));
+
+		assertPersonOnProject(person3, PROJECT2_NAME);
+
+	}
+
+	private void assertPersonOnProject(Uri person, String name) {
 		// now try the reverse lookup
-		final Cursor c = Person.PROJECTS.query(cr, person2, null);
+		final Cursor c = Person.PROJECTS.query(getMockContentResolver(), person, null);
 
 		try {
 
@@ -64,17 +74,11 @@ public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
 			// person2 is only on one project
 			assertEquals(1, c.getCount());
 
-			assertEquals(PROJECT1_NAME, c.getString(c.getColumnIndex(Project.NAME)));
+			assertEquals(name, c.getString(c.getColumnIndex(Project.NAME)));
 
 		} finally {
 			c.close();
 		}
-
-		// final Cursor c = cr.query(uri, projection, selection, selectionArgs, sortOrder)
-
-		//final Uri person3 = cr.insert(Person.CONTENT_URI, Person.toCv(PERSON3_NAME));
-
-		//Person.PROJECTS.insert(cr, parent, cv)
 	}
 
 	/**
