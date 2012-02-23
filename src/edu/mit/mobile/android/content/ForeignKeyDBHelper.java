@@ -37,7 +37,7 @@ import android.net.Uri;
  *
  */
 public class ForeignKeyDBHelper extends GenericDBHelper {
-	public static final String WILDCARD_PATH_SEGMENT = "*";
+	public static final String WILDCARD_PATH_SEGMENT = "_all";
 	private final String mColumn;
 
 	public ForeignKeyDBHelper(Class<? extends ContentItem> parent,
