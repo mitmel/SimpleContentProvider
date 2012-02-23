@@ -23,6 +23,9 @@ public class ForeignKeyManager implements Manager {
 		mChild = child;
 		final UriPath path = mChild.getAnnotation(UriPath.class);
 		mPath = path != null ? path.value() : null;
+		if (mPath == null) {
+			throw new SQLGenerationException("ForeignKeyManager: missing @UriPath on " + child);
+		}
 		final DBSortOrder sortOrder = mChild.getAnnotation(DBSortOrder.class);
 		mSortOrder = sortOrder != null ? sortOrder.value() : null;
 	}

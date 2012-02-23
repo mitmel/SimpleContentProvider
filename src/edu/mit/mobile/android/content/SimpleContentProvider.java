@@ -417,7 +417,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		final int match = MATCHER.match(uri);
 
 		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER);
+			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
 		}
 
 		if (!mDBHelperMapper.canDelete(match)) {
@@ -436,7 +436,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		final int match = MATCHER.match(uri);
 
 		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER);
+			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
 		}
 
 		return mDBHelperMapper.getType(match);
@@ -478,7 +478,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		final int match = MATCHER.match(uri);
 
 		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER);
+			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
 		}
 
 		if (!mDBHelperMapper.canInsert(match)) {
@@ -498,7 +498,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		final int match = MATCHER.match(uri);
 
 		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER);
+			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
 		}
 
 		if (!mDBHelperMapper.canQuery(match)) {
@@ -517,7 +517,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		final int match = MATCHER.match(uri);
 
 		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER);
+			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
 		}
 
 		if (!mDBHelperMapper.canUpdate(match)) {
