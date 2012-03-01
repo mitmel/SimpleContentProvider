@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:padding="10dp" >
 
     <ScrollView
@@ -10,7 +10,7 @@
         android:layout_above="@+id/buttonbar_edit" >
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
@@ -23,7 +23,7 @@
 
             <EditText
                 android:id="@+id/edtId"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false" />
 
@@ -36,7 +36,7 @@
 
             <EditText
                 android:id="@+id/edtTitle"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:inputType="textEmailSubject|textAutoCorrect|textCapSentences|textImeMultiLine" >
@@ -54,7 +54,7 @@
 
             <EditText
                 android:id="@+id/edtBody"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine|textAutoCorrect|textCapSentences" >
             </EditText>
@@ -64,7 +64,7 @@
     <LinearLayout
         android:id="@+id/buttonbar_edit"
         style="@android:style/ButtonBar"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:weightSum="2" >
