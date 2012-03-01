@@ -14,20 +14,17 @@ import edu.mit.mobile.android.content.SQLGenerationException;
 
 public class M2MReverseHelper extends DBHelper {
 	private static final String WILDCARD_PATH_SEGMENT = "*";
-	private final M2MDBHelper mM2mdbHelper;
-	private final String mJoinTable, mFromTable, mToTable;
+
+	private final String mJoinTable, mFromTable;
 
 	public M2MReverseHelper(M2MDBHelper m2mDBHelper) {
-		mM2mdbHelper = m2mDBHelper;
 		mJoinTable = m2mDBHelper.getJoinTableName();
 		mFromTable = m2mDBHelper.getFromTable();
-		mToTable = m2mDBHelper.getToTable();
 	}
 
 	@Override
 	public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values)
 			throws SQLException {
-		// TODO Auto-generated method stub
 		throw new IllegalArgumentException("Not implemented");
 
 	}
@@ -37,7 +34,6 @@ public class M2MReverseHelper extends DBHelper {
 			ContentValues values, String where, String[] whereArgs) {
 
 		throw new IllegalArgumentException("Not implemented");
-
 	}
 
 	@Override
@@ -67,14 +63,12 @@ public class M2MReverseHelper extends DBHelper {
 	@Override
 	public void createTables(SQLiteDatabase db) throws SQLGenerationException {
 		// the wrapped helper will handle this.
-
 	}
 
 	@Override
 	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
 			throws SQLGenerationException {
 		// the wrapped helper will handle this.
-
 	}
 
 	/**
@@ -110,7 +104,7 @@ public class M2MReverseHelper extends DBHelper {
 
 	/**
 	 * Selects rows from the FROM table that have a relation from the given item in the TO table.
-	 * 
+	 *
 	 * @param toId
 	 *            _ID of the item on the FROM side of the relationship
 	 * @param db

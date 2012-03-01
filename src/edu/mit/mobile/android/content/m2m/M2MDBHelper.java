@@ -34,14 +34,10 @@ public class M2MDBHelper extends DBHelper {
 	private static final String WILDCARD_PATH_SEGMENT = "*";
 	private final String mFromTable, mToTable, mJoinTable;
 	private final Uri mToContentUri;
-	private GenericDBHelper mFrom;
-	private GenericDBHelper mTo;
 
 	private final IdenticalChildFinder mIdenticalChildFinder;
 
 	public M2MDBHelper(GenericDBHelper from, GenericDBHelper to) {
-		mFrom = from;
-		mTo = to;
 		mFromTable = from.getTable();
 		mToTable = to.getTable();
 		mJoinTable = genJoinTableName(mFromTable, mToTable);
@@ -51,8 +47,6 @@ public class M2MDBHelper extends DBHelper {
 	}
 
 	public M2MDBHelper(GenericDBHelper from, GenericDBHelper to, Uri toContentUri) {
-		mFrom = from;
-		mTo = to;
 		mFromTable = from.getTable();
 		mToTable = to.getTable();
 		mJoinTable = genJoinTableName(mFromTable, mToTable);
