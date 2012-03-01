@@ -24,8 +24,8 @@ import java.util.Vector;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
-import edu.mit.mobile.android.utils.ListUtilsJoin;
 
 public class ProviderUtils {
 
@@ -41,7 +41,8 @@ public class ProviderUtils {
 	 */
 	public static String addExtraWhere(String where, String... extraWhere) {
 		final String extraWhereJoined = "("
-				+ ListUtilsJoin.join(Arrays.asList(extraWhere), ") AND (") + ")";
+ + TextUtils.join(") AND (", Arrays.asList(extraWhere))
+				+ ")";
 		return extraWhereJoined
 				+ (where != null && where.length() > 0 ? " AND (" + where + ")"
 						: "");
@@ -90,7 +91,7 @@ public class ProviderUtils {
 		for (int i = 0; i < count; i++) {
 			pathWithoutLast.remove(pathWithoutLast.size() - 1);
 		}
-		final String parentPath = ListUtilsJoin.join(pathWithoutLast, "/");
+		final String parentPath = TextUtils.join("/", pathWithoutLast);
 		return uri.buildUpon().path(parentPath).build();
 	}
 

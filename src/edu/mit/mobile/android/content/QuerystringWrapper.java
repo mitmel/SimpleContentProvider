@@ -31,8 +31,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
-import edu.mit.mobile.android.utils.ListUtilsJoin;
 
 /**
  * <p>
@@ -66,6 +66,8 @@ import edu.mit.mobile.android.utils.ListUtilsJoin;
 public class QuerystringWrapper extends DBHelper {
 	public static final String TAG = QuerystringWrapper.class.getSimpleName();
 
+	private static final boolean DEBUG = false;
+
 	public static final String QUERY_PREFIX_OR = "|";
 
 	private final DBHelper mWrappedHelper;
@@ -80,7 +82,9 @@ public class QuerystringWrapper extends DBHelper {
 		final String query = uri.getEncodedQuery();
 		String newSelection = selection;
 		String[] newSelectionArgs = selectionArgs;
-		Log.d(TAG, "query uri " + uri);
+		if (DEBUG) {
+			Log.d(TAG, "query uri " + uri);
+		}
 		try {
 			if (query != null) {
 
@@ -119,9 +123,11 @@ public class QuerystringWrapper extends DBHelper {
 						sb.toString());
 				newSelectionArgs = ProviderUtils.addExtraWhereArgs(
 						selectionArgs, newSelectionArgs);
-				Log.d(TAG,
-						"query:" + newSelection + "; args: ["
-								+ ListUtilsJoin.join(Arrays.asList(newSelectionArgs), ",")+"]");
+				if (DEBUG) {
+					Log.d(TAG,
+							"query:" + newSelection + "; args: ["
+									+ TextUtils.join(",", Arrays.asList(newSelectionArgs)) + "]");
+				}
 			}
 		} catch (final URISyntaxException e) {
 			final SQLGenerationException se = new SQLGenerationException("could not construct URL");
