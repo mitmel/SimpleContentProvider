@@ -11,6 +11,7 @@ import edu.mit.mobile.android.content.AndroidVersions;
 import edu.mit.mobile.android.content.DBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.content.SQLGenUtils;
 
 /**
  * Database helper to make it easier to create many-to-many relationships between two arbitrary
@@ -115,19 +116,19 @@ public class M2MDBHelper extends DBHelper {
 	@Override
 	public void createTables(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE "
-				+ mJoinTable
+				+ SQLGenUtils.escapeTableName(mJoinTable)
 				+ " ("
 				+ M2MColumns._ID
 				+ " INTEGER PRIMARY KEY,"
 				+ M2MColumns.TO_ID
 				+ " INTEGER"
-				+ (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ? " REFERENCES " + mToTable + "("
-						+ BaseColumns._ID + ")" + " ON DELETE CASCADE" : "")
+				+ (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ? " REFERENCES '" + mToTable
+						+ "' (" + BaseColumns._ID + ")" + " ON DELETE CASCADE" : "")
 				+ ","
 				+ M2MColumns.FROM_ID
 				+ " INTEGER"
-				+ (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ? " REFERENCES " + mFromTable + "("
-						+ BaseColumns._ID + ")" + " ON DELETE CASCADE" : "") + ");");
+				+ (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ? " REFERENCES '" + mFromTable
+						+ "' (" + BaseColumns._ID + ")" + " ON DELETE CASCADE" : "") + ");");
 	}
 
 	/**
@@ -135,7 +136,7 @@ public class M2MDBHelper extends DBHelper {
 	 *
 	 */
 	public void deleteJoinTable(SQLiteDatabase db) {
-		db.execSQL("DROP TABLE IF EXISTS " + mJoinTable);
+		db.execSQL("DROP TABLE IF EXISTS " + SQLGenUtils.escapeTableName(mJoinTable));
 	}
 
 	/**
@@ -372,11 +373,15 @@ public class M2MDBHelper extends DBHelper {
 		// XXX hack to get around ambiguous column names. Is there a better way to write this query?
 		if (selection != null) {
 			// matches "foo=bar" but not "foo.baz=bar"; only qualifies unqualified column names
-			selection = selection.replaceAll("((?<!\\.)\\b\\w+=\\?)", mToTable + ".$1");
+			selection = selection.replaceAll("((?<!\\.)\\b\\w+=\\?)",
+					SQLGenUtils.escapeTableName(mToTable) + ".$1");
 		}
 
-		return db.query(mToTable + " INNER JOIN " + mJoinTable + " ON " + mJoinTable + "."
-				+ M2MColumns.TO_ID + "=" + mToTable + "." + BaseColumns._ID,
+		return db.query(
+				SQLGenUtils.escapeTableName(mToTable) + " INNER JOIN "
+						+ SQLGenUtils.escapeTableName(mJoinTable) + " ON "
+						+ SQLGenUtils.escapeTableName(mJoinTable) + "." + M2MColumns.TO_ID + "="
+						+ SQLGenUtils.escapeTableName(mToTable) + "." + BaseColumns._ID,
 				ProviderUtils.addPrefixToProjection(mToTable, toProjection), selection,
 				selectionArgs, null, null, sortOrder);
 	}
@@ -400,9 +405,12 @@ public class M2MDBHelper extends DBHelper {
 	 */
 	public Cursor queryTo(long fromId, SQLiteDatabase db, String[] toProjection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		return queryTo(db, toProjection, ProviderUtils.addExtraWhere(selection, mJoinTable + "."
-				+ M2MColumns.FROM_ID + "=?"), ProviderUtils.addExtraWhereArgs(selectionArgs,
-				Long.toString(fromId)), sortOrder);
+		return queryTo(
+				db,
+				toProjection,
+				ProviderUtils.addExtraWhere(selection, SQLGenUtils.escapeTableName(mJoinTable)
+						+ "." + M2MColumns.FROM_ID + "=?"),
+				ProviderUtils.addExtraWhereArgs(selectionArgs, Long.toString(fromId)), sortOrder);
 	}
 
 	@Override
@@ -435,7 +443,7 @@ public class M2MDBHelper extends DBHelper {
 
 	@Override
 	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + mJoinTable);
+		db.execSQL("DROP TABLE IF EXISTS " + SQLGenUtils.escapeTableName(mJoinTable));
 		createTables(db);
 
 	}

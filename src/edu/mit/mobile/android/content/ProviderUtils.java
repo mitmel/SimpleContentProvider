@@ -116,7 +116,7 @@ public class ProviderUtils {
 		final String[] projection2 = new String[projection.length];
 		final int len = projection2.length;
 		for (int i = 0; i < len; i++) {
-			projection2[i] = tableName + "." + projection[i] + " as "
+			projection2[i] = SQLGenUtils.escapeTableName(tableName) + "." + projection[i] + " as "
 					+ projection[i];
 		}
 		return projection2;

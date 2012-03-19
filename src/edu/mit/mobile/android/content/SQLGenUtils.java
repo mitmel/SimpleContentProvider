@@ -63,4 +63,17 @@ public class SQLGenUtils {
 	public static boolean isValidName(String name){
 		return VALID_NAME.matcher(name).matches();
 	}
+
+	/**
+	 * Escapes table names so they can be used in SQL queries.
+	 *
+	 * @param tableName
+	 *            a plain table name
+	 * @return a quoted, escaped table name
+	 * @see http://stackoverflow.com/a/6701665/90934
+	 */
+	public static String escapeTableName(String tableName) {
+		return '"' + tableName.replaceAll("\"", "\"\"") + '"';
+
+	}
 }
