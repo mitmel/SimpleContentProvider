@@ -22,8 +22,11 @@ import java.util.List;
 
 import android.app.Application;
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -524,6 +527,22 @@ public abstract class SimpleContentProvider extends ContentProvider {
 			db.endTransaction();
 		}
 		return numSuccessfulAdds;
+	}
+
+	@Override
+	public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+			throws OperationApplicationException {
+		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+
+		ContentProviderResult[] res;
+		db.beginTransaction();
+		try {
+			res = super.applyBatch(operations);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+		return res;
 	}
 
 	@Override
