@@ -17,9 +17,6 @@ package edu.mit.mobile.android.content;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -27,6 +24,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.SparseArray;
 
 /**
  * Handles the mapping of a numeric matcher code (usually the code that's used in conjunction with
@@ -37,7 +35,7 @@ import android.net.Uri;
  *
  */
 public final class DBHelperMapper {
-	private final Map<Integer, DBHelperMapItem> mDbhMap = new HashMap<Integer, DBHelperMapItem>();
+	private final SparseArray<DBHelperMapItem> mDbhMap = new SparseArray<DBHelperMapItem>();
 
 	/**
 	 * Makes a mapping from the code to the given DBHelper. This helper will be used to handle any
@@ -64,7 +62,7 @@ public final class DBHelperMapper {
 	 * queries for items that match the given code. All other items will throw an error. Check
 	 * {@link #canHandle(int)} and {@link #canQuery(int)}, etc. first to ensure that a query will
 	 * complete.
-	 * 
+	 *
 	 * @param code
 	 *            A unique ID representing the given URI; usually a {@link UriMatcher} code
 	 * @param helper
@@ -84,7 +82,7 @@ public final class DBHelperMapper {
 	 * @return true if this helper has a mapping for the given code
 	 */
 	public boolean canHandle(int code) {
-		return mDbhMap.containsKey(code);
+		return mDbhMap.get(code) != null;
 	}
 
 	/**
