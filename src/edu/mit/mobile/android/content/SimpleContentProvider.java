@@ -1,7 +1,7 @@
 package edu.mit.mobile.android.content;
 
 /*
- * Copyright (C) 2011 MIT Mobile Experience Lab
+ * Copyright (C) 2011-2012 MIT Mobile Experience Lab
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -489,6 +489,41 @@ public abstract class SimpleContentProvider extends ContentProvider {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
 		return newUri;
+	}
+
+	@Override
+	public int bulkInsert(Uri uri, ContentValues[] values) {
+		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+
+		final int match = MATCHER.match(uri);
+
+		if (UriMatcher.NO_MATCH == match) {
+			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+		}
+
+		if (!mDBHelperMapper.canInsert(match)) {
+			throw new IllegalArgumentException("insert not supported");
+		}
+
+		int numSuccessfulAdds = 0;
+		db.beginTransaction();
+		try {
+
+			for (final ContentValues cv : values) {
+				final Uri newUri = mDBHelperMapper.insert(match, this, db, uri, cv);
+				if (newUri != null) {
+					numSuccessfulAdds++;
+				}
+			}
+			db.setTransactionSuccessful();
+
+			if (numSuccessfulAdds > 0) {
+				getContext().getContentResolver().notifyChange(uri, null);
+			}
+		} finally {
+			db.endTransaction();
+		}
+		return numSuccessfulAdds;
 	}
 
 	@Override
