@@ -8,9 +8,11 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,34 +22,38 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-public class SimpleContentProviderExample extends ListActivity implements
-		OnClickListener {
+public class SimpleContentProviderExample extends ListActivity implements OnClickListener {
 
 	private ListAdapter mListAdapter;
 
-	private static final String[] TITLES = { "Party Rock Anthem",
-			"Give Me Everything", "Rolling In The Deep",
-			"Last Friday Night (T.G.I.F.)", "Super Bass", "The Edge Of Glory",
-			"How To Love", "Good Life", "Tonight Tonight", "E.T." };
+	private static final String[] TITLES = { "Party Rock Anthem", "Give Me Everything",
+			"Rolling In The Deep", "Last Friday Night (T.G.I.F.)", "Super Bass",
+			"The Edge Of Glory", "How To Love", "Good Life", "Tonight Tonight", "E.T." };
 
 	private static final String[] BODIES = {
 			"AWESOME!",
 			"seriously this video was trying WAYYY tooo hard.. it was not at all funny nor amusing, i was getting disgusted by the whole thing.",
-			"anyone knows whats the name of the remix?",
-			"I enjoy the song though(:", "what the heck????",
-			"That wuz funny", "i love this video", "best vid eva!!!",
-			"like kanye west version alot better",
-			"you done an amzing job with the lyrics" };
+			"anyone knows whats the name of the remix?", "I enjoy the song though(:",
+			"what the heck????", "That wuz funny", "i love this video", "best vid eva!!!",
+			"like kanye west version alot better", "you done an amzing job with the lyrics" };
 
 	private final Random mRand = new Random();
 
 	/** Called when the activity is first created. */
+	// the deprecation here is due to the managedQuery() calls. In the latest Android version,
+	// Loaders should be used.
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		getListView().setEmptyView(findViewById(android.R.id.empty));
+
+		// The button bar is only needed if there is no action bar
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			findViewById(R.id.button_bar).setVisibility(View.GONE);
+		}
 
 		findViewById(R.id.add).setOnClickListener(this);
 		findViewById(R.id.add_random).setOnClickListener(this);
@@ -60,23 +66,21 @@ public class SimpleContentProviderExample extends ListActivity implements
 		final int[] to = new int[] { android.R.id.text1, android.R.id.text2 };
 
 		// the columns to query.
-		final String[] projection = new String[] { Message._ID, Message.TITLE,
-				Message.BODY };
+		final String[] projection = new String[] { Message._ID, Message.TITLE, Message.BODY };
 
 		final String sortOrder = Message.CREATED_DATE + " DESC";
 
 		// this makes the actual database query, returning a cursor that can be
 		// read directly
 		// or using an Adapter.
-		final Cursor c = managedQuery(Message.CONTENT_URI, projection, null,
-				null, sortOrder);
+		final Cursor c = managedQuery(Message.CONTENT_URI, projection, null, null, sortOrder);
 
 		// This adapter binds the data from the cursor to the specified view.
 		// Android provides two simple list views:
 		// android.R.layout.simple_list_item_2 which has two text views
 		// and android.R.layout.simple_list_item_1 which has only one
-		mListAdapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_2, c, from, to);
+		mListAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, c, from,
+				to);
 
 		// A ListActivity has a simple ListView by default and this tells it
 		// which adapter to use
@@ -101,48 +105,77 @@ public class SimpleContentProviderExample extends ListActivity implements
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getMenuInflater().inflate(R.menu.item_context, menu);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	      AdapterView.AdapterContextMenuInfo info;
-	        try {
-	            info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-	       } catch (final ClassCastException e) {
+		AdapterView.AdapterContextMenuInfo info;
+		try {
+			info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		} catch (final ClassCastException e) {
 
-	           return false;
-	       }
+			return false;
+		}
 
-	    final Uri itemUri = ContentUris.withAppendedId(Message.CONTENT_URI, info.id);
+		final Uri itemUri = ContentUris.withAppendedId(Message.CONTENT_URI, info.id);
 
-		switch (item.getItemId()){
-		case R.id.view:
-			startActivity(new Intent(Intent.ACTION_VIEW, itemUri));
-			return true;
+		switch (item.getItemId()) {
+			case R.id.view:
+				startActivity(new Intent(Intent.ACTION_VIEW, itemUri));
+				return true;
 
-		case R.id.edit:
-			startActivity(new Intent(Intent.ACTION_EDIT, itemUri));
-			return true;
+			case R.id.edit:
+				startActivity(new Intent(Intent.ACTION_EDIT, itemUri));
+				return true;
 
-		case R.id.delete:
-			deleteItem(itemUri);
-			return true;
+			case R.id.delete:
+				deleteItem(itemUri);
+				return true;
 
-		default:
-			return super.onContextItemSelected(item);
+			default:
+				return super.onContextItemSelected(item);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// load the action bar / menu bar
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.add:
+				createNewItem();
+				return true;
+
+			case R.id.add_random:
+				addItem();
+				return true;
+
+			case R.id.clear:
+				clearAllItems();
+				return true;
+
+			case R.id.add_many:
+				addManyItems();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 
 	}
 
-
 	/**
 	 * Starts a new activity to prompt the user with the contents of a new item.
 	 */
-	private void createNewItem(){
+	private void createNewItem() {
 		// the URI must be specified here, so we know what needs have a new item.
 		startActivity(new Intent(Intent.ACTION_INSERT, Message.CONTENT_URI));
 	}
@@ -160,10 +193,27 @@ public class SimpleContentProviderExample extends ListActivity implements
 		// you wish with this URI, as this is the public interface to the content.
 		final Uri newItem = getContentResolver().insert(Message.CONTENT_URI, cv);
 		if (newItem == null) {
-			Toast.makeText(this,
-					"Error inserting item. insert() returned null",
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Error inserting item. insert() returned null", Toast.LENGTH_LONG)
+					.show();
 		}
+	}
+
+	private void addManyItems() {
+		final int total = 100;
+		final ContentValues manyCv[] = new ContentValues[total];
+
+		for (int i = 0; i < total; i++) {
+			// place your content inside a ContentValues object.
+			final ContentValues cv = new ContentValues();
+			cv.put(Message.TITLE, TITLES[mRand.nextInt(TITLES.length)]);
+			cv.put(Message.BODY, BODIES[mRand.nextInt(BODIES.length)]);
+
+			manyCv[i] = cv;
+		}
+
+		final int count = getContentResolver().bulkInsert(Message.CONTENT_URI, manyCv);
+
+		Toast.makeText(this, count + " items added", Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -171,10 +221,8 @@ public class SimpleContentProviderExample extends ListActivity implements
 	 */
 	private void deleteItem(Uri item) {
 		// the second two arguments are null here, as the row is specified using the URI
-		final int count = getContentResolver().delete(item,
-				null, null);
-		Toast.makeText(this, count + " rows deleted", Toast.LENGTH_SHORT)
-				.show();
+		final int count = getContentResolver().delete(item, null, null);
+		Toast.makeText(this, count + " rows deleted", Toast.LENGTH_SHORT).show();
 
 	}
 
@@ -191,17 +239,17 @@ public class SimpleContentProviderExample extends ListActivity implements
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.add:
-			createNewItem();
-			break;
+			case R.id.add:
+				createNewItem();
+				break;
 
-		case R.id.add_random:
-			addItem();
-			break;
+			case R.id.add_random:
+				addItem();
+				break;
 
-		case R.id.clear:
-			clearAllItems();
-			break;
+			case R.id.clear:
+				clearAllItems();
+				break;
 
 		}
 	}

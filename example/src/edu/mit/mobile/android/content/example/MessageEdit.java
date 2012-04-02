@@ -93,6 +93,7 @@ public class MessageEdit extends Activity implements OnClickListener{
 
 	// TODO: Use only one ContentLoadTask to MessageEdit and MessageDetail
 	private Cursor queryDatabase(Uri message){
+		@SuppressWarnings("deprecation")
 		final Cursor c = managedQuery(message, PROJECTION, null,
 				null, null);
 		return c;

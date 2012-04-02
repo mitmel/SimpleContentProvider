@@ -7,4 +7,7 @@
     <string name="button_add">Add</string>
     <string name="button_cancel">Cancel</string>
     <string name="column_id">ID</string>
+    <string name="clear_all">Clear All</string>
+    <string name="add_random">Add Random</string>
+    <string name="add_many">Add Many</string>
 </resources>
