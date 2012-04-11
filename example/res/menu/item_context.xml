@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/view" android:title="View"></item>
-    <item android:id="@+id/edit" android:title="Edit"></item><item android:id="@+id/delete" android:title="Delete"></item>
-    
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/view"
+        android:title="@string/view"  android:icon="@android:drawable/ic_menu_view" />
+    <item
+        android:id="@+id/edit"
+        android:title="@string/edit" android:showAsAction="ifRoom"  android:icon="@android:drawable/ic_menu_edit" />
+    <item
+        android:id="@+id/delete"
+        android:title="@string/delete" android:showAsAction="always" android:icon="@android:drawable/ic_menu_delete" />
+
 </menu>

@@ -10,4 +10,7 @@
     <string name="clear_all">Clear All</string>
     <string name="add_random">Add Random</string>
     <string name="add_many">Add Many</string>
+    <string name="view">View</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>
