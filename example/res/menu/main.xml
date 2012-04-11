@@ -3,7 +3,7 @@
     <item android:id="@+id/add" android:icon="@android:drawable/ic_menu_add" android:title="@string/button_add" android:showAsAction="always"></item><item android:id="@+id/add_random" android:title="@string/add_random" android:icon="@android:drawable/ic_menu_add" android:showAsAction="ifRoom|withText"></item><item android:id="@+id/add_many" android:icon="@android:drawable/ic_menu_add" android:title="@string/add_many" android:showAsAction="ifRoom|withText"></item>
     
     
-    <item android:id="@+id/clear" android:icon="@android:drawable/ic_menu_delete" android:showAsAction="always" android:title="@string/clear_all"></item>
+    <item android:id="@+id/clear" android:icon="@android:drawable/ic_menu_delete" android:showAsAction="ifRoom" android:title="@string/clear_all"></item>
     
 
 </menu>
