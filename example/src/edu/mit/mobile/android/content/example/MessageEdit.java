@@ -14,14 +14,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MessageEdit extends Activity implements OnClickListener{
+public class MessageEdit extends Activity implements OnClickListener {
 	private EditText mId, mTitle, mBody;
 	private Button mSave, mCancel;
 	private String mAction = "";
 	private TextView mLabelId;
 
-	private static final String[] PROJECTION = { Message._ID, Message.TITLE,
-		Message.BODY };
+	private static final String[] PROJECTION = { Message._ID, Message.TITLE, Message.BODY };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class MessageEdit extends Activity implements OnClickListener{
 		mSave = (Button) findViewById(R.id.btn_save);
 		mCancel = (Button) findViewById(R.id.btn_cancel);
 
-		mLabelId = (TextView)findViewById(R.id.id_label);
+		mLabelId = (TextView) findViewById(R.id.id_label);
 
 		final boolean isInsertAction = Intent.ACTION_INSERT.equals(mAction);
 
@@ -65,15 +64,15 @@ public class MessageEdit extends Activity implements OnClickListener{
 			// load the content on a background thread
 			new ContentLoadTask().execute(message);
 
-		} else if (Intent.ACTION_INSERT.equals(action)){
+		} else if (Intent.ACTION_INSERT.equals(action)) {
 			// nothing to do, this is a valid action. See the save method.
 
 		} else {
 			Toast.makeText(
 					this,
 					MessageDetail.class.getSimpleName()
-							+ " doesn't know how to handle the intent: "
-							+ intent, Toast.LENGTH_LONG).show();
+							+ " doesn't know how to handle the intent: " + intent,
+					Toast.LENGTH_LONG).show();
 			finish();
 		}
 	}
@@ -81,21 +80,20 @@ public class MessageEdit extends Activity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.btn_save:
-			saveChanges();
-			break;
-		case R.id.btn_cancel:
-		default:
-			finish();
-			break;
+			case R.id.btn_save:
+				saveChanges();
+				break;
+			case R.id.btn_cancel:
+			default:
+				finish();
+				break;
 		}
 	}
 
 	// TODO: Use only one ContentLoadTask to MessageEdit and MessageDetail
-	private Cursor queryDatabase(Uri message){
+	private Cursor queryDatabase(Uri message) {
 		@SuppressWarnings("deprecation")
-		final Cursor c = managedQuery(message, PROJECTION, null,
-				null, null);
+		final Cursor c = managedQuery(message, PROJECTION, null, null, null);
 		return c;
 	}
 
@@ -132,17 +130,17 @@ public class MessageEdit extends Activity implements OnClickListener{
 	 *
 	 * @return true if the filled-in form is valid
 	 */
-	private boolean validate(){
+	private boolean validate() {
 
 		// setError is a great way to display error messages to users, as it
 		// keeps the message close to the source of the error.
-		if(mTitle.getText().length() == 0){
+		if (mTitle.getText().length() == 0) {
 			mTitle.setError("Please enter a title");
 			mTitle.requestFocus();
 			return false;
 		}
 
-		if(mBody.getText().length() == 0){
+		if (mBody.getText().length() == 0) {
 			mBody.setError("Please enter a body");
 			mBody.requestFocus();
 			return false;
@@ -156,7 +154,7 @@ public class MessageEdit extends Activity implements OnClickListener{
 	 *
 	 * @return the current user-entered data as ContentValues
 	 */
-	private ContentValues toContentValues(){
+	private ContentValues toContentValues() {
 		// place your content inside a ContentValues object.
 		final ContentValues cv = new ContentValues();
 		cv.put(Message.TITLE, mTitle.getText().toString());
@@ -167,7 +165,7 @@ public class MessageEdit extends Activity implements OnClickListener{
 
 	private void saveChanges() {
 		// validate the form
-		if (!validate()){
+		if (!validate()) {
 			return;
 		}
 
@@ -180,44 +178,44 @@ public class MessageEdit extends Activity implements OnClickListener{
 		final Uri message = intent.getData();
 		final String action = intent.getAction();
 
-		if (Intent.ACTION_EDIT.equals(action) && message != null){
+		if (Intent.ACTION_EDIT.equals(action) && message != null) {
 			final int count = getContentResolver().update(message, cv, null, null);
 
 			if (count <= 0) {
-				Toast.makeText(this,
-						"Error updating item. update() returned " + count,
+				Toast.makeText(this, "Error updating item. update() returned " + count,
 						Toast.LENGTH_LONG).show();
-			}else{
-				Toast.makeText(this,
-						"Message was updated" ,
-						Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(this, "Message was updated", Toast.LENGTH_LONG).show();
 				finish();
 			}
 
-		// the URI for ACTION_INSERT should be the index that the content should be inserted into.
-		}else if (Intent.ACTION_INSERT.equals(action)){
+			// the URI for ACTION_INSERT should be the index that the content should be inserted
+			// into.
+		} else if (Intent.ACTION_INSERT.equals(action)) {
 			final Uri newUri = getContentResolver().insert(message, cv);
-			if (newUri == null){
+			if (newUri == null) {
 				Toast.makeText(this, "Error creating new message", Toast.LENGTH_LONG).show();
 				return;
 			}
 			Toast.makeText(this, "New message created at: " + newUri, Toast.LENGTH_LONG).show();
 
-			// the below isn't needed, but it will make it so that we could potentially get the newly created URI
+			// the below isn't needed, but it will make it so that we could potentially get the
+			// newly created URI
 			// if we needed it using startActivityForResult()
 			setResult(RESULT_OK, new Intent().setData(newUri));
 
 			finish();
 
-		}else{
-			Toast.makeText(this, "saveChanges() was called for an unhandled intent:" + intent, Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(this, "saveChanges() was called for an unhandled intent:" + intent,
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
 	// TODO: Use only one ContentLoadTask to MessageEdit and MessageDetail
 	/**
-	 * A background thread that shows an indeterminate progress bar in the window title
-	 * while the content is loading.
+	 * A background thread that shows an indeterminate progress bar in the window title while the
+	 * content is loading.
 	 *
 	 */
 	private class ContentLoadTask extends AsyncTask<Uri, Void, Cursor> {
