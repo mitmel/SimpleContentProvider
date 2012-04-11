@@ -3,6 +3,7 @@ package edu.mit.mobile.android.content.example;
 import java.util.Random;
 
 import android.app.ListActivity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -98,7 +99,7 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
 		final Intent viewMessage = new Intent(Intent.ACTION_VIEW, message);
 		startActivity(viewMessage);
 
-		// Android will see which activit(y|ies) are capable of VIEWing a message
+		// Android will see which activity or activities are capable of VIEWing a message
 		// item by looking through the Manifest to find the right Activity for the given
 		// content MIME type and action. If more than one activity is found, it will prompt
 		// the user and ask which Activity they would like to use for this type.
@@ -198,6 +199,10 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
 		}
 	}
 
+	/**
+	 * Adds a bunch of items to the database. This interactively demonstrates the use of
+	 * {@link ContentResolver#bulkInsert(Uri, ContentValues[])}.
+	 */
 	private void addManyItems() {
 		final int total = 100;
 		final ContentValues manyCv[] = new ContentValues[total];
@@ -217,7 +222,7 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
 	}
 
 	/**
-	 * Deletes all the items from the database.
+	 * Deletes the selected item from the database.
 	 */
 	private void deleteItem(Uri item) {
 		// the second two arguments are null here, as the row is specified using the URI
@@ -230,8 +235,8 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
 	 * Deletes all the items from the database.
 	 */
 	private void clearAllItems() {
-		// delete() with null in the where and selectionArgs parameters will
-		// delete all the content.
+		// Specify the dir URI, along with null in the where and selectionArgs
+		// to delete everything.
 		deleteItem(Message.CONTENT_URI);
 
 	}
