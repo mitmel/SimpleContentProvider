@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="edu.mit.mobile.android.content.test"
-      android:versionCode="1"
-      android:versionName="1.0">
+    package="edu.mit.mobile.android.content.test"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="10" />
-    <instrumentation android:targetPackage="edu.mit.mobile.android.content.test" android:name="android.test.InstrumentationTestRunner" />
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="15" />
 
-    <uses-library android:name="android.test.runner" />
-    <!-- not needed for the tests, but you should put this in your application's manifest
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:targetPackage="edu.mit.mobile.android.content.test" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <uses-library android:name="android.test.runner" />
+        <!--
+    not needed for the tests, but you should put this in your application's manifest
     <provider android:name="SampleProvider1"  android:authorities="edu.mit.mobile.android.content.test.sampleprovider1" />
     <provider android:name="SampleProvider2"  android:authorities="edu.mit.mobile.android.content.test.sampleprovider2" />
-    -->
+        -->
     </application>
+
 </manifest>
