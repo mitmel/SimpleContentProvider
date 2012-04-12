@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -40,6 +43,10 @@ public class MessageEdit extends Activity implements OnClickListener {
 		mLabelId = (TextView) findViewById(R.id.id_label);
 
 		final boolean isInsertAction = Intent.ACTION_INSERT.equals(mAction);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			findViewById(R.id.button_bar).setVisibility(View.GONE);
+		}
 
 		if (isInsertAction) {
 			mId.setVisibility(View.GONE);
@@ -87,6 +94,39 @@ public class MessageEdit extends Activity implements OnClickListener {
 			default:
 				finish();
 				break;
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.item_edit, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		final boolean isInsert = Intent.ACTION_INSERT.equals(getIntent().getAction());
+
+		menu.findItem(R.id.add).setVisible(isInsert);
+		menu.findItem(R.id.save).setVisible(!isInsert);
+
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.add:
+			case R.id.save:
+				saveChanges();
+				return true;
+
+			case R.id.cancel:
+				finish();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 
