@@ -97,6 +97,8 @@ public class MessageDetail extends Activity {
 		switch (id) {
 			case DIALOG_CONFIRM_DELETE:
 				return new AlertDialog.Builder(this).setCancelable(true)
+						.setTitle(R.string.delete_confirm_title)
+						.setMessage(R.string.delete_confirm_prompt)
 						.setPositiveButton(R.string.delete, mDeleteDialogListener)
 						.setNegativeButton(android.R.string.cancel, mDeleteDialogListener).create();
 			default:

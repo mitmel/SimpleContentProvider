@@ -13,7 +13,7 @@
 		android:gravity="center"
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:textStyle="italic"
-		android:text="There are no items in the list."
+		android:text="@string/no_items"
 		android:layout_above="@+id/button_bar"
 		android:visibility="gone" />
 
@@ -36,11 +36,12 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:src="@android:drawable/ic_menu_add"
+			android:contentDescription="@string/button_add"
 			android:layout_weight="1" />
 		<Button
 			android:layout_weight="1"
 			android:id="@+id/add_random"
-			android:text="Random"
+			android:text="@string/random"
 			android:drawableLeft="@android:drawable/ic_menu_add"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

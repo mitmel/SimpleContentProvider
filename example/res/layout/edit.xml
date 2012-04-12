@@ -25,7 +25,9 @@
                 android:id="@+id/edtId"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:enabled="false" />
+                android:inputType="number"
+                android:enabled="false"
+                />
 
             <TextView
                 android:id="@+id/title_label"
@@ -70,6 +72,14 @@
         android:weightSum="2" >
 
         <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+            android:text="@string/button_cancel" />
+            
+        <Button
             android:id="@+id/btn_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -77,13 +87,6 @@
             android:drawableLeft="@android:drawable/ic_menu_save"
             android:text="@string/button_save" />
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
-            android:text="@string/button_cancel" />
     </LinearLayout>
 
 </RelativeLayout>
