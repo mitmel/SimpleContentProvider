@@ -41,7 +41,7 @@
 		<Button
 			android:layout_weight="1"
 			android:id="@+id/add_random"
-			android:text="@string/random"
+			android:text="@string/add_random"
 			android:drawableLeft="@android:drawable/ic_menu_add"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
