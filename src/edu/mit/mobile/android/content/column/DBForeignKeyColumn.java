@@ -13,11 +13,19 @@ import edu.mit.mobile.android.content.ContentItem;
 @Documented
 public @interface DBForeignKeyColumn {
 
-	Class<? extends ContentItem> value();
+	Class<? extends ContentItem> parent();
+
+	/**
+	 * Sets this column to be NOT NULL.
+	 *
+	 * @return true if the column is NOT NULL
+	 */
+	boolean notnull() default false;
 
 	/**
 	 * Suffixes the column declaration with this string.
 	 * @return a string of any supplemental column declarations
 	 */
 	String extraColDef() default DBColumn.NULL;
+
 }

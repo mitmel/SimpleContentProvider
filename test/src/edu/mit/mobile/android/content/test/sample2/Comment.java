@@ -23,7 +23,7 @@ public class Comment implements ContentItem {
 	// this creates a foreign key relationship to the blog post. In effect, this
 	// is the child storing the ID of its parent. The ForeignKeyManager will help
 	// access this relationship.
-	@DBForeignKeyColumn(BlogPost.class)
+	@DBForeignKeyColumn(parent = BlogPost.class)
 	public static final String POST = "post";
 
 	public static final String PATH = "comment";

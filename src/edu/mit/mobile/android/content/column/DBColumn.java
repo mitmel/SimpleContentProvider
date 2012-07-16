@@ -345,11 +345,14 @@ public @interface DBColumn {
 
 			tableSQL.append("'");
 			tableSQL.append(getDbColumnName(field));
-			tableSQL.append("' INTEGER NOT NULL");
+			tableSQL.append("' INTEGER");
+			if (fk.notnull()) {
+				tableSQL.append(" NOT NULL");
+			}
 
 			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
 				tableSQL.append(" REFERENCES ");
-				final String parentTable = extractTableName(fk.value());
+				final String parentTable = extractTableName(fk.parent());
 				tableSQL.append("'");
 				tableSQL.append(parentTable);
 				tableSQL.append("' (");
