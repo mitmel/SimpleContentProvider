@@ -137,6 +137,24 @@ public @interface DBColumn {
 	 */
 	boolean unique() default false;
 
+
+	public static enum OnConflict {
+		UNSPECIFIED,
+		ROLLBACK,
+		ABORT,
+		FAIL,
+		IGNORE,
+		REPLACE
+	}
+
+	/**
+	 * If the column is marked unique, this determines what to do if there's a conflict. This is
+	 * ignored if the column is not unique.
+	 *
+	 * @return the desired conflict resolution
+	 */
+	OnConflict onConflict() default OnConflict.UNSPECIFIED;
+
 	public static enum CollationName {
 		DEFAULT,
 		BINARY,
@@ -224,6 +242,26 @@ public @interface DBColumn {
 
 			if (t.unique()){
 				tableSQL.append(" UNIQUE");
+				if (t.onConflict() != OnConflict.UNSPECIFIED) {
+					tableSQL.append(" ON CONFLICT");
+				}
+				switch (t.onConflict()) {
+					case ABORT:
+						tableSQL.append(" ABORT");
+						break;
+					case FAIL:
+						tableSQL.append(" FAIL");
+						break;
+					case IGNORE:
+						tableSQL.append(" IGNORE");
+						break;
+					case REPLACE:
+						tableSQL.append(" REPLACE");
+						break;
+					case ROLLBACK:
+						tableSQL.append(" ROLLBACK");
+						break;
+				}
 			}
 
 			if (t.notnull()){
@@ -396,11 +434,14 @@ public @interface DBColumn {
 
 			tableSQL.append("'");
 			tableSQL.append(getDbColumnName(field));
-			tableSQL.append("' INTEGER NOT NULL");
+			tableSQL.append("' INTEGER");
+			if (fk.notnull()) {
+				tableSQL.append(" NOT NULL");
+			}
 
 			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
 				tableSQL.append(" REFERENCES ");
-				final String parentTable = extractTableName(fk.value());
+				final String parentTable = extractTableName(fk.parent());
 				tableSQL.append("'");
 				tableSQL.append(parentTable);
 				tableSQL.append("' (");

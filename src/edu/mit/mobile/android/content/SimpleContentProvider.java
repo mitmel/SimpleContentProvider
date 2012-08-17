@@ -19,6 +19,7 @@ package edu.mit.mobile.android.content;
  */
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import android.app.Application;
 import android.content.ContentProvider;
@@ -445,25 +446,47 @@ public abstract class SimpleContentProvider extends ContentProvider {
 		return mDBHelperMapper.getType(match);
 	}
 
+	private static final Pattern MIME_INVALID_CHARS = Pattern.compile("[^\\w!#$&.+^-]+");
+	public static final String MIME_INVALID_CHAR_REPLACEMENT = ".";
+
 	/**
+	 * <p>
 	 * Generates a complete MIME type string in the following format:
 	 * {@code vnd.android.cursor.dir/vnd.AUTHORITY.SUFFIX}
+	 * </p>
+	 *
+	 * <p>
+	 * SUFFIX is filtered so all invalid characters (see <a
+	 * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
+	 * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
+	 * </p>
 	 *
 	 * @param suffix
 	 * @return the MIME type for the given suffix
 	 */
 	public String getDirType(String suffix) {
+		suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
 		return ProviderUtils.TYPE_DIR_PREFIX + mAuthority + "." + suffix;
 	}
 
 	/**
+	 * <p>
 	 * Generates a complete MIME type string in the following format:
 	 * {@code vnd.android.cursor.item/vnd.AUTHORITY.SUFFIX}
+	 * </p>
+	 *
+	 *
+	 * <p>
+	 * SUFFIX is filtered so all invalid characters (see <a
+	 * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
+	 * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
+	 * </p>
 	 *
 	 * @param suffix
 	 * @return the MIME type for the given suffix
 	 */
 	public String getItemType(String suffix) {
+		suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
 		return ProviderUtils.TYPE_ITEM_PREFIX + mAuthority + "." + suffix;
 	}
 

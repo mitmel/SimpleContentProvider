@@ -39,10 +39,14 @@ import android.net.Uri;
 public class ForeignKeyDBHelper extends GenericDBHelper {
 	public static final String WILDCARD_PATH_SEGMENT = "_all";
 	private final String mColumn;
+	private final Class<? extends ContentItem> mChild;
+	private final Class<? extends ContentItem> mParent;
 
 	public ForeignKeyDBHelper(Class<? extends ContentItem> parent,
 			Class<? extends ContentItem> child, String column) {
 		super(child);
+		mChild = child;
+		mParent = parent;
 		mColumn = column;
 	}
 
@@ -122,6 +126,20 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
 			return super.queryItem(db, uri, projection,
 					ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
 					ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
+		}
+	}
+
+	@Override
+	public void createTables(SQLiteDatabase db) throws SQLGenerationException {
+		if (!mChild.equals(mParent)) {
+			super.createTables(db);
+		}
+	}
+
+	@Override
+	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
+		if (!mChild.equals(mParent)) {
+			super.upgradeTables(db, oldVersion, newVersion);
 		}
 	}
 }
