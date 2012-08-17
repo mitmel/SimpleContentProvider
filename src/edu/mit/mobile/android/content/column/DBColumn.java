@@ -74,8 +74,7 @@ public @interface DBColumn {
 	 *
 	 * @return the column type
 	 */
-	@SuppressWarnings("rawtypes")
-	Class<? extends DBColumnType> type();
+	Class<? extends DBColumnType<?>> type();
 
 	/**
 	 * Sets this column to be NOT NULL.
@@ -186,8 +185,22 @@ public @interface DBColumn {
 			return tableName;
 		}
 
-		private static String getDbColumnName(Field field) throws IllegalArgumentException, IllegalAccessException{
-			final String dbColumnName = (String) field.get(null);
+		public static String getDbColumnName(Field field) throws SQLGenerationException {
+			String dbColumnName;
+			try {
+				dbColumnName = (String) field.get(null);
+
+			} catch (final IllegalArgumentException e) {
+				throw new SQLGenerationException("programming error", e);
+
+			} catch (final IllegalAccessException e) {
+				throw new SQLGenerationException("field '" + field.getName()
+						+ "' cannot be accessed", e);
+
+			} catch (final NullPointerException e) {
+				throw new SQLGenerationException("field '" + field.getName() + "' is not static", e);
+			}
+
 			if (! SQLGenUtils.isValidName(dbColumnName)){
 				throw new SQLGenerationException("@DBColumn '"+dbColumnName+"' is not a valid SQLite column name.");
 			}
@@ -270,6 +283,44 @@ public @interface DBColumn {
 			final String extraColDef = t.extraColDef();
 			if (! DBColumn.NULL.equals(extraColDef)){
 				tableSQL.append(extraColDef);
+			}
+		}
+
+		public static Class<? extends DBColumnType<?>> getFieldType(
+				Class<? extends ContentItem> mDataItem, String fieldName)
+				throws SQLGenerationException, NoSuchFieldException {
+
+			final Field field = mDataItem.getField(fieldName);
+
+			return getFieldType(mDataItem, field);
+		}
+
+		public static Class<? extends DBColumnType<?>> getFieldType(
+				Class<? extends ContentItem> mDataItem, Field field) throws SQLGenerationException {
+			try {
+
+				final DBColumn t = field.getAnnotation(DBColumn.class);
+
+				if (t == null) {
+					return null;
+				}
+
+				final int m = field.getModifiers();
+
+				if (!String.class.equals(field.getType()) || !Modifier.isStatic(m)
+						|| !Modifier.isFinal(m)) {
+					throw new SQLGenerationException(
+							"Columns defined using @DBColumn must be static final Strings.");
+				}
+				return t.type();
+
+			} catch (final IllegalArgumentException e) {
+				throw new SQLGenerationException(
+						"field claimed to be static, but something went wrong on invocation", e);
+
+			} catch (final SecurityException e) {
+				throw new SQLGenerationException("cannot access class fields", e);
+
 			}
 		}
 
