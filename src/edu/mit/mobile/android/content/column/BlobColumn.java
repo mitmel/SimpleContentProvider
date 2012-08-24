@@ -20,14 +20,14 @@ import android.database.Cursor;
 
 public class BlobColumn extends DBColumnType<byte[]> {
 
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "BLOB");
-	}
+    @Override
+    public String toCreateColumn(String colName) {
+        return toColumnDef(colName, "BLOB");
+    }
 
-	@Override
-	public byte[] get(Cursor c, int colNumber) {
+    @Override
+    public byte[] get(Cursor c, int colNumber) {
 
-		return c.getBlob(colNumber);
-	}
+        return c.getBlob(colNumber);
+    }
 }

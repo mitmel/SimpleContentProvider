@@ -28,16 +28,16 @@ import android.database.Cursor;
  */
 public class DatetimeColumn extends DBColumnType<Date> {
 
-	public static final String
-		// the formula below is from SQLite's manual
-		NOW_IN_MILLISECONDS = DEFAULT_VALUE_ESCAPE + "((julianday('now') - 2440587.5)*86400000)";
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "INTEGER");
-	}
+    public static final String
+        // the formula below is from SQLite's manual
+        NOW_IN_MILLISECONDS = DEFAULT_VALUE_ESCAPE + "((julianday('now') - 2440587.5)*86400000)";
+    @Override
+    public String toCreateColumn(String colName) {
+        return toColumnDef(colName, "INTEGER");
+    }
 
-	@Override
-	public Date get(Cursor c, int colNumber) {
-		return new Date(c.getLong(colNumber));
-	}
+    @Override
+    public Date get(Cursor c, int colNumber) {
+        return new Date(c.getLong(colNumber));
+    }
 }

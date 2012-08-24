@@ -26,18 +26,18 @@ import android.database.Cursor;
  */
 public class TimestampColumn extends DBColumnType<String> {
 
-	public final static String
-		CURRENT_TIMESTAMP = DEFAULT_VALUE_ESCAPE + "CURRENT_TIMESTAMP",
-		CURRENT_DATE = DEFAULT_VALUE_ESCAPE + "CURRENT_DATE",
-		CURRENT_TIME = DEFAULT_VALUE_ESCAPE + "CURRENT_TIME";
+    public final static String
+        CURRENT_TIMESTAMP = DEFAULT_VALUE_ESCAPE + "CURRENT_TIMESTAMP",
+        CURRENT_DATE = DEFAULT_VALUE_ESCAPE + "CURRENT_DATE",
+        CURRENT_TIME = DEFAULT_VALUE_ESCAPE + "CURRENT_TIME";
 
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "TIMESTAMP");
-	}
+    @Override
+    public String toCreateColumn(String colName) {
+        return toColumnDef(colName, "TIMESTAMP");
+    }
 
-	@Override
-	public String get(Cursor c, int colNumber) {
-		return c.getString(colNumber);
-	}
+    @Override
+    public String get(Cursor c, int colNumber) {
+        return c.getString(colNumber);
+    }
 }

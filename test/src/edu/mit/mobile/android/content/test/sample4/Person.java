@@ -16,27 +16,27 @@ import edu.mit.mobile.android.content.test.SampleProvider4;
 @DBTable("kittens")
 public class Person implements ContentItem {
 
-	@DBColumn(type = TextColumn.class)
-	public static final String NAME = "name";
+    @DBColumn(type = TextColumn.class)
+    public static final String NAME = "name";
 
-	@DBForeignKeyColumn(parent = Person.class, notnull = false)
-	public static final String SUPERVISOR = "supervisor";
+    @DBForeignKeyColumn(parent = Person.class, notnull = false)
+    public static final String SUPERVISOR = "supervisor";
 
-	public static final String PATH = "person";
+    public static final String PATH = "person";
 
-	public static final String SUBORDINATE_PATH = "subordinates";
+    public static final String SUBORDINATE_PATH = "subordinates";
 
-	public static final ForeignKeyManager SUBORDINATES = new ForeignKeyManager(Person.class,
-			SUBORDINATE_PATH);
+    public static final ForeignKeyManager SUBORDINATES = new ForeignKeyManager(Person.class,
+            SUBORDINATE_PATH);
 
-	public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider4.AUTHORITY,
-			PATH);
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider4.AUTHORITY,
+            PATH);
 
-	public static ContentValues toCv(String name) {
-		final ContentValues cv = new ContentValues();
+    public static ContentValues toCv(String name) {
+        final ContentValues cv = new ContentValues();
 
-		cv.put(NAME, name);
+        cv.put(NAME, name);
 
-		return cv;
-	}
+        return cv;
+    }
 }

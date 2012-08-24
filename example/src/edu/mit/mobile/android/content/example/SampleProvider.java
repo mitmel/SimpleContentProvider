@@ -54,26 +54,26 @@ import edu.mit.mobile.android.content.SimpleContentProvider;
  */
 public class SampleProvider extends SimpleContentProvider {
 
-	// Each ContentProvider must have a globally unique authority. You should
-	// specify one here starting from your your Application's package string:
-	public static final String AUTHORITY = "edu.mit.mobile.android.content.example.sampleprovider";
+    // Each ContentProvider must have a globally unique authority. You should
+    // specify one here starting from your your Application's package string:
+    public static final String AUTHORITY = "edu.mit.mobile.android.content.example.sampleprovider";
 
-	// Every time you update your database schema, you must increment the
-	// database version.
-	private static final int DB_VERSION = 1;
+    // Every time you update your database schema, you must increment the
+    // database version.
+    private static final int DB_VERSION = 1;
 
-	public SampleProvider() {
-		super(AUTHORITY, DB_VERSION);
+    public SampleProvider() {
+        super(AUTHORITY, DB_VERSION);
 
-		// This helper creates the table and can do basic database queries. See
-		// Message for more info.
-		final DBHelper messageHelper = new GenericDBHelper(Message.class);
+        // This helper creates the table and can do basic database queries. See
+        // Message for more info.
+        final DBHelper messageHelper = new GenericDBHelper(Message.class);
 
-		// This adds a mapping between the given content:// URI path and the
-		// helper.
-		addDirAndItemUri(messageHelper, Message.PATH);
+        // This adds a mapping between the given content:// URI path and the
+        // helper.
+        addDirAndItemUri(messageHelper, Message.PATH);
 
-		// the above three statements can be repeated to create multiple data
-		// stores. Each will have separate tables and URIs.
-	}
+        // the above three statements can be repeated to create multiple data
+        // stores. Each will have separate tables and URIs.
+    }
 }

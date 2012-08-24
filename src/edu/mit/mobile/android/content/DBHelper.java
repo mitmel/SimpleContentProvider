@@ -32,64 +32,64 @@ import android.net.Uri;
  */
 public abstract class DBHelper {
 
-	public abstract Uri insertDir(SQLiteDatabase db, ContentProvider provider,
-			Uri uri, ContentValues values) throws SQLException;
+    public abstract Uri insertDir(SQLiteDatabase db, ContentProvider provider,
+            Uri uri, ContentValues values) throws SQLException;
 
-	public abstract int updateItem(SQLiteDatabase db, ContentProvider provider,
-			Uri uri, ContentValues values, String where, String[] whereArgs);
+    public abstract int updateItem(SQLiteDatabase db, ContentProvider provider,
+            Uri uri, ContentValues values, String where, String[] whereArgs);
 
-	public abstract int updateDir(SQLiteDatabase db, ContentProvider provider,
-			Uri uri, ContentValues values, String where, String[] whereArgs);
+    public abstract int updateDir(SQLiteDatabase db, ContentProvider provider,
+            Uri uri, ContentValues values, String where, String[] whereArgs);
 
-	public abstract int deleteItem(SQLiteDatabase db, ContentProvider provider,
-			Uri uri, String where, String[] whereArgs);
+    public abstract int deleteItem(SQLiteDatabase db, ContentProvider provider,
+            Uri uri, String where, String[] whereArgs);
 
-	public abstract int deleteDir(SQLiteDatabase db, ContentProvider provider,
-			Uri uri, String where, String[] whereArgs);
+    public abstract int deleteDir(SQLiteDatabase db, ContentProvider provider,
+            Uri uri, String where, String[] whereArgs);
 
-	public abstract Cursor queryDir(SQLiteDatabase db, Uri uri,
-			String[] projection, String selection, String[] selectionArgs,
-			String sortOrder);
+    public abstract Cursor queryDir(SQLiteDatabase db, Uri uri,
+            String[] projection, String selection, String[] selectionArgs,
+            String sortOrder);
 
-	public abstract Cursor queryItem(SQLiteDatabase db, Uri uri,
-			String[] projection, String selection, String[] selectionArgs,
-			String sortOrder);
+    public abstract Cursor queryItem(SQLiteDatabase db, Uri uri,
+            String[] projection, String selection, String[] selectionArgs,
+            String sortOrder);
 
-	/**
-	 * @return the path within a content URI that represents the dir index of an item.
-	 */
-	public abstract String getPath();
+    /**
+     * @return the path within a content URI that represents the dir index of an item.
+     */
+    public abstract String getPath();
 
-	/**
-	 * Creates the tables for the items of this helper.
-	 *
-	 * @param db
-	 */
-	public abstract void createTables(SQLiteDatabase db) throws SQLGenerationException;
+    /**
+     * Creates the tables for the items of this helper.
+     *
+     * @param db
+     */
+    public abstract void createTables(SQLiteDatabase db) throws SQLGenerationException;
 
-	/**
-	 * Upgrades the tables for the times of this helper.
-	 * @param db
-	 * @param oldVersion the old version number of the database
-	 * @param newVersion the new, current version number
-	 */
-	public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) throws SQLGenerationException;
+    /**
+     * Upgrades the tables for the times of this helper.
+     * @param db
+     * @param oldVersion the old version number of the database
+     * @param newVersion the new, current version number
+     */
+    public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) throws SQLGenerationException;
 
-	protected OnSaveListener mOnSaveListener;
+    protected OnSaveListener mOnSaveListener;
 
-	/**
-	 * Registers an {@link OnSaveListener} to be called right before insert/update.
-	 *
-	 * @param onSaveListener
-	 */
-	public void setOnSaveListener(OnSaveListener onSaveListener){
-		mOnSaveListener = onSaveListener;
-	}
+    /**
+     * Registers an {@link OnSaveListener} to be called right before insert/update.
+     *
+     * @param onSaveListener
+     */
+    public void setOnSaveListener(OnSaveListener onSaveListener){
+        mOnSaveListener = onSaveListener;
+    }
 
-	/**
-	 * Removes any {@link OnSaveListener} formerly registered with {@link #setOnSaveListener(OnSaveListener)}.
-	 */
-	public void removeOnSaveListener(){
-		mOnSaveListener = null;
-	}
+    /**
+     * Removes any {@link OnSaveListener} formerly registered with {@link #setOnSaveListener(OnSaveListener)}.
+     */
+    public void removeOnSaveListener(){
+        mOnSaveListener = null;
+    }
 }

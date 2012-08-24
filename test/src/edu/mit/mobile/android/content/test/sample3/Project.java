@@ -16,25 +16,25 @@ import edu.mit.mobile.android.content.test.SampleProvider3;
 @UriPath(Project.PATH)
 public class Project implements ContentItem {
 
-	@DBColumn(type = TextColumn.class)
-	public static final String NAME = "name";
+    @DBColumn(type = TextColumn.class)
+    public static final String NAME = "name";
 
-	@DBColumn(type = DatetimeColumn.class)
-	public static final String DUE_DATE = "due_date";
+    @DBColumn(type = DatetimeColumn.class)
+    public static final String DUE_DATE = "due_date";
 
-	public static final M2MManager PEOPLE = new M2MManager(Person.class);
+    public static final M2MManager PEOPLE = new M2MManager(Person.class);
 
-	public static final String PATH = "project";
+    public static final String PATH = "project";
 
-	public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider3.AUTHORITY,
-			PATH);
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider3.AUTHORITY,
+            PATH);
 
-	public static ContentValues toCv(String name, Date dueDate) {
-		final ContentValues cv = new ContentValues();
+    public static ContentValues toCv(String name, Date dueDate) {
+        final ContentValues cv = new ContentValues();
 
-		cv.put(NAME, name);
-		cv.put(DUE_DATE, dueDate.getTime());
+        cv.put(NAME, name);
+        cv.put(DUE_DATE, dueDate.getTime());
 
-		return cv;
-	}
+        return cv;
+    }
 }

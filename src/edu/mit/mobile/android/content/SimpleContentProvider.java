@@ -80,22 +80,22 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *
  * <pre>
  * public class Message implements ContentItem {
- * 	// Column definitions below. ContentItem contains one column definition
- * 	// for the BaseColumns._ID which defines the primary key.
- * 	&#064;DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
- * 	public static final String CREATED_DATE = &quot;created&quot;;
+ *  // Column definitions below. ContentItem contains one column definition
+ *  // for the BaseColumns._ID which defines the primary key.
+ *  &#064;DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
+ *  public static final String CREATED_DATE = &quot;created&quot;;
  *
- * 	&#064;DBColumn(type = TextColumn.class)
- * 	public static final String BODY = &quot;body&quot;;
+ *  &#064;DBColumn(type = TextColumn.class)
+ *  public static final String BODY = &quot;body&quot;;
  *
- * 	// The path component of the content URI.
- * 	public static final String PATH = &quot;message&quot;;
+ *  // The path component of the content URI.
+ *  public static final String PATH = &quot;message&quot;;
  *
- * 	// The SimpleContentProvider constructs content URIs based on your provided
- * 	// path and authority.
- * 	// This constant is not necessary, but is very handy for doing queries.
- * 	public static final Uri CONTENT_URI = ProviderUtils.toContentUri(
- * 			SampleProvider1.AUTHORITY, PATH);
+ *  // The SimpleContentProvider constructs content URIs based on your provided
+ *  // path and authority.
+ *  // This constant is not necessary, but is very handy for doing queries.
+ *  public static final Uri CONTENT_URI = ProviderUtils.toContentUri(
+ *          SampleProvider1.AUTHORITY, PATH);
  * }
  * </pre>
  *
@@ -105,32 +105,32 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *
  * <pre>
  * public class MyProvider extends SimpleContentProvider {
- * 	public static final String AUTHORITY = &quot;edu.mit.mobile.android.content.test.sampleprovider1&quot;;
+ *  public static final String AUTHORITY = &quot;edu.mit.mobile.android.content.test.sampleprovider1&quot;;
  *
- * 	public MyProvider() {
- * 		// authority DB name DB ver
- * 		super(AUTHORITY, &quot;myprovider&quot;, 1);
+ *  public MyProvider() {
+ *      // authority DB name DB ver
+ *      super(AUTHORITY, &quot;myprovider&quot;, 1);
  *
- * 		// This helper creates the table and can do basic CRUD for items
- * 		// that
- * 		// use the dir/item scheme with the BaseColumns._ID integer primary
- * 		// key.
- * 		final DBHelper messageHelper = new GenericDBHelper(Message.class,
- * 				Message.CONTENT_URI);
+ *      // This helper creates the table and can do basic CRUD for items
+ *      // that
+ *      // use the dir/item scheme with the BaseColumns._ID integer primary
+ *      // key.
+ *      final DBHelper messageHelper = new GenericDBHelper(Message.class,
+ *              Message.CONTENT_URI);
  *
- * 		// Adds a mapping between the given content:// URI path and the
- * 		// helper.
- * 		//
- * 		// There's an optional fourth parameter which lets you have
- * 		// different
- * 		// helpers handle different SQL verbs (eg. use a GenericDBHelper for
- * 		// basic insert, delete, update, but have a custom helper for
- * 		// querying).
- * 		addDirUri(messageHelper, Message.PATH, getDirType(Message.PATH));
- * 		addItemUri(messageHelper, Message.PATH + &quot;/#&quot;,
- * 				getItemType(Message.PATH));
+ *      // Adds a mapping between the given content:// URI path and the
+ *      // helper.
+ *      //
+ *      // There's an optional fourth parameter which lets you have
+ *      // different
+ *      // helpers handle different SQL verbs (eg. use a GenericDBHelper for
+ *      // basic insert, delete, update, but have a custom helper for
+ *      // querying).
+ *      addDirUri(messageHelper, Message.PATH, getDirType(Message.PATH));
+ *      addItemUri(messageHelper, Message.PATH + &quot;/#&quot;,
+ *              getItemType(Message.PATH));
  *
- * 	}
+ *  }
  * }
  * </pre>
  *
@@ -139,513 +139,513 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  */
 public abstract class SimpleContentProvider extends ContentProvider {
 
-	@SuppressWarnings("unused")
-	private static final String TAG = SimpleContentProvider.class
-			.getSimpleName();
+    @SuppressWarnings("unused")
+    private static final String TAG = SimpleContentProvider.class
+            .getSimpleName();
 
-	///////////////////// public API constants
+    ///////////////////// public API constants
 
-	/**
-	 * Suffix that turns a dir path into an item path. The # represents the item
-	 * ID number.
-	 */
-	public static final String PATH_ITEM_ID_SUFFIX = "/#";
+    /**
+     * Suffix that turns a dir path into an item path. The # represents the item
+     * ID number.
+     */
+    public static final String PATH_ITEM_ID_SUFFIX = "/#";
 
-	/**
-	 * This is the starting value for the automatically-generated URI mapper
-	 * entries. You can freely use any numbers below this without any risk of
-	 * conflict.
-	 */
-	public static final int URI_MATCHER_CODE_START = 0x100000;
+    /**
+     * This is the starting value for the automatically-generated URI mapper
+     * entries. You can freely use any numbers below this without any risk of
+     * conflict.
+     */
+    public static final int URI_MATCHER_CODE_START = 0x100000;
 
-	///////////////////////// private fields
-	private final String mAuthority;
-	private String mDBName;
-	private final int mDBVersion;
+    ///////////////////////// private fields
+    private final String mAuthority;
+    private String mDBName;
+    private final int mDBVersion;
 
-	private final DBHelperMapper mDBHelperMapper;
+    private final DBHelperMapper mDBHelperMapper;
 
-	private static final UriMatcher MATCHER = new UriMatcher(
-			UriMatcher.NO_MATCH);
-	private DatabaseHelper mDatabaseHelper;
+    private static final UriMatcher MATCHER = new UriMatcher(
+            UriMatcher.NO_MATCH);
+    private DatabaseHelper mDatabaseHelper;
 
-	private final List<DBHelper> mDBHelpers = new ArrayList<DBHelper>();
+    private final List<DBHelper> mDBHelpers = new ArrayList<DBHelper>();
 
-	private int mMatcherID = URI_MATCHER_CODE_START;
+    private int mMatcherID = URI_MATCHER_CODE_START;
 
-	private static final String ERR_NO_HANDLER = "uri not handled by provider";
+    private static final String ERR_NO_HANDLER = "uri not handled by provider";
 
-	///////////////////////////////// public methods
+    ///////////////////////////////// public methods
 
-	/**
-	 * The database name for this provider is generated based on the provider's
-	 * class name. If you have multiple providers in your {@link Application},
-	 * you should ensure that these class names are unique or specify your own
-	 * dbName with {@link #SimpleContentProvider(String, String, int)}.
-	 *
-	 * @param authority
-	 *            the full authority string for this provider
-	 * @param dbVersion
-	 *            the version of the database schema associated with this
-	 *            provider. <strong>NOTE:</strong> This number must be increased
-	 *            each time the database schema (in this instance, your
-	 *            {@link ContentItem} fields) changes in order for the tables to
-	 *            be recreated. At the moment, there <strong>WILL BE DATA
-	 *            LOSS</strong> when this number increases, so please make sure
-	 *            to that the data is backed up first.
-	 */
-	public SimpleContentProvider(String authority, int dbVersion) {
-		this(authority, null, dbVersion);
-	}
+    /**
+     * The database name for this provider is generated based on the provider's
+     * class name. If you have multiple providers in your {@link Application},
+     * you should ensure that these class names are unique or specify your own
+     * dbName with {@link #SimpleContentProvider(String, String, int)}.
+     *
+     * @param authority
+     *            the full authority string for this provider
+     * @param dbVersion
+     *            the version of the database schema associated with this
+     *            provider. <strong>NOTE:</strong> This number must be increased
+     *            each time the database schema (in this instance, your
+     *            {@link ContentItem} fields) changes in order for the tables to
+     *            be recreated. At the moment, there <strong>WILL BE DATA
+     *            LOSS</strong> when this number increases, so please make sure
+     *            to that the data is backed up first.
+     */
+    public SimpleContentProvider(String authority, int dbVersion) {
+        this(authority, null, dbVersion);
+    }
 
-	/**
-	 * @param authority
-	 *            the full authority string for this provider
-	 * @param dbName
-	 *            the name of the database. This must be unique throughout your
-	 *            {@link Application}.
-	 * @param dbVersion
-	 *            the version of the database schema associated with this
-	 *            provider. <strong>NOTE:</strong> This number must be increased
-	 *            each time the database schema (in this instance, your
-	 *            {@link ContentItem} fields) changes in order for the tables to
-	 *            be recreated. At the moment, there <strong>WILL BE DATA
-	 *            LOSS</strong> when this number increases, so please make sure
-	 *            to that the data is backed up first.
-	 */
-	public SimpleContentProvider(String authority, String dbName, int dbVersion) {
-		super();
-		mAuthority = authority;
-		mDBHelperMapper = new DBHelperMapper();
-		mDBName = dbName;
-		mDBVersion = dbVersion;
-	}
+    /**
+     * @param authority
+     *            the full authority string for this provider
+     * @param dbName
+     *            the name of the database. This must be unique throughout your
+     *            {@link Application}.
+     * @param dbVersion
+     *            the version of the database schema associated with this
+     *            provider. <strong>NOTE:</strong> This number must be increased
+     *            each time the database schema (in this instance, your
+     *            {@link ContentItem} fields) changes in order for the tables to
+     *            be recreated. At the moment, there <strong>WILL BE DATA
+     *            LOSS</strong> when this number increases, so please make sure
+     *            to that the data is backed up first.
+     */
+    public SimpleContentProvider(String authority, String dbName, int dbVersion) {
+        super();
+        mAuthority = authority;
+        mDBHelperMapper = new DBHelperMapper();
+        mDBName = dbName;
+        mDBVersion = dbVersion;
+    }
 
-	/**
-	 * Registers a DBHelper with the content provider. You must call this in the
-	 * constructor of any subclasses.
-	 *
-	 * @param dbHelper
-	 * @deprecated no longer needed; helpers will be implicitly added when
-	 *             calling {@link #addDirAndItemUri(DBHelper, String)} and
-	 *             friends.
-	 * @see SimpleContentProvider#registerDBHelper(DBHelper)
-	 */
-	@Deprecated
-	public void addDBHelper(DBHelper dbHelper) {
-		mDBHelpers.add(dbHelper);
-	}
+    /**
+     * Registers a DBHelper with the content provider. You must call this in the
+     * constructor of any subclasses.
+     *
+     * @param dbHelper
+     * @deprecated no longer needed; helpers will be implicitly added when
+     *             calling {@link #addDirAndItemUri(DBHelper, String)} and
+     *             friends.
+     * @see SimpleContentProvider#registerDBHelper(DBHelper)
+     */
+    @Deprecated
+    public void addDBHelper(DBHelper dbHelper) {
+        mDBHelpers.add(dbHelper);
+    }
 
-	/**
-	 * Registers a {@link DBHelper} with the provider. This is only needed when
-	 * you don't call {@link #addDirAndItemUri(DBHelper, String)} and friends,
-	 * as they will implicitly register for you. This can be called multiple
-	 * times without issue.
-	 *
-	 * @param dbHelper
-	 *            the helper you wish to have registered with this provider
-	 */
-	public void registerDBHelper(DBHelper dbHelper) {
-		if (!mDBHelpers.contains(dbHelper)) {
-			mDBHelpers.add(dbHelper);
-		}
-	}
+    /**
+     * Registers a {@link DBHelper} with the provider. This is only needed when
+     * you don't call {@link #addDirAndItemUri(DBHelper, String)} and friends,
+     * as they will implicitly register for you. This can be called multiple
+     * times without issue.
+     *
+     * @param dbHelper
+     *            the helper you wish to have registered with this provider
+     */
+    public void registerDBHelper(DBHelper dbHelper) {
+        if (!mDBHelpers.contains(dbHelper)) {
+            mDBHelpers.add(dbHelper);
+        }
+    }
 
-	/**
-	 * Adds an entry for a directory of a given type. This should be called in
-	 * the constructor of any subclasses.
-	 *
-	 * @param dbHelper
-	 *            the DBHelper to associate with the given path.
-	 * @param path
-	 *            a complete path on top of the content provider's authority.
-	 * @param type
-	 *            the complete MIME type for the item's directory.
-	 * @param verb
-	 *            one or more of {@link DBHelperMapper#VERB_ALL},
-	 *            {@link DBHelperMapper#VERB_INSERT},
-	 *            {@link DBHelperMapper#VERB_QUERY},
-	 *            {@link DBHelperMapper#VERB_UPDATE},
-	 *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
-	 */
-	public void addDirUri(DBHelper dbHelper, String path, String type, int verb) {
-		registerDBHelper(dbHelper);
-		mDBHelperMapper.addDirMapping(mMatcherID, dbHelper, verb, type);
-		MATCHER.addURI(mAuthority, path, mMatcherID);
-		mMatcherID++;
-	}
+    /**
+     * Adds an entry for a directory of a given type. This should be called in
+     * the constructor of any subclasses.
+     *
+     * @param dbHelper
+     *            the DBHelper to associate with the given path.
+     * @param path
+     *            a complete path on top of the content provider's authority.
+     * @param type
+     *            the complete MIME type for the item's directory.
+     * @param verb
+     *            one or more of {@link DBHelperMapper#VERB_ALL},
+     *            {@link DBHelperMapper#VERB_INSERT},
+     *            {@link DBHelperMapper#VERB_QUERY},
+     *            {@link DBHelperMapper#VERB_UPDATE},
+     *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
+     */
+    public void addDirUri(DBHelper dbHelper, String path, String type, int verb) {
+        registerDBHelper(dbHelper);
+        mDBHelperMapper.addDirMapping(mMatcherID, dbHelper, verb, type);
+        MATCHER.addURI(mAuthority, path, mMatcherID);
+        mMatcherID++;
+    }
 
-	/**
-	 * Adds an entry for a directory of a given type. This should be called in
-	 * the constructor of any subclasses.
-	 *
-	 * Defaults to handle all method types.
-	 *
-	 * @param dbHelper
-	 *            the DBHelper to associate with the given path.
-	 * @param path
-	 *            a complete path on top of the content provider's authority.
-	 *
-	 * @param type
-	 *            the complete MIME type for the item's directory.
-	 */
-	public void addDirUri(DBHelper dbHelper, String path) {
-		addDirUri(dbHelper, path, getDirType(path), DBHelperMapper.VERB_ALL);
-	}
+    /**
+     * Adds an entry for a directory of a given type. This should be called in
+     * the constructor of any subclasses.
+     *
+     * Defaults to handle all method types.
+     *
+     * @param dbHelper
+     *            the DBHelper to associate with the given path.
+     * @param path
+     *            a complete path on top of the content provider's authority.
+     *
+     * @param type
+     *            the complete MIME type for the item's directory.
+     */
+    public void addDirUri(DBHelper dbHelper, String path) {
+        addDirUri(dbHelper, path, getDirType(path), DBHelperMapper.VERB_ALL);
+    }
 
-	/**
-	 * Adds an entry for a directory of a given type. This should be called in
-	 * the constructor of any subclasses.
-	 *
-	 * Defaults to handle all method types.
-	 *
-	 * @param dbHelper
-	 *            the DBHelper to associate with the given path.
-	 * @param path
-	 *            a complete path on top of the content provider's authority.
-	 *
-	 * @param type
-	 *            the complete MIME type for the item's directory.
-	 */
-	public void addDirUri(DBHelper dbHelper, String path, String type) {
-		addDirUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
-	}
+    /**
+     * Adds an entry for a directory of a given type. This should be called in
+     * the constructor of any subclasses.
+     *
+     * Defaults to handle all method types.
+     *
+     * @param dbHelper
+     *            the DBHelper to associate with the given path.
+     * @param path
+     *            a complete path on top of the content provider's authority.
+     *
+     * @param type
+     *            the complete MIME type for the item's directory.
+     */
+    public void addDirUri(DBHelper dbHelper, String path, String type) {
+        addDirUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
+    }
 
-	/**
-	 * Adds dir and item entries for the given helper at the given path. The
-	 * types are generated using {@link #getDirType(String)} and
-	 * {@link #getItemType(String)} passing path in for the suffix.
-	 *
-	 * @param dbHelper
-	 * @param path
-	 *            a complete path on top of the content provider's authority.
-	 */
-	public void addDirAndItemUri(DBHelper dbHelper, String path) {
-		addDirAndItemUri(dbHelper, path, getDirType(path), getItemType(path));
-	}
+    /**
+     * Adds dir and item entries for the given helper at the given path. The
+     * types are generated using {@link #getDirType(String)} and
+     * {@link #getItemType(String)} passing path in for the suffix.
+     *
+     * @param dbHelper
+     * @param path
+     *            a complete path on top of the content provider's authority.
+     */
+    public void addDirAndItemUri(DBHelper dbHelper, String path) {
+        addDirAndItemUri(dbHelper, path, getDirType(path), getItemType(path));
+    }
 
-	/**
-	 * Adds both dir and item entries for the given
-	 *
-	 * @param dbHelper
-	 * @param path
-	 *            the path that will be used for the item's dir. For the item,
-	 *            it will be suffixed with {@value #PATH_ITEM_ID_SUFFIX}.
-	 * @param dirType
-	 *            The complete MIME type for the item's directory.
-	 * @param itemType
-	 *            The complete MIME type for the item.
-	 */
-	public void addDirAndItemUri(DBHelper dbHelper, String path,
-			String dirType, String itemType) {
-		addDirUri(dbHelper, path, dirType, DBHelperMapper.VERB_ALL);
-		addItemUri(dbHelper, path + PATH_ITEM_ID_SUFFIX, itemType,
-				DBHelperMapper.VERB_ALL);
-	}
+    /**
+     * Adds both dir and item entries for the given
+     *
+     * @param dbHelper
+     * @param path
+     *            the path that will be used for the item's dir. For the item,
+     *            it will be suffixed with {@value #PATH_ITEM_ID_SUFFIX}.
+     * @param dirType
+     *            The complete MIME type for the item's directory.
+     * @param itemType
+     *            The complete MIME type for the item.
+     */
+    public void addDirAndItemUri(DBHelper dbHelper, String path,
+            String dirType, String itemType) {
+        addDirUri(dbHelper, path, dirType, DBHelperMapper.VERB_ALL);
+        addItemUri(dbHelper, path + PATH_ITEM_ID_SUFFIX, itemType,
+                DBHelperMapper.VERB_ALL);
+    }
 
-	/**
-	 * Functionally equivalent to {@link #addDirAndItemUri(DBHelper, String)}
-	 * with a path of parentPath/#/childPath
-	 *
-	 * @param helper
-	 *            the helper that will handle this request. Usually, this is an
-	 *            {@link M2MDBHelper}.
-	 * @param parentPath
-	 *            the path of the parent. This should not end in an "#" as it
-	 *            will be added for you
-	 * @param childPath
-	 *            the path of the child within an item of the parent.
-	 */
-	public void addChildDirAndItemUri(DBHelper helper,
-			String parentPath, String childPath) {
-		final String path = parentPath + "/#/" + childPath;
-		addDirAndItemUri(helper, path);
-	}
+    /**
+     * Functionally equivalent to {@link #addDirAndItemUri(DBHelper, String)}
+     * with a path of parentPath/#/childPath
+     *
+     * @param helper
+     *            the helper that will handle this request. Usually, this is an
+     *            {@link M2MDBHelper}.
+     * @param parentPath
+     *            the path of the parent. This should not end in an "#" as it
+     *            will be added for you
+     * @param childPath
+     *            the path of the child within an item of the parent.
+     */
+    public void addChildDirAndItemUri(DBHelper helper,
+            String parentPath, String childPath) {
+        final String path = parentPath + "/#/" + childPath;
+        addDirAndItemUri(helper, path);
+    }
 
-	/**
-	 * Adds an entry for an item of a given type. This should be called in the
-	 * constructor of any subclasses.
-	 *
-	 * @param dbHelper
-	 *            the DBHelper to associate with the given path.
-	 * @param path
-	 *            a complete path on top of the content provider's authority.
-	 *            <strong>This must end in
-	 *            <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
-	 * @param type
-	 *            The complete MIME type for this item.
-	 * @param verb
-	 *            one or more of {@link DBHelperMapper#VERB_ALL},
-	 *            {@link DBHelperMapper#VERB_INSERT},
-	 *            {@link DBHelperMapper#VERB_QUERY},
-	 *            {@link DBHelperMapper#VERB_UPDATE},
-	 *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
-	 */
-	public void addItemUri(DBHelper dbHelper, String path, String type, int verb) {
-		registerDBHelper(dbHelper);
-		mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, verb, type);
-		MATCHER.addURI(mAuthority, path, mMatcherID);
-		mMatcherID++;
-	}
+    /**
+     * Adds an entry for an item of a given type. This should be called in the
+     * constructor of any subclasses.
+     *
+     * @param dbHelper
+     *            the DBHelper to associate with the given path.
+     * @param path
+     *            a complete path on top of the content provider's authority.
+     *            <strong>This must end in
+     *            <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
+     * @param type
+     *            The complete MIME type for this item.
+     * @param verb
+     *            one or more of {@link DBHelperMapper#VERB_ALL},
+     *            {@link DBHelperMapper#VERB_INSERT},
+     *            {@link DBHelperMapper#VERB_QUERY},
+     *            {@link DBHelperMapper#VERB_UPDATE},
+     *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
+     */
+    public void addItemUri(DBHelper dbHelper, String path, String type, int verb) {
+        registerDBHelper(dbHelper);
+        mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, verb, type);
+        MATCHER.addURI(mAuthority, path, mMatcherID);
+        mMatcherID++;
+    }
 
-	/**
-	 * Adds an entry for an item of a given type. This should be called in the
-	 * constructor of any subclasses.
-	 *
-	 * Defaults to handle all method types.
-	 *
-	 * @param dbHelper
-	 *            the DBHelper to associate with the given path.
-	 * @param path
-	 *            a complete path on top of the content provider's authority.
-	 *            <strong>This must end in
-	 *            <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
-	 */
-	public void addItemUri(DBHelper dbHelper, String path, String type) {
-		addItemUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
-	}
+    /**
+     * Adds an entry for an item of a given type. This should be called in the
+     * constructor of any subclasses.
+     *
+     * Defaults to handle all method types.
+     *
+     * @param dbHelper
+     *            the DBHelper to associate with the given path.
+     * @param path
+     *            a complete path on top of the content provider's authority.
+     *            <strong>This must end in
+     *            <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
+     */
+    public void addItemUri(DBHelper dbHelper, String path, String type) {
+        addItemUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
+    }
 
-	@Override
-	public boolean onCreate() {
-		if (mDBName == null) {
-			mDBName = extractDBName();
-		}
-		mDatabaseHelper = new DatabaseHelper(getContext(), mDBName, mDBVersion);
+    @Override
+    public boolean onCreate() {
+        if (mDBName == null) {
+            mDBName = extractDBName();
+        }
+        mDatabaseHelper = new DatabaseHelper(getContext(), mDBName, mDBVersion);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-		final int match = MATCHER.match(uri);
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        final int match = MATCHER.match(uri);
 
-		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
-		}
+        if (UriMatcher.NO_MATCH == match) {
+            throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+        }
 
-		if (!mDBHelperMapper.canDelete(match)) {
-			throw new IllegalArgumentException("delete note supported");
-		}
-		final int count = mDBHelperMapper.delete(match, this, db, uri,
-				selection, selectionArgs);
+        if (!mDBHelperMapper.canDelete(match)) {
+            throw new IllegalArgumentException("delete note supported");
+        }
+        final int count = mDBHelperMapper.delete(match, this, db, uri,
+                selection, selectionArgs);
 
-		getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri, null);
 
-		return count;
-	}
+        return count;
+    }
 
-	@Override
-	public String getType(Uri uri) {
-		final int match = MATCHER.match(uri);
+    @Override
+    public String getType(Uri uri) {
+        final int match = MATCHER.match(uri);
 
-		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
-		}
+        if (UriMatcher.NO_MATCH == match) {
+            throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+        }
 
-		return mDBHelperMapper.getType(match);
-	}
+        return mDBHelperMapper.getType(match);
+    }
 
-	private static final Pattern MIME_INVALID_CHARS = Pattern.compile("[^\\w!#$&.+^-]+");
-	public static final String MIME_INVALID_CHAR_REPLACEMENT = ".";
+    private static final Pattern MIME_INVALID_CHARS = Pattern.compile("[^\\w!#$&.+^-]+");
+    public static final String MIME_INVALID_CHAR_REPLACEMENT = ".";
 
-	/**
-	 * <p>
-	 * Generates a complete MIME type string in the following format:
-	 * {@code vnd.android.cursor.dir/vnd.AUTHORITY.SUFFIX}
-	 * </p>
-	 *
-	 * <p>
-	 * SUFFIX is filtered so all invalid characters (see <a
-	 * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
-	 * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
-	 * </p>
-	 *
-	 * @param suffix
-	 * @return the MIME type for the given suffix
-	 */
-	public String getDirType(String suffix) {
-		suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
-		return ProviderUtils.TYPE_DIR_PREFIX + mAuthority + "." + suffix;
-	}
+    /**
+     * <p>
+     * Generates a complete MIME type string in the following format:
+     * {@code vnd.android.cursor.dir/vnd.AUTHORITY.SUFFIX}
+     * </p>
+     *
+     * <p>
+     * SUFFIX is filtered so all invalid characters (see <a
+     * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
+     * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
+     * </p>
+     *
+     * @param suffix
+     * @return the MIME type for the given suffix
+     */
+    public String getDirType(String suffix) {
+        suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
+        return ProviderUtils.TYPE_DIR_PREFIX + mAuthority + "." + suffix;
+    }
 
-	/**
-	 * <p>
-	 * Generates a complete MIME type string in the following format:
-	 * {@code vnd.android.cursor.item/vnd.AUTHORITY.SUFFIX}
-	 * </p>
-	 *
-	 *
-	 * <p>
-	 * SUFFIX is filtered so all invalid characters (see <a
-	 * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
-	 * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
-	 * </p>
-	 *
-	 * @param suffix
-	 * @return the MIME type for the given suffix
-	 */
-	public String getItemType(String suffix) {
-		suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
-		return ProviderUtils.TYPE_ITEM_PREFIX + mAuthority + "." + suffix;
-	}
+    /**
+     * <p>
+     * Generates a complete MIME type string in the following format:
+     * {@code vnd.android.cursor.item/vnd.AUTHORITY.SUFFIX}
+     * </p>
+     *
+     *
+     * <p>
+     * SUFFIX is filtered so all invalid characters (see <a
+     * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
+     * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
+     * </p>
+     *
+     * @param suffix
+     * @return the MIME type for the given suffix
+     */
+    public String getItemType(String suffix) {
+        suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
+        return ProviderUtils.TYPE_ITEM_PREFIX + mAuthority + "." + suffix;
+    }
 
-	/**
-	 *
-	 * @return the UriMatcher that's used to route the URIs of this handler
-	 */
-	public static UriMatcher getMatcher() {
-		return MATCHER;
-	}
+    /**
+     *
+     * @return the UriMatcher that's used to route the URIs of this handler
+     */
+    public static UriMatcher getMatcher() {
+        return MATCHER;
+    }
 
-	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-		final int match = MATCHER.match(uri);
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        final int match = MATCHER.match(uri);
 
-		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
-		}
+        if (UriMatcher.NO_MATCH == match) {
+            throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+        }
 
-		if (!mDBHelperMapper.canInsert(match)) {
-			throw new IllegalArgumentException("insert not supported");
-		}
-		final Uri newUri = mDBHelperMapper.insert(match, this, db, uri, values);
-		if (newUri != null) {
-			getContext().getContentResolver().notifyChange(uri, null);
-		}
-		return newUri;
-	}
+        if (!mDBHelperMapper.canInsert(match)) {
+            throw new IllegalArgumentException("insert not supported");
+        }
+        final Uri newUri = mDBHelperMapper.insert(match, this, db, uri, values);
+        if (newUri != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return newUri;
+    }
 
-	@Override
-	public int bulkInsert(Uri uri, ContentValues[] values) {
-		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 
-		final int match = MATCHER.match(uri);
+        final int match = MATCHER.match(uri);
 
-		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
-		}
+        if (UriMatcher.NO_MATCH == match) {
+            throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+        }
 
-		if (!mDBHelperMapper.canInsert(match)) {
-			throw new IllegalArgumentException("insert not supported");
-		}
+        if (!mDBHelperMapper.canInsert(match)) {
+            throw new IllegalArgumentException("insert not supported");
+        }
 
-		int numSuccessfulAdds = 0;
-		db.beginTransaction();
-		try {
+        int numSuccessfulAdds = 0;
+        db.beginTransaction();
+        try {
 
-			for (final ContentValues cv : values) {
-				final Uri newUri = mDBHelperMapper.insert(match, this, db, uri, cv);
-				if (newUri != null) {
-					numSuccessfulAdds++;
-				}
-			}
-			db.setTransactionSuccessful();
+            for (final ContentValues cv : values) {
+                final Uri newUri = mDBHelperMapper.insert(match, this, db, uri, cv);
+                if (newUri != null) {
+                    numSuccessfulAdds++;
+                }
+            }
+            db.setTransactionSuccessful();
 
-			if (numSuccessfulAdds > 0) {
-				getContext().getContentResolver().notifyChange(uri, null);
-			}
-		} finally {
-			db.endTransaction();
-		}
-		return numSuccessfulAdds;
-	}
+            if (numSuccessfulAdds > 0) {
+                getContext().getContentResolver().notifyChange(uri, null);
+            }
+        } finally {
+            db.endTransaction();
+        }
+        return numSuccessfulAdds;
+    }
 
-	@Override
-	public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
-			throws OperationApplicationException {
-		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+    @Override
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+            throws OperationApplicationException {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 
-		ContentProviderResult[] res;
-		db.beginTransaction();
-		try {
-			res = super.applyBatch(operations);
-			db.setTransactionSuccessful();
-		} finally {
-			db.endTransaction();
-		}
-		return res;
-	}
+        ContentProviderResult[] res;
+        db.beginTransaction();
+        try {
+            res = super.applyBatch(operations);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return res;
+    }
 
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
-		final int match = MATCHER.match(uri);
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
+        final int match = MATCHER.match(uri);
 
-		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
-		}
+        if (UriMatcher.NO_MATCH == match) {
+            throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+        }
 
-		if (!mDBHelperMapper.canQuery(match)) {
-			throw new IllegalArgumentException("query not supported");
-		}
-		final Cursor c = mDBHelperMapper.query(match, this, db, uri,
-				projection, selection, selectionArgs, sortOrder);
-		c.setNotificationUri(getContext().getContentResolver(), uri);
-		return c;
-	}
+        if (!mDBHelperMapper.canQuery(match)) {
+            throw new IllegalArgumentException("query not supported");
+        }
+        final Cursor c = mDBHelperMapper.query(match, this, db, uri,
+                projection, selection, selectionArgs, sortOrder);
+        c.setNotificationUri(getContext().getContentResolver(), uri);
+        return c;
+    }
 
-	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-		final int match = MATCHER.match(uri);
+    @Override
+    public int update(Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        final int match = MATCHER.match(uri);
 
-		if (UriMatcher.NO_MATCH == match) {
-			throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
-		}
+        if (UriMatcher.NO_MATCH == match) {
+            throw new IllegalArgumentException(ERR_NO_HANDLER + ": " + uri);
+        }
 
-		if (!mDBHelperMapper.canUpdate(match)) {
-			throw new IllegalArgumentException("update not supported");
-		}
-		final int changed = mDBHelperMapper.update(match, this, db, uri,
-				values, selection, selectionArgs);
-		if (changed != 0) {
-			getContext().getContentResolver().notifyChange(uri, null);
-		}
-		return changed;
-	}
+        if (!mDBHelperMapper.canUpdate(match)) {
+            throw new IllegalArgumentException("update not supported");
+        }
+        final int changed = mDBHelperMapper.update(match, this, db, uri,
+                values, selection, selectionArgs);
+        if (changed != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return changed;
+    }
 
-	/////////////////////// private methods
-	/**
-	 * Generates a name for the database from the content provider.
-	 *
-	 * @return a valid name, based on the classname.
-	 */
-	private String extractDBName() {
-		return SQLGenUtils.toValidName(getClass());
-	}
+    /////////////////////// private methods
+    /**
+     * Generates a name for the database from the content provider.
+     *
+     * @return a valid name, based on the classname.
+     */
+    private String extractDBName() {
+        return SQLGenUtils.toValidName(getClass());
+    }
 
-	////////////////////// internal classes
+    ////////////////////// internal classes
 
-	private class DatabaseHelper extends SQLiteOpenHelper {
-		public DatabaseHelper(Context context, String name, int version) {
-			super(context, name, null, version);
-		}
+    private class DatabaseHelper extends SQLiteOpenHelper {
+        public DatabaseHelper(Context context, String name, int version) {
+            super(context, name, null, version);
+        }
 
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-			for (final DBHelper dbHelper : mDBHelpers) {
-				dbHelper.createTables(db);
-			}
-		}
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            for (final DBHelper dbHelper : mDBHelpers) {
+                dbHelper.createTables(db);
+            }
+        }
 
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			for (final DBHelper dbHelper : mDBHelpers) {
-				dbHelper.upgradeTables(db, oldVersion, newVersion);
-			}
-		}
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            for (final DBHelper dbHelper : mDBHelpers) {
+                dbHelper.upgradeTables(db, oldVersion, newVersion);
+            }
+        }
 
-		@Override
-		public void onOpen(SQLiteDatabase db) {
-			super.onOpen(db);
+        @Override
+        public void onOpen(SQLiteDatabase db) {
+            super.onOpen(db);
 
-			if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
-				db.execSQL("PRAGMA foreign_keys = ON;");
-			}
-		}
-	}
+            if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
+                db.execSQL("PRAGMA foreign_keys = ON;");
+            }
+        }
+    }
 }

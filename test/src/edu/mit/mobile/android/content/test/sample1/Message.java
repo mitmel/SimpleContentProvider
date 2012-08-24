@@ -14,20 +14,20 @@ import edu.mit.mobile.android.content.test.SampleProvider1;
  */
 public class Message implements ContentItem {
 
-	// Column definitions below. ContentItem contains one column definition
-	// for the BaseColumns._ID which defines the primary key.
-	@DBColumn(type = TimestampColumn.class, defaultValue = TimestampColumn.CURRENT_TIMESTAMP)
-	public static final String CREATED_DATE = "created";
+    // Column definitions below. ContentItem contains one column definition
+    // for the BaseColumns._ID which defines the primary key.
+    @DBColumn(type = TimestampColumn.class, defaultValue = TimestampColumn.CURRENT_TIMESTAMP)
+    public static final String CREATED_DATE = "created";
 
-	@DBColumn(type = TextColumn.class)
-	public static final String BODY = "body";
+    @DBColumn(type = TextColumn.class)
+    public static final String BODY = "body";
 
-	// The path component of the content URI.
-	public static final String PATH = "message";
+    // The path component of the content URI.
+    public static final String PATH = "message";
 
-	// The SimpleContentProvider constructs content URIs based on your provided
-	// path and authority.
-	// This constant is not necessary, but is very handy for doing queries.
-	public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider1.AUTHORITY, PATH);
+    // The SimpleContentProvider constructs content URIs based on your provided
+    // path and authority.
+    // This constant is not necessary, but is very handy for doing queries.
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider1.AUTHORITY, PATH);
 
 }

@@ -44,50 +44,50 @@ import edu.mit.mobile.android.content.test.SampleProvider2;
 @DBSortOrder(BlogPost.SORT_ORDER_DEFAULT)
 public class BlogPost implements ContentItem {
 
-	// Defining the table name as a static string will let you use it in your
-	// content provider if you ever need to do custom DB queries.
-	public static final String TABLE = "posts";
+    // Defining the table name as a static string will let you use it in your
+    // content provider if you ever need to do custom DB queries.
+    public static final String TABLE = "posts";
 
-	// Column definitions below. ContentItem contains one column definition
-	// for the BaseColumns._ID which defines the primary key.
-	@DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
-	public static final String CREATED_DATE = "created";
+    // Column definitions below. ContentItem contains one column definition
+    // for the BaseColumns._ID which defines the primary key.
+    @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
+    public static final String CREATED_DATE = "created";
 
-	@DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
-	public static final String MODIFIED_DATE = "modified";
+    @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
+    public static final String MODIFIED_DATE = "modified";
 
-	@DBColumn(type = TextColumn.class, notnull = true)
-	public static final String TITLE = "title";
+    @DBColumn(type = TextColumn.class, notnull = true)
+    public static final String TITLE = "title";
 
-	@DBColumn(type = TextColumn.class, notnull = true)
-	public static final String BODY = "body";
+    @DBColumn(type = TextColumn.class, notnull = true)
+    public static final String BODY = "body";
 
-	@DBColumn(type = TextColumn.class, unique = true, notnull = true)
-	public static final String SLUG = "slug";
+    @DBColumn(type = TextColumn.class, unique = true, notnull = true)
+    public static final String SLUG = "slug";
 
-	// The path component of the content URI.
-	public static final String PATH = "posts";
+    // The path component of the content URI.
+    public static final String PATH = "posts";
 
-	// the DBSortOrder annotation on this class denotes the default sort order.
-	public static final String SORT_ORDER_DEFAULT = "DESC " + CREATED_DATE;
+    // the DBSortOrder annotation on this class denotes the default sort order.
+    public static final String SORT_ORDER_DEFAULT = "DESC " + CREATED_DATE;
 
-	// This is a helpful tool connecting back to the "child" of this object. This is similar
-	// to Django's relation manager, although we need to define it ourselves.
-	public static final ForeignKeyManager COMMENTS = new ForeignKeyManager(Comment.class);
+    // This is a helpful tool connecting back to the "child" of this object. This is similar
+    // to Django's relation manager, although we need to define it ourselves.
+    public static final ForeignKeyManager COMMENTS = new ForeignKeyManager(Comment.class);
 
-	// The SimpleContentProvider constructs content URIs based on your provided
-	// path and authority.
-	// This constant is not necessary, but is very handy for doing queries.
-	public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider2.AUTHORITY, PATH);
+    // The SimpleContentProvider constructs content URIs based on your provided
+    // path and authority.
+    // This constant is not necessary, but is very handy for doing queries.
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider2.AUTHORITY, PATH);
 
-	public static final OnSaveListener ON_SAVE_LISTENER = new OnSaveListener(){
-		@Override
-		public ContentValues onPreSave(SQLiteDatabase db, Uri uri, ContentValues cv) {
-			if (! cv.containsKey(SLUG) && cv.containsKey(TITLE)){
-				final String slug = cv.getAsString(TITLE).replaceAll("\\s+", "-").replaceAll("[^\\w-]+", "");
-				cv.put(SLUG, slug);
-			}
-			return cv;
-		}
-	};
+    public static final OnSaveListener ON_SAVE_LISTENER = new OnSaveListener(){
+        @Override
+        public ContentValues onPreSave(SQLiteDatabase db, Uri uri, ContentValues cv) {
+            if (! cv.containsKey(SLUG) && cv.containsKey(TITLE)){
+                final String slug = cv.getAsString(TITLE).replaceAll("\\s+", "-").replaceAll("[^\\w-]+", "");
+                cv.put(SLUG, slug);
+            }
+            return cv;
+        }
+    };
 }

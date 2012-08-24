@@ -20,15 +20,15 @@ import android.database.Cursor;
 
 public class DoubleColumn extends DBColumnType<java.lang.Double> {
 
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "DOUBLE");
-	}
+    @Override
+    public String toCreateColumn(String colName) {
+        return toColumnDef(colName, "DOUBLE");
+    }
 
-	@Override
-	public java.lang.Double get(Cursor c, int colNumber) {
+    @Override
+    public java.lang.Double get(Cursor c, int colNumber) {
 
-		return java.lang.Double.valueOf(c.getDouble(colNumber));
-	}
+        return java.lang.Double.valueOf(c.getDouble(colNumber));
+    }
 
 }

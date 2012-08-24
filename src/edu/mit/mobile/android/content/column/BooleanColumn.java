@@ -24,14 +24,14 @@ import android.database.Cursor;
  */
 public class BooleanColumn extends DBColumnType<Boolean> {
 
-	@Override
-	public String toCreateColumn(String colName) {
-		return toColumnDef(colName, "BOOLEAN");
-	}
+    @Override
+    public String toCreateColumn(String colName) {
+        return toColumnDef(colName, "BOOLEAN");
+    }
 
-	@Override
-	public Boolean get(Cursor c, int colNumber) {
+    @Override
+    public Boolean get(Cursor c, int colNumber) {
 
-		return c.getInt(colNumber) != 0;
-	}
+        return c.getInt(colNumber) != 0;
+    }
 }

@@ -11,128 +11,128 @@ import edu.mit.mobile.android.content.test.sample3.Project;
 
 public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
 
-	public static final String
-		PERSON1_NAME = "Marco Dahlqvist",
-		PERSON2_NAME = "Akira Roudiere",
-		PERSON3_NAME = "Charles Crew",
-		PERSON4_NAME = "Ernesto Nadir Crespo Keitel";
+    public static final String
+        PERSON1_NAME = "Marco Dahlqvist",
+        PERSON2_NAME = "Akira Roudiere",
+        PERSON3_NAME = "Charles Crew",
+        PERSON4_NAME = "Ernesto Nadir Crespo Keitel";
 
-	public static final String
-		PROJECT1_NAME = "Shufflestorm",
-		PROJECT2_NAME = "Brightspot",
-		PROJECT3_NAME = "Fivebean";
+    public static final String
+        PROJECT1_NAME = "Shufflestorm",
+        PROJECT2_NAME = "Brightspot",
+        PROJECT3_NAME = "Fivebean";
 
-	public SampleProvider3Test() {
-		super(SampleProvider3.class, SampleProvider3.AUTHORITY);
+    public SampleProvider3Test() {
+        super(SampleProvider3.class, SampleProvider3.AUTHORITY);
 
-	}
+    }
 
-	public void testCRUD(){
-		final MockContentResolver cr = getMockContentResolver();
+    public void testCRUD(){
+        final MockContentResolver cr = getMockContentResolver();
 
-		final Uri project1 = cr.insert(Project.CONTENT_URI,
-				Project.toCv(PROJECT1_NAME, new GregorianCalendar(2012, 01, 12).getTime()));
+        final Uri project1 = cr.insert(Project.CONTENT_URI,
+                Project.toCv(PROJECT1_NAME, new GregorianCalendar(2012, 01, 12).getTime()));
 
-		assertNotNull(project1);
+        assertNotNull(project1);
 
-		final Uri project2 = cr.insert(Project.CONTENT_URI,
-				Project.toCv(PROJECT2_NAME, new GregorianCalendar(2013, 12, 25).getTime()));
+        final Uri project2 = cr.insert(Project.CONTENT_URI,
+                Project.toCv(PROJECT2_NAME, new GregorianCalendar(2013, 12, 25).getTime()));
 
-		assertNotNull(project2);
+        assertNotNull(project2);
 
-		// person1 is a loner and isn't on any projects
-		final Uri person1 = cr.insert(Person.CONTENT_URI, Person.toCv(PERSON1_NAME));
+        // person1 is a loner and isn't on any projects
+        final Uri person1 = cr.insert(Person.CONTENT_URI, Person.toCv(PERSON1_NAME));
 
-		assertNotNull(person1);
+        assertNotNull(person1);
 
-		assertPerson(person1, PERSON1_NAME);
+        assertPerson(person1, PERSON1_NAME);
 
-		// person2 is only on one project, that is project 1
-		final Uri person2 = Project.PEOPLE.insert(cr, project1, Person.toCv(PERSON2_NAME));
+        // person2 is only on one project, that is project 1
+        final Uri person2 = Project.PEOPLE.insert(cr, project1, Person.toCv(PERSON2_NAME));
 
-		assertNotNull(person2);
+        assertNotNull(person2);
 
-		assertPerson(person2, PERSON2_NAME);
+        assertPerson(person2, PERSON2_NAME);
 
-		assertPersonOnProject(person2, PROJECT1_NAME);
+        assertPersonOnProject(person2, PROJECT1_NAME);
 
-		// person 3 is on project 2
-		final Uri person3 = Project.PEOPLE.insert(cr, project2, Person.toCv(PERSON3_NAME));
+        // person 3 is on project 2
+        final Uri person3 = Project.PEOPLE.insert(cr, project2, Person.toCv(PERSON3_NAME));
 
-		assertPersonOnProject(person3, PROJECT2_NAME);
+        assertPersonOnProject(person3, PROJECT2_NAME);
 
-	}
+    }
 
-	private void assertPersonOnProject(Uri person, String name) {
-		// now try the reverse lookup
-		final Cursor c = Person.PROJECTS.query(getMockContentResolver(), person, null);
+    private void assertPersonOnProject(Uri person, String name) {
+        // now try the reverse lookup
+        final Cursor c = Person.PROJECTS.query(getMockContentResolver(), person, null);
 
-		try {
+        try {
 
-			assertTrue(c.moveToFirst());
+            assertTrue(c.moveToFirst());
 
-			// person2 is only on one project
-			assertEquals(1, c.getCount());
+            // person2 is only on one project
+            assertEquals(1, c.getCount());
 
-			assertEquals(name, c.getString(c.getColumnIndex(Project.NAME)));
+            assertEquals(name, c.getString(c.getColumnIndex(Project.NAME)));
 
-		} finally {
-			c.close();
-		}
-	}
+        } finally {
+            c.close();
+        }
+    }
 
-	/**
-	 * Ensures that there is a person at uri who matches name. the uri can resolve to more than one
-	 *
-	 * @param uri
-	 * @param name
-	 * @return
-	 */
-	private Cursor assertPerson(Uri uri, String name) {
-		final MockContentResolver cr = getMockContentResolver();
+    /**
+     * Ensures that there is a person at uri who matches name. the uri can resolve to more than one
+     *
+     * @param uri
+     * @param name
+     * @return
+     */
+    private Cursor assertPerson(Uri uri, String name) {
+        final MockContentResolver cr = getMockContentResolver();
 
-		// first look through all the results to ensure that it matches.
+        // first look through all the results to ensure that it matches.
 
-		Cursor c = cr.query(uri, null, null, null, null);
+        Cursor c = cr.query(uri, null, null, null, null);
 
-		try {
-			assertTrue(c.moveToFirst());
+        try {
+            assertTrue(c.moveToFirst());
 
-			final int nameCol = c.getColumnIndex(Person.NAME);
+            final int nameCol = c.getColumnIndex(Person.NAME);
 
-			boolean found = false;
+            boolean found = false;
 
-			for (; !c.isAfterLast(); c.moveToNext()) {
-				if (name.equals(c.getString(nameCol))) {
-					found = true;
-					break;
-				}
-			}
-			assertTrue(found);
-		} finally {
+            for (; !c.isAfterLast(); c.moveToNext()) {
+                if (name.equals(c.getString(nameCol))) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+        } finally {
 
-			c.close();
-		}
+            c.close();
+        }
 
-		// then try selecting it using a selection
+        // then try selecting it using a selection
 
-		c = cr.query(uri, null, Person.NAME + "=?", new String[] { name }, null);
+        c = cr.query(uri, null, Person.NAME + "=?", new String[] { name }, null);
 
-		try {
-			assertTrue(c.moveToFirst());
+        try {
+            assertTrue(c.moveToFirst());
 
-			assertEquals(1, c.getCount());
+            assertEquals(1, c.getCount());
 
-			final int nameCol = c.getColumnIndex(Person.NAME);
+            final int nameCol = c.getColumnIndex(Person.NAME);
 
-			assertEquals(name, c.getString(nameCol));
+            assertEquals(name, c.getString(nameCol));
 
-		} finally {
+        } finally {
 
-			c.close();
-		}
+            c.close();
+        }
 
-		return c;
+        return c;
 
-	}
+    }
 }

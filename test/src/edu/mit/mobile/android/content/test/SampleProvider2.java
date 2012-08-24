@@ -24,24 +24,24 @@ import edu.mit.mobile.android.content.test.sample2.BlogPost;
 import edu.mit.mobile.android.content.test.sample2.Comment;
 
 public class SampleProvider2 extends SimpleContentProvider {
-	public static final String AUTHORITY = "edu.mit.mobile.android.content.test.sampleprovider2";
+    public static final String AUTHORITY = "edu.mit.mobile.android.content.test.sampleprovider2";
 
-	public SampleProvider2() {
-		//    authority   DB ver
-		super(AUTHORITY, 1);
+    public SampleProvider2() {
+        //    authority   DB ver
+        super(AUTHORITY, 1);
 
-		final QuerystringWrapper blogPosts = new QuerystringWrapper(new GenericDBHelper(BlogPost.class));
+        final QuerystringWrapper blogPosts = new QuerystringWrapper(new GenericDBHelper(BlogPost.class));
 
-		blogPosts.setOnSaveListener(BlogPost.ON_SAVE_LISTENER);
+        blogPosts.setOnSaveListener(BlogPost.ON_SAVE_LISTENER);
 
-		// creates a relationship between BlogPosts and Comments, using Comment.POST as the column.
-		// It's also responsible for creating the tables for the child.
-		final ForeignKeyDBHelper comments = new ForeignKeyDBHelper(BlogPost.class, Comment.class, Comment.POST);
+        // creates a relationship between BlogPosts and Comments, using Comment.POST as the column.
+        // It's also responsible for creating the tables for the child.
+        final ForeignKeyDBHelper comments = new ForeignKeyDBHelper(BlogPost.class, Comment.class, Comment.POST);
 
-		addDirAndItemUri(blogPosts, BlogPost.PATH);
-		addChildDirAndItemUri(comments, BlogPost.PATH, Comment.PATH);
+        addDirAndItemUri(blogPosts, BlogPost.PATH);
+        addChildDirAndItemUri(comments, BlogPost.PATH, Comment.PATH);
 
-		addDirAndItemUri(comments, Comment.PATH_ALL_COMMENTS);
+        addDirAndItemUri(comments, Comment.PATH_ALL_COMMENTS);
 
-	}
+    }
 }

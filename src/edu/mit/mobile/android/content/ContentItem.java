@@ -29,7 +29,7 @@ import edu.mit.mobile.android.content.column.IntegerColumn;
  */
 public interface ContentItem extends BaseColumns {
 
-	@DBColumn(type=IntegerColumn.class, primaryKey=true, autoIncrement=true)
-	public static final String _ID = BaseColumns._ID;
+    @DBColumn(type=IntegerColumn.class, primaryKey=true, autoIncrement=true)
+    public static final String _ID = BaseColumns._ID;
 
 }

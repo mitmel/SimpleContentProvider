@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DBSortOrder {
 
-	/**
-	 * @return the default sort order for this type
-	 */
-	public String value();
+    /**
+     * @return the default sort order for this type
+     */
+    public String value();
 }

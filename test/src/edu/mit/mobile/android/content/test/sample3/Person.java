@@ -13,21 +13,21 @@ import edu.mit.mobile.android.content.test.SampleProvider3;
 @UriPath(Person.PATH)
 public class Person implements ContentItem {
 
-	@DBColumn(type = TextColumn.class)
-	public static final String NAME = "name";
+    @DBColumn(type = TextColumn.class)
+    public static final String NAME = "name";
 
-	public static final M2MManager PROJECTS = new M2MManager(Project.class);
+    public static final M2MManager PROJECTS = new M2MManager(Project.class);
 
-	public static final String PATH = "person";
+    public static final String PATH = "person";
 
-	public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider3.AUTHORITY,
-			PATH);
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider3.AUTHORITY,
+            PATH);
 
-	public static ContentValues toCv(String name) {
-		final ContentValues cv = new ContentValues();
+    public static ContentValues toCv(String name) {
+        final ContentValues cv = new ContentValues();
 
-		cv.put(NAME, name);
+        cv.put(NAME, name);
 
-		return cv;
-	}
+        return cv;
+    }
 }

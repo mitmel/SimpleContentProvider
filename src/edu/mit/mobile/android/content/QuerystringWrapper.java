@@ -64,143 +64,143 @@ import android.util.Log;
  */
 // TODO provide ability to limit columns that can be queried.
 public class QuerystringWrapper extends DBHelper {
-	public static final String TAG = QuerystringWrapper.class.getSimpleName();
+    public static final String TAG = QuerystringWrapper.class.getSimpleName();
 
-	private static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
-	public static final String QUERY_PREFIX_OR = "|";
+    public static final String QUERY_PREFIX_OR = "|";
 
-	private final DBHelper mWrappedHelper;
+    private final DBHelper mWrappedHelper;
 
-	public QuerystringWrapper(DBHelper wrappedHelper) {
-		mWrappedHelper = wrappedHelper;
-	}
+    public QuerystringWrapper(DBHelper wrappedHelper) {
+        mWrappedHelper = wrappedHelper;
+    }
 
-	@Override
-	public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
-			String selection, String[] selectionArgs, String sortOrder) {
-		final String query = uri.getEncodedQuery();
-		String newSelection = selection;
-		String[] newSelectionArgs = selectionArgs;
-		if (DEBUG) {
-			Log.d(TAG, "query uri " + uri);
-		}
-		try {
-			if (query != null) {
+    @Override
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        final String query = uri.getEncodedQuery();
+        String newSelection = selection;
+        String[] newSelectionArgs = selectionArgs;
+        if (DEBUG) {
+            Log.d(TAG, "query uri " + uri);
+        }
+        try {
+            if (query != null) {
 
-				final StringBuilder sb = new StringBuilder();
-				final List<NameValuePair> qs = URLEncodedUtils.parse(new URI(
-						uri.toString()), "utf-8");
-				// reset the URI for querying down the road
-				uri = uri.buildUpon().query(null).build();
+                final StringBuilder sb = new StringBuilder();
+                final List<NameValuePair> qs = URLEncodedUtils.parse(new URI(
+                        uri.toString()), "utf-8");
+                // reset the URI for querying down the road
+                uri = uri.buildUpon().query(null).build();
 
-				final int count = qs.size();
-				newSelectionArgs = new String[count];
-				int i = 0;
-				String name;
-				for (final NameValuePair nvp : qs) {
-					name = nvp.getName();
+                final int count = qs.size();
+                newSelectionArgs = new String[count];
+                int i = 0;
+                String name;
+                for (final NameValuePair nvp : qs) {
+                    name = nvp.getName();
 
-					if (i > 0) {
-						if (name.startsWith(QUERY_PREFIX_OR)) {
-							sb.append("OR ");
-							name = name.substring(1);
-						} else {
-							sb.append("AND ");
-						}
-					}
-					if (! SQLGenUtils.isValidName(name)){
-						throw new SQLGenerationException("illegal column name in query: '"+name+"'");
-					}
-					// this isn't escaped, as we check it for validity.
-					sb.append(name);
-					sb.append("=? ");
-					newSelectionArgs[i] = nvp.getValue();
-					i++;
-				}
+                    if (i > 0) {
+                        if (name.startsWith(QUERY_PREFIX_OR)) {
+                            sb.append("OR ");
+                            name = name.substring(1);
+                        } else {
+                            sb.append("AND ");
+                        }
+                    }
+                    if (! SQLGenUtils.isValidName(name)){
+                        throw new SQLGenerationException("illegal column name in query: '"+name+"'");
+                    }
+                    // this isn't escaped, as we check it for validity.
+                    sb.append(name);
+                    sb.append("=? ");
+                    newSelectionArgs[i] = nvp.getValue();
+                    i++;
+                }
 
-				newSelection = ProviderUtils.addExtraWhere(selection,
-						sb.toString());
-				newSelectionArgs = ProviderUtils.addExtraWhereArgs(
-						selectionArgs, newSelectionArgs);
-				if (DEBUG) {
-					Log.d(TAG,
-							"query:" + newSelection + "; args: ["
-									+ TextUtils.join(",", Arrays.asList(newSelectionArgs)) + "]");
-				}
-			}
-		} catch (final URISyntaxException e) {
-			final SQLGenerationException se = new SQLGenerationException("could not construct URL");
-			se.initCause(e);
-			throw se;
-		}
+                newSelection = ProviderUtils.addExtraWhere(selection,
+                        sb.toString());
+                newSelectionArgs = ProviderUtils.addExtraWhereArgs(
+                        selectionArgs, newSelectionArgs);
+                if (DEBUG) {
+                    Log.d(TAG,
+                            "query:" + newSelection + "; args: ["
+                                    + TextUtils.join(",", Arrays.asList(newSelectionArgs)) + "]");
+                }
+            }
+        } catch (final URISyntaxException e) {
+            final SQLGenerationException se = new SQLGenerationException("could not construct URL");
+            se.initCause(e);
+            throw se;
+        }
 
 
-		return mWrappedHelper.queryDir(db, uri, projection, newSelection,
-				newSelectionArgs, sortOrder);
-	}
+        return mWrappedHelper.queryDir(db, uri, projection, newSelection,
+                newSelectionArgs, sortOrder);
+    }
 
-	@Override
-	public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			ContentValues values) throws SQLException {
+    @Override
+    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values) throws SQLException {
 
-		return mWrappedHelper.insertDir(db, provider, uri, values);
-	}
+        return mWrappedHelper.insertDir(db, provider, uri, values);
+    }
 
-	@Override
-	public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			ContentValues values, String where, String[] whereArgs) {
-		return mWrappedHelper.updateItem(db, provider, uri, values, where, whereArgs);
-	}
+    @Override
+    public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values, String where, String[] whereArgs) {
+        return mWrappedHelper.updateItem(db, provider, uri, values, where, whereArgs);
+    }
 
-	@Override
-	public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			ContentValues values, String where, String[] whereArgs) {
-		return mWrappedHelper.updateDir(db, provider, uri, values, where, whereArgs);
-	}
+    @Override
+    public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values, String where, String[] whereArgs) {
+        return mWrappedHelper.updateDir(db, provider, uri, values, where, whereArgs);
+    }
 
-	@Override
-	public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			String where, String[] whereArgs) {
-		return mWrappedHelper.deleteItem(db, provider, uri, where, whereArgs);
-	}
+    @Override
+    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            String where, String[] whereArgs) {
+        return mWrappedHelper.deleteItem(db, provider, uri, where, whereArgs);
+    }
 
-	@Override
-	public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			String where, String[] whereArgs) {
-		return mWrappedHelper.deleteDir(db, provider, uri, where, whereArgs);
-	}
+    @Override
+    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            String where, String[] whereArgs) {
+        return mWrappedHelper.deleteDir(db, provider, uri, where, whereArgs);
+    }
 
-	@Override
-	public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
-			String selection, String[] selectionArgs, String sortOrder) {
-		return mWrappedHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
-	}
+    @Override
+    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        return mWrappedHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
+    }
 
-	@Override
-	public String getPath() {
+    @Override
+    public String getPath() {
 
-		return mWrappedHelper.getPath();
-	}
+        return mWrappedHelper.getPath();
+    }
 
-	@Override
-	public void createTables(SQLiteDatabase db) throws SQLGenerationException {
-		mWrappedHelper.createTables(db);
-	}
+    @Override
+    public void createTables(SQLiteDatabase db) throws SQLGenerationException {
+        mWrappedHelper.createTables(db);
+    }
 
-	@Override
-	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
-			throws SQLGenerationException {
-		mWrappedHelper.upgradeTables(db, oldVersion, newVersion);
-	}
+    @Override
+    public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
+            throws SQLGenerationException {
+        mWrappedHelper.upgradeTables(db, oldVersion, newVersion);
+    }
 
-	@Override
-	public void setOnSaveListener(OnSaveListener onSaveListener) {
-		mWrappedHelper.setOnSaveListener(onSaveListener);
-	}
+    @Override
+    public void setOnSaveListener(OnSaveListener onSaveListener) {
+        mWrappedHelper.setOnSaveListener(onSaveListener);
+    }
 
-	@Override
-	public void removeOnSaveListener() {
-		mWrappedHelper.removeOnSaveListener();
-	}
+    @Override
+    public void removeOnSaveListener() {
+        mWrappedHelper.removeOnSaveListener();
+    }
 }

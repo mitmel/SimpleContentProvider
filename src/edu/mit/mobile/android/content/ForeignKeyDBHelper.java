@@ -37,109 +37,109 @@ import android.net.Uri;
  *
  */
 public class ForeignKeyDBHelper extends GenericDBHelper {
-	public static final String WILDCARD_PATH_SEGMENT = "_all";
-	private final String mColumn;
-	private final Class<? extends ContentItem> mChild;
-	private final Class<? extends ContentItem> mParent;
+    public static final String WILDCARD_PATH_SEGMENT = "_all";
+    private final String mColumn;
+    private final Class<? extends ContentItem> mChild;
+    private final Class<? extends ContentItem> mParent;
 
-	public ForeignKeyDBHelper(Class<? extends ContentItem> parent,
-			Class<? extends ContentItem> child, String column) {
-		super(child);
-		mChild = child;
-		mParent = parent;
-		mColumn = column;
-	}
+    public ForeignKeyDBHelper(Class<? extends ContentItem> parent,
+            Class<? extends ContentItem> child, String column) {
+        super(child);
+        mChild = child;
+        mParent = parent;
+        mColumn = column;
+    }
 
-	@Override
-	public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			ContentValues values) throws SQLException {
-		final long parentId = Long.valueOf(ProviderUtils.getNthPathFromEnd(uri,
-				1));
-		values.put(mColumn, parentId);
-		return super.insertDir(db, provider, uri, values);
-	}
+    @Override
+    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values) throws SQLException {
+        final long parentId = Long.valueOf(ProviderUtils.getNthPathFromEnd(uri,
+                1));
+        values.put(mColumn, parentId);
+        return super.insertDir(db, provider, uri, values);
+    }
 
-	@Override
-	public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			ContentValues values, String where, String[] whereArgs) {
-		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
+    @Override
+    public int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values, String where, String[] whereArgs) {
+        final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
-		return super.updateItem(db, provider, uri, values,
-				ProviderUtils.addExtraWhere(where, mColumn + "=?"),
-				ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
-	}
+        return super.updateItem(db, provider, uri, values,
+                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
+    }
 
-	@Override
-	public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			ContentValues values, String where, String[] whereArgs) {
-		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
+    @Override
+    public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values, String where, String[] whereArgs) {
+        final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
-		return super.updateDir(db, provider, uri, values,
-				ProviderUtils.addExtraWhere(where, mColumn + "=?"),
-				ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
-	}
+        return super.updateDir(db, provider, uri, values,
+                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
+    }
 
-	@Override
-	public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			String where, String[] whereArgs) {
-		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
+    @Override
+    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            String where, String[] whereArgs) {
+        final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
-		return super.deleteItem(db, provider, uri,
-				ProviderUtils.addExtraWhere(where, mColumn + "=?"),
-				ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
-	}
+        return super.deleteItem(db, provider, uri,
+                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
+    }
 
-	@Override
-	public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-			String where, String[] whereArgs) {
-		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
+    @Override
+    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            String where, String[] whereArgs) {
+        final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
-		return super.deleteDir(db, provider, uri,
-				ProviderUtils.addExtraWhere(where, mColumn + "=?"),
-				ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
-	}
+        return super.deleteDir(db, provider, uri,
+                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
+    }
 
-	@Override
-	public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
-			String selection, String[] selectionArgs, String sortOrder) {
-		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
+    @Override
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
-		if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
-			return super.queryDir(db, uri, projection, selection, selectionArgs, sortOrder);
+        if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
+            return super.queryDir(db, uri, projection, selection, selectionArgs, sortOrder);
 
-		} else {
-			return super.queryDir(db, uri, projection,
-					ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
-					ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
-		}
-	}
+        } else {
+            return super.queryDir(db, uri, projection,
+                    ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
+        }
+    }
 
-	@Override
-	public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
-			String selection, String[] selectionArgs, String sortOrder) {
-		final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
+    @Override
+    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder) {
+        final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
-		if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
-			return super.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
+        if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
+            return super.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
 
-		} else {
-			return super.queryItem(db, uri, projection,
-					ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
-					ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
-		}
-	}
+        } else {
+            return super.queryItem(db, uri, projection,
+                    ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
+        }
+    }
 
-	@Override
-	public void createTables(SQLiteDatabase db) throws SQLGenerationException {
-		if (!mChild.equals(mParent)) {
-			super.createTables(db);
-		}
-	}
+    @Override
+    public void createTables(SQLiteDatabase db) throws SQLGenerationException {
+        if (!mChild.equals(mParent)) {
+            super.createTables(db);
+        }
+    }
 
-	@Override
-	public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (!mChild.equals(mParent)) {
-			super.upgradeTables(db, oldVersion, newVersion);
-		}
-	}
+    @Override
+    public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (!mChild.equals(mParent)) {
+            super.upgradeTables(db, oldVersion, newVersion);
+        }
+    }
 }

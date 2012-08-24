@@ -33,9 +33,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DBTable {
 
-	/**
-	 * @return the name of the table
-	 */
-	String value();
+    /**
+     * @return the name of the table
+     */
+    String value();
 
 }
