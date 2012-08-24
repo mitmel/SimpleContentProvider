@@ -40,6 +40,11 @@ public class MessageDetail extends Activity {
         mTitle = (TextView) findViewById(R.id.title);
         mBody = (TextView) findViewById(R.id.body);
         mDate = (TextView) findViewById(R.id.date);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 
         final Intent intent = getIntent();
 
