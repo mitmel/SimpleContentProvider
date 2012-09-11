@@ -18,6 +18,7 @@ package edu.mit.mobile.android.content;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -160,6 +161,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
     private final List<DBHelper> mDBHelpers = new ArrayList<DBHelper>();
 
+    private final HashMap<String, Class<? extends ContentItem>> mContentItemTypeMap = new HashMap<String, Class<? extends ContentItem>>();
+
     private int mMatcherID = URI_MATCHER_CODE_START;
 
     private static final String ERR_NO_HANDLER = "uri not handled by provider";
@@ -254,6 +257,10 @@ public abstract class SimpleContentProvider extends ContentProvider {
         registerDBHelper(dbHelper);
         mDBHelperMapper.addDirMapping(mMatcherID, dbHelper, verb, type);
         MATCHER.addURI(mAuthority, path, mMatcherID);
+        if (dbHelper instanceof ContentItemRegisterable) {
+            registerContentItemType(type,
+                    ((ContentItemRegisterable) dbHelper).getContentItem(false));
+        }
         mMatcherID++;
     }
 
@@ -359,6 +366,10 @@ public abstract class SimpleContentProvider extends ContentProvider {
         registerDBHelper(dbHelper);
         mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, verb, type);
         MATCHER.addURI(mAuthority, path, mMatcherID);
+        if (dbHelper instanceof ContentItemRegisterable) {
+            registerContentItemType(type,
+                    ((ContentItemRegisterable) dbHelper).getContentItem(true));
+        }
         mMatcherID++;
     }
 
@@ -463,10 +474,54 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
+     * Registers a {@link ContentItem} to be associated with the given type. This can later be
+     * retrieved using {@link #getContentItem(Uri)}.
+     *
+     * @param type
+     *            MIME type for the given {@link ContentItem}
+     * @param itemClass
+     *            the class of the associated {@link ContentItem}
+     */
+    public void registerContentItemType(String type, Class<? extends ContentItem> itemClass) {
+
+        mContentItemTypeMap.put(type, itemClass);
+    }
+
+    /**
+     * Retrieves the class of the {@link ContentItem} previously associated using
+     * {@link #registerContentItemType(String, Class)}
+     *
+     * @param type
+     *            the {@link ContentItem}'s MIME type
+     * @return the class of the {@link ContentItem} or null if there's no mapping
+     */
+    public Class<? extends ContentItem> getContentItem(String type) {
+        return mContentItemTypeMap.get(type);
+    }
+
+    /**
+     * Gets the class of the {@link ContentItem} that was previously associated with the MIME type
+     * of the URI using {@link #registerContentItemType(String, Class)}.
+     *
+     * @param uri
+     *            a URI which has MIME types registered with this provider
+     * @return the class of the {@link ContentItem} or null if there's no mapping
+     */
+    public Class<? extends ContentItem> getContentItem(Uri uri) {
+        final String type = getType(uri);
+
+        if (type == null) {
+            return null;
+        }
+
+        return mContentItemTypeMap.get(type);
+    }
+
+    /**
      *
      * @return the UriMatcher that's used to route the URIs of this handler
      */
-    public static UriMatcher getMatcher() {
+    protected static UriMatcher getMatcher() {
         return MATCHER;
     }
 

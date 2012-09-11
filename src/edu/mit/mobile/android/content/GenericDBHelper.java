@@ -40,7 +40,7 @@ import edu.mit.mobile.android.content.column.DBColumn;
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
-public class GenericDBHelper extends DBHelper {
+public class GenericDBHelper extends DBHelper implements ContentItemRegisterable {
 
     private final String mTable;
     private final Class<? extends ContentItem> mDataItem;
@@ -157,5 +157,10 @@ public class GenericDBHelper extends DBHelper {
                 ProviderUtils.addExtraWhere(selection, BaseColumns._ID + "=?"),
                 ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()), null,
                 null, sortOrder == null ? mSortOrder : sortOrder);
+    }
+
+    @Override
+    public Class<? extends ContentItem> getContentItem(boolean isItem) {
+        return mDataItem;
     }
 }

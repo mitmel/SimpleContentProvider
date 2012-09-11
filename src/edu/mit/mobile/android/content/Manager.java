@@ -5,6 +5,11 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+/**
+ * Interface to provide common shortcuts for interacting with {@link ContentItem}s that relate to
+ * one another.
+ *
+ */
 public interface Manager {
 
     /**
@@ -15,7 +20,7 @@ public interface Manager {
 
     /**
      * Adds an item to the destination
-     * 
+     *
      * @param cr
      * @param parent
      * @param cv
@@ -25,8 +30,14 @@ public interface Manager {
 
     public abstract Cursor query(ContentResolver cr, Uri parent, String[] projection);
 
+    /**
+     * @return the sort order of the given {@link ContentItem}
+     */
     public abstract String getSortOrder();
 
+    /**
+     * @return the path segment used in URIs for this {@link ContentItem}
+     */
     public abstract String getPath();
 
 }
