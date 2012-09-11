@@ -42,6 +42,7 @@ public class GenericDBHelper extends DBHelper {
 
     private final String mTable;
     private final Class<? extends ContentItem> mDataItem;
+    private final String mSortOrder;
 
     /**
      * @param contentItem
@@ -50,6 +51,8 @@ public class GenericDBHelper extends DBHelper {
     public GenericDBHelper(Class<? extends ContentItem> contentItem) {
         mDataItem = contentItem;
         mTable = DBColumn.Extractor.extractTableName(contentItem);
+        final DBSortOrder sortOrder = contentItem.getAnnotation(DBSortOrder.class);
+        mSortOrder = sortOrder != null ? sortOrder.value() : null;
     }
 
     /**
@@ -152,7 +155,7 @@ public class GenericDBHelper extends DBHelper {
                 selectionArgs,
                 null,
                 null,
-                sortOrder);
+				sortOrder == null ? mSortOrder : sortOrder);
 
     }
 
@@ -167,6 +170,6 @@ public class GenericDBHelper extends DBHelper {
                 ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
                 null,
                 null,
-                sortOrder);
+				sortOrder == null ? mSortOrder : sortOrder);
     }
 }
