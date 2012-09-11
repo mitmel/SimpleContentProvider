@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.column;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -26,10 +27,9 @@ import android.database.Cursor;
  */
 public class TimestampColumn extends DBColumnType<String> {
 
-    public final static String
-        CURRENT_TIMESTAMP = DEFAULT_VALUE_ESCAPE + "CURRENT_TIMESTAMP",
-        CURRENT_DATE = DEFAULT_VALUE_ESCAPE + "CURRENT_DATE",
-        CURRENT_TIME = DEFAULT_VALUE_ESCAPE + "CURRENT_TIME";
+    public final static String CURRENT_TIMESTAMP = DEFAULT_VALUE_ESCAPE + "CURRENT_TIMESTAMP";
+    public final static String CURRENT_DATE = DEFAULT_VALUE_ESCAPE + "CURRENT_DATE";
+    public final static String CURRENT_TIME = DEFAULT_VALUE_ESCAPE + "CURRENT_TIME";
 
     @Override
     public String toCreateColumn(String colName) {

@@ -24,6 +24,7 @@ public @interface DBForeignKeyColumn {
 
     /**
      * Suffixes the column declaration with this string.
+     *
      * @return a string of any supplemental column declarations
      */
     String extraColDef() default DBColumn.NULL;

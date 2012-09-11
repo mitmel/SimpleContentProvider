@@ -51,10 +51,9 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
     }
 
     @Override
-    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            ContentValues values) throws SQLException {
-        final long parentId = Long.valueOf(ProviderUtils.getNthPathFromEnd(uri,
-                1));
+    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values)
+            throws SQLException {
+        final long parentId = Long.valueOf(ProviderUtils.getNthPathFromEnd(uri, 1));
         values.put(mColumn, parentId);
         return super.insertDir(db, provider, uri, values);
     }
@@ -80,8 +79,8 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
     }
 
     @Override
-    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            String where, String[] whereArgs) {
+    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
+            String[] whereArgs) {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
         return super.deleteItem(db, provider, uri,
@@ -90,8 +89,8 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
     }
 
     @Override
-    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            String where, String[] whereArgs) {
+    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
+            String[] whereArgs) {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
         return super.deleteDir(db, provider, uri,
@@ -100,8 +99,8 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
     }
 
     @Override
-    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
         if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
@@ -115,8 +114,8 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
     }
 
     @Override
-    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
         if (WILDCARD_PATH_SEGMENT.equals(parentId)) {

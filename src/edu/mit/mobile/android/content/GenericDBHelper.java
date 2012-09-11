@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -30,9 +31,10 @@ import edu.mit.mobile.android.content.column.DBColumn;
 /**
  * Provides basic CRUD database calls to handle very simple object types, eg:
  *
+ * <pre>
  * content://AUTHORITY/item
  * content://AUTHORITY/item/1
- *
+ * </pre>
  *
  *
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
@@ -56,56 +58,52 @@ public class GenericDBHelper extends DBHelper {
     }
 
     /**
-     * This default implementation drops existing tables and recreates them.
-     * If you want to preserve the user's data, please override this and handle
-     * migrations more carefully.
+     * This default implementation drops existing tables and recreates them. If you want to preserve
+     * the user's data, please override this and handle migrations more carefully.
      *
      * @see edu.mit.mobile.android.content.DBHelper#upgradeTables(android.database.sqlite.SQLiteDatabase,
      *      int, int)
      */
     @Override
-    public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion){
+    public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + mTable);
         createTables(db);
     }
 
-
-    public String getTable(){
+    public String getTable() {
         return mTable;
     }
 
-    public Class<? extends ContentItem> getContentItem(){
+    public Class<? extends ContentItem> getContentItem() {
         return mDataItem;
     }
 
     @Override
-    public String getPath(){
+    public String getPath() {
         return null; // XXX is this used? Paths need to be fixed.
     }
-
 
     @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
         db.execSQL(DBColumn.Extractor.getTableCreation(mDataItem, mTable));
     }
 
-
-    protected ContentValues callOnPreSaveListener(SQLiteDatabase db, Uri uri, ContentValues values){
-        if (mOnSaveListener != null){
+    protected ContentValues callOnPreSaveListener(SQLiteDatabase db, Uri uri, ContentValues values) {
+        if (mOnSaveListener != null) {
             values = mOnSaveListener.onPreSave(db, null, values);
         }
         return values;
     }
 
     @Override
-    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            ContentValues values) throws SQLException {
+    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values)
+            throws SQLException {
         values = callOnPreSaveListener(db, uri, values);
 
         final long id = db.insertOrThrow(mTable, null, values);
-        if (id != -1){
+        if (id != -1) {
             return ContentUris.withAppendedId(uri, id);
-        }else{
+        } else {
             throw new SQLException("error inserting into " + mTable);
         }
     }
@@ -130,46 +128,34 @@ public class GenericDBHelper extends DBHelper {
     }
 
     @Override
-    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            String where, String[] whereArgs) {
-        return db.delete(mTable,
-                ProviderUtils.addExtraWhere(where, BaseColumns._ID + "=?"),
+    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
+            String[] whereArgs) {
+        return db.delete(mTable, ProviderUtils.addExtraWhere(where, BaseColumns._ID + "=?"),
                 ProviderUtils.addExtraWhereArgs(whereArgs, uri.getLastPathSegment()));
     }
 
     @Override
-    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            String where, String[] whereArgs) {
+    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
+            String[] whereArgs) {
         return db.delete(mTable, where, whereArgs);
     }
 
     @Override
-    public Cursor queryDir(SQLiteDatabase db, Uri uri,
-            String[] projection, String selection, String[] selectionArgs,
-            String sortOrder) {
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
 
-        return db.query(
-                mTable,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-				sortOrder == null ? mSortOrder : sortOrder);
+        return db.query(mTable, projection, selection, selectionArgs, null, null,
+                sortOrder == null ? mSortOrder : sortOrder);
 
     }
 
     @Override
-    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
 
-        return db.query(
-                mTable,
-                projection,
-                ProviderUtils.addExtraWhere(selection, BaseColumns._ID+"=?"),
-                ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
-                null,
-                null,
-				sortOrder == null ? mSortOrder : sortOrder);
+        return db.query(mTable, projection,
+                ProviderUtils.addExtraWhere(selection, BaseColumns._ID + "=?"),
+                ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()), null,
+                null, sortOrder == null ? mSortOrder : sortOrder);
     }
 }

@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -36,27 +37,25 @@ import android.util.Log;
 
 /**
  * <p>
- * Overrides the queryDir method in order to provide handling of select
- * statement building using URI query strings. To use, first construct a content
- * uri for a content item's directory. For example
- * <kbd>content://org.example.test/message</kbd>. Then add query parameters to
- * limit the result set (ideally, using
- * {@link android.net.Uri.Builder#appendQueryParameter(String, String)}) so that
- * your uri looks more like:
- * <kbd>content://org.example.test/message?to=steve</kbd>.
+ * Overrides the queryDir method in order to provide handling of select statement building using URI
+ * query strings. To use, first construct a content uri for a content item's directory. For example
+ * <kbd>content://org.example.test/message</kbd>. Then add query parameters to limit the result set
+ * (ideally, using {@link android.net.Uri.Builder#appendQueryParameter(String, String)}) so that
+ * your uri looks more like: <kbd>content://org.example.test/message?to=steve</kbd>.
  * </p>
  *
  * <p>
- * This will translate the queries to select statements using the key for column
- * name and the value for the value, so you can easily provide links to specific
- * lists of your content items.
+ * This will translate the queries to select statements using the key for column name and the value
+ * for the value, so you can easily provide links to specific lists of your content items.
  * </p>
  *
- * <p>Keys and values are automatically escaped to prevent any SQL injections.</p>
+ * <p>
+ * Keys and values are automatically escaped to prevent any SQL injections.
+ * </p>
  *
  * <p>
- * By default, multiple items are joined with AND, but can be joined by OR by
- * prefixing the query name with {@value #QUERY_PREFIX_OR}. For example:
+ * By default, multiple items are joined with AND, but can be joined by OR by prefixing the query
+ * name with {@value #QUERY_PREFIX_OR}. For example:
  * <kbd>content://org.example.test/message?to=bob&amp;|to=alice
  * </p>
  *
@@ -77,8 +76,8 @@ public class QuerystringWrapper extends DBHelper {
     }
 
     @Override
-    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
         final String query = uri.getEncodedQuery();
         String newSelection = selection;
         String[] newSelectionArgs = selectionArgs;
@@ -89,8 +88,8 @@ public class QuerystringWrapper extends DBHelper {
             if (query != null) {
 
                 final StringBuilder sb = new StringBuilder();
-                final List<NameValuePair> qs = URLEncodedUtils.parse(new URI(
-                        uri.toString()), "utf-8");
+                final List<NameValuePair> qs = URLEncodedUtils.parse(new URI(uri.toString()),
+                        "utf-8");
                 // reset the URI for querying down the road
                 uri = uri.buildUpon().query(null).build();
 
@@ -109,8 +108,9 @@ public class QuerystringWrapper extends DBHelper {
                             sb.append("AND ");
                         }
                     }
-                    if (! SQLGenUtils.isValidName(name)){
-                        throw new SQLGenerationException("illegal column name in query: '"+name+"'");
+                    if (!SQLGenUtils.isValidName(name)) {
+                        throw new SQLGenerationException("illegal column name in query: '" + name
+                                + "'");
                     }
                     // this isn't escaped, as we check it for validity.
                     sb.append(name);
@@ -119,10 +119,8 @@ public class QuerystringWrapper extends DBHelper {
                     i++;
                 }
 
-                newSelection = ProviderUtils.addExtraWhere(selection,
-                        sb.toString());
-                newSelectionArgs = ProviderUtils.addExtraWhereArgs(
-                        selectionArgs, newSelectionArgs);
+                newSelection = ProviderUtils.addExtraWhere(selection, sb.toString());
+                newSelectionArgs = ProviderUtils.addExtraWhereArgs(selectionArgs, newSelectionArgs);
                 if (DEBUG) {
                     Log.d(TAG,
                             "query:" + newSelection + "; args: ["
@@ -135,14 +133,13 @@ public class QuerystringWrapper extends DBHelper {
             throw se;
         }
 
-
-        return mWrappedHelper.queryDir(db, uri, projection, newSelection,
-                newSelectionArgs, sortOrder);
+        return mWrappedHelper.queryDir(db, uri, projection, newSelection, newSelectionArgs,
+                sortOrder);
     }
 
     @Override
-    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            ContentValues values) throws SQLException {
+    public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values)
+            throws SQLException {
 
         return mWrappedHelper.insertDir(db, provider, uri, values);
     }
@@ -160,20 +157,20 @@ public class QuerystringWrapper extends DBHelper {
     }
 
     @Override
-    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            String where, String[] whereArgs) {
+    public int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
+            String[] whereArgs) {
         return mWrappedHelper.deleteItem(db, provider, uri, where, whereArgs);
     }
 
     @Override
-    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
-            String where, String[] whereArgs) {
+    public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
+            String[] whereArgs) {
         return mWrappedHelper.deleteDir(db, provider, uri, where, whereArgs);
     }
 
     @Override
-    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
         return mWrappedHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
     }
 

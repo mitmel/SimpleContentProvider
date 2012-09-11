@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.column;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *

@@ -224,10 +224,6 @@ public final class DBHelperMapper {
 
     }
 
-    public static final int
-        VERB_INSERT = 1,
-        VERB_QUERY  = 2,
-        VERB_UPDATE = 4,
-        VERB_DELETE = 8,
-        VERB_ALL = VERB_INSERT | VERB_QUERY | VERB_UPDATE | VERB_DELETE;
+    public static final int VERB_INSERT = 1, VERB_QUERY = 2, VERB_UPDATE = 4, VERB_DELETE = 8,
+            VERB_ALL = VERB_INSERT | VERB_QUERY | VERB_UPDATE | VERB_DELETE;
 }

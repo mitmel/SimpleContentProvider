@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -39,16 +40,17 @@ public class SQLGenUtils {
      * @param myClass
      * @return a valid SQL name
      */
-    public static final String toValidName(Class<? extends Object> myClass){
+    public static final String toValidName(Class<? extends Object> myClass) {
         return toValidName(myClass.getSimpleName().toLowerCase());
     }
 
     /**
      * Removes any non-name characters from the given name.
+     *
      * @param name
      * @return a valid SQL name
      */
-    public static final String toValidName(String name){
+    public static final String toValidName(String name) {
         // strip out any non-name characters from the name.
         final Matcher m = NON_NAME_CHARS.matcher(name);
         name = m.replaceAll("");
@@ -60,7 +62,7 @@ public class SQLGenUtils {
      * @param name
      * @return true if the name is a valid SQLite name.
      */
-    public static boolean isValidName(String name){
+    public static boolean isValidName(String name) {
         return VALID_NAME.matcher(name).matches();
     }
 

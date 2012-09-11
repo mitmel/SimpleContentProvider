@@ -27,7 +27,7 @@ public class ForeignKeyManager implements Manager {
      * @param childRelationshipPath
      *            the path that is used in the URI to refer to this relationship
      */
-    public ForeignKeyManager(Class<? extends ContentItem> child, String childRelationshipPath){
+    public ForeignKeyManager(Class<? extends ContentItem> child, String childRelationshipPath) {
         mChild = child;
         mPath = childRelationshipPath;
         final DBSortOrder sortOrder = mChild.getAnnotation(DBSortOrder.class);

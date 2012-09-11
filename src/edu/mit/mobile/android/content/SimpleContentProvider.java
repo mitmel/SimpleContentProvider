@@ -41,61 +41,56 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *
  *
  * <p>
- * This provider simplifies the construction of a content provider by splitting
- * it into two parts: the request handlers and a request mapper. The request
- * handlers — subclasses of {@link DBHelper} — handle the generation and
- * execution of the SQL, while {@link DBHelperMapper} maps URIs, types and verbs
- * to those handlers.
+ * This provider simplifies the construction of a content provider by splitting it into two parts:
+ * the request handlers and a request mapper. The request handlers — subclasses of {@link DBHelper}
+ * — handle the generation and execution of the SQL, while {@link DBHelperMapper} maps URIs, types
+ * and verbs to those handlers.
  * </p>
  *
  * <p>
- * {@link ContentItem}s describe the data that you wish to be persisted. In SQL
- * terms, these would be your tables or in Java terms, your objects. Unlike ORMs
- * which have typed fields, these are constructed using classes with numerous
- * static fields that describe the data. This is done in order to avoid creation
- * of short-lived data objects, which would lead to considerable garbage
+ * {@link ContentItem}s describe the data that you wish to be persisted. In SQL terms, these would
+ * be your tables or in Java terms, your objects. Unlike ORMs which have typed fields, these are
+ * constructed using classes with numerous static fields that describe the data. This is done in
+ * order to avoid creation of short-lived data objects, which would lead to considerable garbage
  * collector churn.
  * </p>
  *
  * <p>
- * To use, first create your content item. Each content item is an
- * implementation of {@link ContentItem} and generally consists of a number of
- * annotated static fields.
+ * To use, first create your content item. Each content item is an implementation of
+ * {@link ContentItem} and generally consists of a number of annotated static fields.
  * </p>
  *
  * <h4>columns</h4>
  * <p>
- * A column is defined by creating a static final String whose value is the
- * desired column name. That column must be annotated with @{@link DBColumn},
- * where the column type and column definitions are specified. This is done this
- * way, so that queries can easily be constructed using the standard
- * {@link ContentProvider#query(Uri, String[], String, String[], String)} and
+ * A column is defined by creating a static final String whose value is the desired column name.
+ * That column must be annotated with @{@link DBColumn}, where the column type and column
+ * definitions are specified. This is done this way, so that queries can easily be constructed using
+ * the standard {@link ContentProvider#query(Uri, String[], String, String[], String)} and
  * {@link ContentValues} frameworks.
  * </p>
  *
  * <p>
- * The content item below describes a message with two columns: a created date
- * and a body.
+ * The content item below describes a message with two columns: a created date and a body.
  * </p>
  *
  * <pre>
  * public class Message implements ContentItem {
- *  // Column definitions below. ContentItem contains one column definition
- *  // for the BaseColumns._ID which defines the primary key.
- *  &#064;DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
- *  public static final String CREATED_DATE = &quot;created&quot;;
+ *     // Column definitions below. ContentItem contains one column definition
+ *     // for the BaseColumns._ID which defines the primary key.
+ *     &#064;DBColumn(type = DateColumn.class, defaultValue = DateColumn.CURRENT_TIMESTAMP)
+ *     public static final String CREATED_DATE = &quot;created&quot;;
  *
- *  &#064;DBColumn(type = TextColumn.class)
- *  public static final String BODY = &quot;body&quot;;
+ *     &#064;DBColumn(type = TextColumn.class)
+ *     public static final String BODY = &quot;body&quot;;
  *
- *  // The path component of the content URI.
- *  public static final String PATH = &quot;message&quot;;
+ *     // The path component of the content URI.
+ *     public static final String PATH = &quot;message&quot;;
  *
- *  // The SimpleContentProvider constructs content URIs based on your provided
- *  // path and authority.
- *  // This constant is not necessary, but is very handy for doing queries.
- *  public static final Uri CONTENT_URI = ProviderUtils.toContentUri(
- *          SampleProvider1.AUTHORITY, PATH);
+ *     // The SimpleContentProvider constructs content URIs based on your provided
+ *     // path and authority.
+ *     // This constant is not necessary, but is very handy for doing queries.
+ *     public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider1.AUTHORITY,
+ *             PATH);
  * }
  * </pre>
  *
@@ -105,32 +100,30 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *
  * <pre>
  * public class MyProvider extends SimpleContentProvider {
- *  public static final String AUTHORITY = &quot;edu.mit.mobile.android.content.test.sampleprovider1&quot;;
+ *     public static final String AUTHORITY = &quot;edu.mit.mobile.android.content.test.sampleprovider1&quot;;
  *
- *  public MyProvider() {
- *      // authority DB name DB ver
- *      super(AUTHORITY, &quot;myprovider&quot;, 1);
+ *     public MyProvider() {
+ *         // authority DB name DB ver
+ *         super(AUTHORITY, &quot;myprovider&quot;, 1);
  *
- *      // This helper creates the table and can do basic CRUD for items
- *      // that
- *      // use the dir/item scheme with the BaseColumns._ID integer primary
- *      // key.
- *      final DBHelper messageHelper = new GenericDBHelper(Message.class,
- *              Message.CONTENT_URI);
+ *         // This helper creates the table and can do basic CRUD for items
+ *         // that
+ *         // use the dir/item scheme with the BaseColumns._ID integer primary
+ *         // key.
+ *         final DBHelper messageHelper = new GenericDBHelper(Message.class, Message.CONTENT_URI);
  *
- *      // Adds a mapping between the given content:// URI path and the
- *      // helper.
- *      //
- *      // There's an optional fourth parameter which lets you have
- *      // different
- *      // helpers handle different SQL verbs (eg. use a GenericDBHelper for
- *      // basic insert, delete, update, but have a custom helper for
- *      // querying).
- *      addDirUri(messageHelper, Message.PATH, getDirType(Message.PATH));
- *      addItemUri(messageHelper, Message.PATH + &quot;/#&quot;,
- *              getItemType(Message.PATH));
+ *         // Adds a mapping between the given content:// URI path and the
+ *         // helper.
+ *         //
+ *         // There's an optional fourth parameter which lets you have
+ *         // different
+ *         // helpers handle different SQL verbs (eg. use a GenericDBHelper for
+ *         // basic insert, delete, update, but have a custom helper for
+ *         // querying).
+ *         addDirUri(messageHelper, Message.PATH, getDirType(Message.PATH));
+ *         addItemUri(messageHelper, Message.PATH + &quot;/#&quot;, getItemType(Message.PATH));
  *
- *  }
+ *     }
  * }
  * </pre>
  *
@@ -140,33 +133,29 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
 public abstract class SimpleContentProvider extends ContentProvider {
 
     @SuppressWarnings("unused")
-    private static final String TAG = SimpleContentProvider.class
-            .getSimpleName();
+    private static final String TAG = SimpleContentProvider.class.getSimpleName();
 
-    ///////////////////// public API constants
+    // /////////////////// public API constants
 
     /**
-     * Suffix that turns a dir path into an item path. The # represents the item
-     * ID number.
+     * Suffix that turns a dir path into an item path. The # represents the item ID number.
      */
     public static final String PATH_ITEM_ID_SUFFIX = "/#";
 
     /**
-     * This is the starting value for the automatically-generated URI mapper
-     * entries. You can freely use any numbers below this without any risk of
-     * conflict.
+     * This is the starting value for the automatically-generated URI mapper entries. You can freely
+     * use any numbers below this without any risk of conflict.
      */
     public static final int URI_MATCHER_CODE_START = 0x100000;
 
-    ///////////////////////// private fields
+    // /////////////////////// private fields
     private final String mAuthority;
     private String mDBName;
     private final int mDBVersion;
 
     private final DBHelperMapper mDBHelperMapper;
 
-    private static final UriMatcher MATCHER = new UriMatcher(
-            UriMatcher.NO_MATCH);
+    private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
     private DatabaseHelper mDatabaseHelper;
 
     private final List<DBHelper> mDBHelpers = new ArrayList<DBHelper>();
@@ -175,24 +164,23 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
     private static final String ERR_NO_HANDLER = "uri not handled by provider";
 
-    ///////////////////////////////// public methods
+    // /////////////////////////////// public methods
 
     /**
-     * The database name for this provider is generated based on the provider's
-     * class name. If you have multiple providers in your {@link Application},
-     * you should ensure that these class names are unique or specify your own
-     * dbName with {@link #SimpleContentProvider(String, String, int)}.
+     * The database name for this provider is generated based on the provider's class name. If you
+     * have multiple providers in your {@link Application}, you should ensure that these class names
+     * are unique or specify your own dbName with
+     * {@link #SimpleContentProvider(String, String, int)}.
      *
      * @param authority
      *            the full authority string for this provider
      * @param dbVersion
-     *            the version of the database schema associated with this
-     *            provider. <strong>NOTE:</strong> This number must be increased
-     *            each time the database schema (in this instance, your
-     *            {@link ContentItem} fields) changes in order for the tables to
-     *            be recreated. At the moment, there <strong>WILL BE DATA
-     *            LOSS</strong> when this number increases, so please make sure
-     *            to that the data is backed up first.
+     *            the version of the database schema associated with this provider.
+     *            <strong>NOTE:</strong> This number must be increased each time the database schema
+     *            (in this instance, your {@link ContentItem} fields) changes in order for the
+     *            tables to be recreated. At the moment, there <strong>WILL BE DATA LOSS</strong>
+     *            when this number increases, so please make sure to that the data is backed up
+     *            first.
      */
     public SimpleContentProvider(String authority, int dbVersion) {
         this(authority, null, dbVersion);
@@ -202,16 +190,14 @@ public abstract class SimpleContentProvider extends ContentProvider {
      * @param authority
      *            the full authority string for this provider
      * @param dbName
-     *            the name of the database. This must be unique throughout your
-     *            {@link Application}.
+     *            the name of the database. This must be unique throughout your {@link Application}.
      * @param dbVersion
-     *            the version of the database schema associated with this
-     *            provider. <strong>NOTE:</strong> This number must be increased
-     *            each time the database schema (in this instance, your
-     *            {@link ContentItem} fields) changes in order for the tables to
-     *            be recreated. At the moment, there <strong>WILL BE DATA
-     *            LOSS</strong> when this number increases, so please make sure
-     *            to that the data is backed up first.
+     *            the version of the database schema associated with this provider.
+     *            <strong>NOTE:</strong> This number must be increased each time the database schema
+     *            (in this instance, your {@link ContentItem} fields) changes in order for the
+     *            tables to be recreated. At the moment, there <strong>WILL BE DATA LOSS</strong>
+     *            when this number increases, so please make sure to that the data is backed up
+     *            first.
      */
     public SimpleContentProvider(String authority, String dbName, int dbVersion) {
         super();
@@ -222,13 +208,12 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Registers a DBHelper with the content provider. You must call this in the
-     * constructor of any subclasses.
+     * Registers a DBHelper with the content provider. You must call this in the constructor of any
+     * subclasses.
      *
      * @param dbHelper
-     * @deprecated no longer needed; helpers will be implicitly added when
-     *             calling {@link #addDirAndItemUri(DBHelper, String)} and
-     *             friends.
+     * @deprecated no longer needed; helpers will be implicitly added when calling
+     *             {@link #addDirAndItemUri(DBHelper, String)} and friends.
      * @see SimpleContentProvider#registerDBHelper(DBHelper)
      */
     @Deprecated
@@ -237,10 +222,9 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Registers a {@link DBHelper} with the provider. This is only needed when
-     * you don't call {@link #addDirAndItemUri(DBHelper, String)} and friends,
-     * as they will implicitly register for you. This can be called multiple
-     * times without issue.
+     * Registers a {@link DBHelper} with the provider. This is only needed when you don't call
+     * {@link #addDirAndItemUri(DBHelper, String)} and friends, as they will implicitly register for
+     * you. This can be called multiple times without issue.
      *
      * @param dbHelper
      *            the helper you wish to have registered with this provider
@@ -252,8 +236,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Adds an entry for a directory of a given type. This should be called in
-     * the constructor of any subclasses.
+     * Adds an entry for a directory of a given type. This should be called in the constructor of
+     * any subclasses.
      *
      * @param dbHelper
      *            the DBHelper to associate with the given path.
@@ -262,10 +246,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
      * @param type
      *            the complete MIME type for the item's directory.
      * @param verb
-     *            one or more of {@link DBHelperMapper#VERB_ALL},
-     *            {@link DBHelperMapper#VERB_INSERT},
-     *            {@link DBHelperMapper#VERB_QUERY},
-     *            {@link DBHelperMapper#VERB_UPDATE},
+     *            one or more of {@link DBHelperMapper#VERB_ALL}, {@link DBHelperMapper#VERB_INSERT}
+     *            , {@link DBHelperMapper#VERB_QUERY}, {@link DBHelperMapper#VERB_UPDATE},
      *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
      */
     public void addDirUri(DBHelper dbHelper, String path, String type, int verb) {
@@ -276,8 +258,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Adds an entry for a directory of a given type. This should be called in
-     * the constructor of any subclasses.
+     * Adds an entry for a directory of a given type. This should be called in the constructor of
+     * any subclasses.
      *
      * Defaults to handle all method types.
      *
@@ -294,8 +276,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Adds an entry for a directory of a given type. This should be called in
-     * the constructor of any subclasses.
+     * Adds an entry for a directory of a given type. This should be called in the constructor of
+     * any subclasses.
      *
      * Defaults to handle all method types.
      *
@@ -312,9 +294,9 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Adds dir and item entries for the given helper at the given path. The
-     * types are generated using {@link #getDirType(String)} and
-     * {@link #getItemType(String)} passing path in for the suffix.
+     * Adds dir and item entries for the given helper at the given path. The types are generated
+     * using {@link #getDirType(String)} and {@link #getItemType(String)} passing path in for the
+     * suffix.
      *
      * @param dbHelper
      * @param path
@@ -329,56 +311,48 @@ public abstract class SimpleContentProvider extends ContentProvider {
      *
      * @param dbHelper
      * @param path
-     *            the path that will be used for the item's dir. For the item,
-     *            it will be suffixed with {@value #PATH_ITEM_ID_SUFFIX}.
+     *            the path that will be used for the item's dir. For the item, it will be suffixed
+     *            with {@value #PATH_ITEM_ID_SUFFIX}.
      * @param dirType
      *            The complete MIME type for the item's directory.
      * @param itemType
      *            The complete MIME type for the item.
      */
-    public void addDirAndItemUri(DBHelper dbHelper, String path,
-            String dirType, String itemType) {
+    public void addDirAndItemUri(DBHelper dbHelper, String path, String dirType, String itemType) {
         addDirUri(dbHelper, path, dirType, DBHelperMapper.VERB_ALL);
-        addItemUri(dbHelper, path + PATH_ITEM_ID_SUFFIX, itemType,
-                DBHelperMapper.VERB_ALL);
+        addItemUri(dbHelper, path + PATH_ITEM_ID_SUFFIX, itemType, DBHelperMapper.VERB_ALL);
     }
 
     /**
-     * Functionally equivalent to {@link #addDirAndItemUri(DBHelper, String)}
-     * with a path of parentPath/#/childPath
+     * Functionally equivalent to {@link #addDirAndItemUri(DBHelper, String)} with a path of
+     * parentPath/#/childPath
      *
      * @param helper
-     *            the helper that will handle this request. Usually, this is an
-     *            {@link M2MDBHelper}.
+     *            the helper that will handle this request. Usually, this is an {@link M2MDBHelper}.
      * @param parentPath
-     *            the path of the parent. This should not end in an "#" as it
-     *            will be added for you
+     *            the path of the parent. This should not end in an "#" as it will be added for you
      * @param childPath
      *            the path of the child within an item of the parent.
      */
-    public void addChildDirAndItemUri(DBHelper helper,
-            String parentPath, String childPath) {
+    public void addChildDirAndItemUri(DBHelper helper, String parentPath, String childPath) {
         final String path = parentPath + "/#/" + childPath;
         addDirAndItemUri(helper, path);
     }
 
     /**
-     * Adds an entry for an item of a given type. This should be called in the
-     * constructor of any subclasses.
+     * Adds an entry for an item of a given type. This should be called in the constructor of any
+     * subclasses.
      *
      * @param dbHelper
      *            the DBHelper to associate with the given path.
      * @param path
-     *            a complete path on top of the content provider's authority.
-     *            <strong>This must end in
-     *            <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
+     *            a complete path on top of the content provider's authority. <strong>This must end
+     *            in <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
      * @param type
      *            The complete MIME type for this item.
      * @param verb
-     *            one or more of {@link DBHelperMapper#VERB_ALL},
-     *            {@link DBHelperMapper#VERB_INSERT},
-     *            {@link DBHelperMapper#VERB_QUERY},
-     *            {@link DBHelperMapper#VERB_UPDATE},
+     *            one or more of {@link DBHelperMapper#VERB_ALL}, {@link DBHelperMapper#VERB_INSERT}
+     *            , {@link DBHelperMapper#VERB_QUERY}, {@link DBHelperMapper#VERB_UPDATE},
      *            {@link DBHelperMapper#VERB_DELETE} joined bitwise.
      */
     public void addItemUri(DBHelper dbHelper, String path, String type, int verb) {
@@ -389,17 +363,16 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     /**
-     * Adds an entry for an item of a given type. This should be called in the
-     * constructor of any subclasses.
+     * Adds an entry for an item of a given type. This should be called in the constructor of any
+     * subclasses.
      *
      * Defaults to handle all method types.
      *
      * @param dbHelper
      *            the DBHelper to associate with the given path.
      * @param path
-     *            a complete path on top of the content provider's authority.
-     *            <strong>This must end in
-     *            <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
+     *            a complete path on top of the content provider's authority. <strong>This must end
+     *            in <code>{@value #PATH_ITEM_ID_SUFFIX}</code></strong>
      */
     public void addItemUri(DBHelper dbHelper, String path, String type) {
         addItemUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
@@ -427,8 +400,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
         if (!mDBHelperMapper.canDelete(match)) {
             throw new IllegalArgumentException("delete note supported");
         }
-        final int count = mDBHelperMapper.delete(match, this, db, uri,
-                selection, selectionArgs);
+        final int count = mDBHelperMapper.delete(match, this, db, uri, selection, selectionArgs);
 
         getContext().getContentResolver().notifyChange(uri, null);
 
@@ -569,8 +541,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+            String sortOrder) {
         final SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         final int match = MATCHER.match(uri);
 
@@ -581,15 +553,14 @@ public abstract class SimpleContentProvider extends ContentProvider {
         if (!mDBHelperMapper.canQuery(match)) {
             throw new IllegalArgumentException("query not supported");
         }
-        final Cursor c = mDBHelperMapper.query(match, this, db, uri,
-                projection, selection, selectionArgs, sortOrder);
+        final Cursor c = mDBHelperMapper.query(match, this, db, uri, projection, selection,
+                selectionArgs, sortOrder);
         c.setNotificationUri(getContext().getContentResolver(), uri);
         return c;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection,
-            String[] selectionArgs) {
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         final int match = MATCHER.match(uri);
 
@@ -600,15 +571,15 @@ public abstract class SimpleContentProvider extends ContentProvider {
         if (!mDBHelperMapper.canUpdate(match)) {
             throw new IllegalArgumentException("update not supported");
         }
-        final int changed = mDBHelperMapper.update(match, this, db, uri,
-                values, selection, selectionArgs);
+        final int changed = mDBHelperMapper.update(match, this, db, uri, values, selection,
+                selectionArgs);
         if (changed != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return changed;
     }
 
-    /////////////////////// private methods
+    // ///////////////////// private methods
     /**
      * Generates a name for the database from the content provider.
      *
@@ -618,7 +589,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
         return SQLGenUtils.toValidName(getClass());
     }
 
-    ////////////////////// internal classes
+    // //////////////////// internal classes
 
     private class DatabaseHelper extends SQLiteOpenHelper {
         public DatabaseHelper(Context context, String name, int version) {

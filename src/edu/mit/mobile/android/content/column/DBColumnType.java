@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.column;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -39,10 +40,9 @@ public abstract class DBColumnType<T> {
     }
 
     /**
-     * Prefix the default value with this character in order to prevent
-     * auto-quoting. Prefix the default value with this character twice to
-     * insert it literally. This character only needs to be escaped if it's
-     * at the beginning of the string.
+     * Prefix the default value with this character in order to prevent auto-quoting. Prefix the
+     * default value with this character twice to insert it literally. This character only needs to
+     * be escaped if it's at the beginning of the string.
      */
     public static final String DEFAULT_VALUE_ESCAPE = "\\";
 }

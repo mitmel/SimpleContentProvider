@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.column;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -29,8 +30,9 @@ import android.database.Cursor;
 public class DatetimeColumn extends DBColumnType<Date> {
 
     public static final String
-        // the formula below is from SQLite's manual
-        NOW_IN_MILLISECONDS = DEFAULT_VALUE_ESCAPE + "((julianday('now') - 2440587.5)*86400000)";
+    // the formula below is from SQLite's manual
+    NOW_IN_MILLISECONDS = DEFAULT_VALUE_ESCAPE + "((julianday('now') - 2440587.5)*86400000)";
+
     @Override
     public String toCreateColumn(String colName) {
         return toColumnDef(colName, "INTEGER");

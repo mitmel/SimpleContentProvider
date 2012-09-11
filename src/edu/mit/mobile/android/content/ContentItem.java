@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -21,15 +22,14 @@ import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.IntegerColumn;
 
 /**
- * A simple extension of {@link BaseColumns} that tags {@link #_ID} as an
- * integer primary key.
+ * A simple extension of {@link BaseColumns} that tags {@link #_ID} as an integer primary key.
  *
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
 public interface ContentItem extends BaseColumns {
 
-    @DBColumn(type=IntegerColumn.class, primaryKey=true, autoIncrement=true)
+    @DBColumn(type = IntegerColumn.class, primaryKey = true, autoIncrement = true)
     public static final String _ID = BaseColumns._ID;
 
 }

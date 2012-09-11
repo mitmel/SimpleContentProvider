@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -40,17 +41,15 @@ public class ProviderUtils {
      * @return a query string with the extra clauses added in
      */
     public static String addExtraWhere(String where, String... extraWhere) {
-        final String extraWhereJoined = "("
- + TextUtils.join(") AND (", Arrays.asList(extraWhere))
+        final String extraWhereJoined = "(" + TextUtils.join(") AND (", Arrays.asList(extraWhere))
                 + ")";
         return extraWhereJoined
-                + (where != null && where.length() > 0 ? " AND (" + where + ")"
-                        : "");
+                + (where != null && where.length() > 0 ? " AND (" + where + ")" : "");
     }
 
     /**
-     * Adds in extra arguments to a where query. You'll have to put in the
-     * appropriate query placeholders.
+     * Adds in extra arguments to a where query. You'll have to put in the appropriate query
+     * placeholders.
      *
      * @param whereArgs
      *            the original whereArgs passed in from the query. Can be null.
@@ -58,8 +57,7 @@ public class ProviderUtils {
      *            Extra arguments needed for the query.
      * @return a new String[] with the extra arguments added in
      */
-    public static String[] addExtraWhereArgs(String[] whereArgs,
-            String... extraArgs) {
+    public static String[] addExtraWhereArgs(String[] whereArgs, String... extraArgs) {
         final List<String> whereArgs2 = new ArrayList<String>();
         if (whereArgs != null) {
             whereArgs2.addAll(Arrays.asList(whereArgs));
@@ -86,8 +84,7 @@ public class ProviderUtils {
      * @return a new uri built off the supplied uri with the last count path segments removed
      */
     public static Uri removeLastPathSegments(Uri uri, int count) {
-        final List<String> pathWithoutLast = new Vector<String>(
-                uri.getPathSegments());
+        final List<String> pathWithoutLast = new Vector<String>(uri.getPathSegments());
         for (int i = 0; i < count; i++) {
             pathWithoutLast.remove(pathWithoutLast.size() - 1);
         }
@@ -96,20 +93,20 @@ public class ProviderUtils {
     }
 
     /**
-     * Modify the projection so that all columns refers to that of the specified
-     * table, not any others that may be joined. Without this, _ID and other
-     * columns would be ambiguous and the query fails.
+     * Modify the projection so that all columns refers to that of the specified table, not any
+     * others that may be joined. Without this, _ID and other columns would be ambiguous and the
+     * query fails.
      *
-     * All columns are aliased as the column name in the original projection so
-     * that most queries should Just Work™.
+     * All columns are aliased as the column name in the original projection so that most queries
+     * should Just Work™.
      *
      * @param tableName
      *            the name of the table whose columns should be returned.
      * @param projection
-     * @return a modified projection with a table prefix for all columns or null if the projection is null
+     * @return a modified projection with a table prefix for all columns or null if the projection
+     *         is null
      */
-    public static String[] addPrefixToProjection(String tableName,
-            String[] projection) {
+    public static String[] addPrefixToProjection(String tableName, String[] projection) {
         if (projection == null) {
             return null;
         }
@@ -146,15 +143,13 @@ public class ProviderUtils {
     }
 
     /**
-     * Removes key from the given ContentValues and returns it in a new
-     * container.
+     * Removes key from the given ContentValues and returns it in a new container.
      *
      * @param cv
      * @param key
      * @return a new {@link ContentValues} with the specified key removed.
      */
-    public static ContentValues extractContentValueItem(ContentValues cv,
-            String key) {
+    public static ContentValues extractContentValueItem(ContentValues cv, String key) {
         final String val = cv.getAsString(key);
         cv.remove(key);
         final ContentValues cvNew = new ContentValues();
@@ -172,17 +167,21 @@ public class ProviderUtils {
     }
 
     /**
-     * @param uri the uri whose path segment you wish to extract
-     * @param nth number of path segments from the end. 0 is the last one, 1 is the second to last one, etc.
+     * @param uri
+     *            the uri whose path segment you wish to extract
+     * @param nth
+     *            number of path segments from the end. 0 is the last one, 1 is the second to last
+     *            one, etc.
      * @return
      */
-    public static String getNthPathFromEnd(Uri uri, int nth){
+    public static String getNthPathFromEnd(Uri uri, int nth) {
 
         final List<String> path = uri.getPathSegments();
         final int size = path.size();
         final int pos = size - 1 - nth;
-        if (pos < 0){
-            throw new IllegalArgumentException("there are not "+ nth+ " path segments from the end of " + uri);
+        if (pos < 0) {
+            throw new IllegalArgumentException("there are not " + nth
+                    + " path segments from the end of " + uri);
         }
 
         return path.get(pos);

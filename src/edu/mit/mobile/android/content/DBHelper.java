@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content;
+
 /*
  * Copyright (C) 2011 MIT Mobile Experience Lab
  *
@@ -26,34 +27,32 @@ import android.net.Uri;
 /**
  * Classes should extend this class and pass the result to {@link DBHelperMapper} to create their
  * content providers.
- * 
+ *
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
- * 
+ *
  */
 public abstract class DBHelper {
 
-    public abstract Uri insertDir(SQLiteDatabase db, ContentProvider provider,
-            Uri uri, ContentValues values) throws SQLException;
+    public abstract Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values) throws SQLException;
 
-    public abstract int updateItem(SQLiteDatabase db, ContentProvider provider,
-            Uri uri, ContentValues values, String where, String[] whereArgs);
+    public abstract int updateItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values, String where, String[] whereArgs);
 
-    public abstract int updateDir(SQLiteDatabase db, ContentProvider provider,
-            Uri uri, ContentValues values, String where, String[] whereArgs);
+    public abstract int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            ContentValues values, String where, String[] whereArgs);
 
-    public abstract int deleteItem(SQLiteDatabase db, ContentProvider provider,
-            Uri uri, String where, String[] whereArgs);
+    public abstract int deleteItem(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            String where, String[] whereArgs);
 
-    public abstract int deleteDir(SQLiteDatabase db, ContentProvider provider,
-            Uri uri, String where, String[] whereArgs);
+    public abstract int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
+            String where, String[] whereArgs);
 
-    public abstract Cursor queryDir(SQLiteDatabase db, Uri uri,
-            String[] projection, String selection, String[] selectionArgs,
-            String sortOrder);
+    public abstract Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder);
 
-    public abstract Cursor queryItem(SQLiteDatabase db, Uri uri,
-            String[] projection, String selection, String[] selectionArgs,
-            String sortOrder);
+    public abstract Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
+            String selection, String[] selectionArgs, String sortOrder);
 
     /**
      * @return the path within a content URI that represents the dir index of an item.
@@ -69,11 +68,15 @@ public abstract class DBHelper {
 
     /**
      * Upgrades the tables for the times of this helper.
+     *
      * @param db
-     * @param oldVersion the old version number of the database
-     * @param newVersion the new, current version number
+     * @param oldVersion
+     *            the old version number of the database
+     * @param newVersion
+     *            the new, current version number
      */
-    public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) throws SQLGenerationException;
+    public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
+            throws SQLGenerationException;
 
     protected OnSaveListener mOnSaveListener;
 
@@ -82,14 +85,15 @@ public abstract class DBHelper {
      *
      * @param onSaveListener
      */
-    public void setOnSaveListener(OnSaveListener onSaveListener){
+    public void setOnSaveListener(OnSaveListener onSaveListener) {
         mOnSaveListener = onSaveListener;
     }
 
     /**
-     * Removes any {@link OnSaveListener} formerly registered with {@link #setOnSaveListener(OnSaveListener)}.
+     * Removes any {@link OnSaveListener} formerly registered with
+     * {@link #setOnSaveListener(OnSaveListener)}.
      */
-    public void removeOnSaveListener(){
+    public void removeOnSaveListener() {
         mOnSaveListener = null;
     }
 }

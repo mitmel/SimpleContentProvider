@@ -121,9 +121,9 @@ public class M2MReverseHelper extends DBHelper {
      */
     public Cursor queryFrom(long toId, SQLiteDatabase db, String[] fromProjection,
             String selection, String[] selectionArgs, String sortOrder) {
-        return queryFrom(db, fromProjection, ProviderUtils.addExtraWhere(selection, mJoinTable + "."
-                + M2MColumns.TO_ID + "=?"), ProviderUtils.addExtraWhereArgs(selectionArgs,
-                Long.toString(toId)), sortOrder);
+        return queryFrom(db, fromProjection,
+                ProviderUtils.addExtraWhere(selection, mJoinTable + "." + M2MColumns.TO_ID + "=?"),
+                ProviderUtils.addExtraWhereArgs(selectionArgs, Long.toString(toId)), sortOrder);
     }
 
     @Override
