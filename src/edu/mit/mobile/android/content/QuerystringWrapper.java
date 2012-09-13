@@ -1,7 +1,7 @@
 package edu.mit.mobile.android.content;
 
 /*
- * Copyright (C) 2011 MIT Mobile Experience Lab
+ * Copyright (C) 2011-2012 MIT Mobile Experience Lab
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,11 +37,17 @@ import android.util.Log;
 
 /**
  * <p>
- * Overrides the queryDir method in order to provide handling of select statement building using URI
- * query strings. To use, first construct a content uri for a content item's directory. For example
+ * This class wraps another {@link DBHelper} and makes it searchable by passing it special URIs.
+ * <p>
+ * This overrides the {@link #queryDir(SQLiteDatabase, Uri, String[], String, String[], String)
+ * queryDir},
+ * {@link #updateDir(SQLiteDatabase, ContentProvider, Uri, ContentValues, String, String[])
+ * updateDir}, and {@link #deleteDir(SQLiteDatabase, ContentProvider, Uri, String, String[])
+ * deleteDir} method in order to provide handling of select statement building using URI query
+ * strings. To use, first construct a content uri for a content item's directory. For example
  * <kbd>content://org.example.test/message</kbd>. Then add query parameters to limit the result set
- * (ideally, using {@link android.net.Uri.Builder#appendQueryParameter(String, String)}) so that
- * your uri looks more like: <kbd>content://org.example.test/message?to=steve</kbd>.
+ * (ideally, using {@link Uri.Builder#appendQueryParameter(String, String) appendQueryParameter}) so
+ * that your uri looks more like: <kbd>content://org.example.test/message?to=steve</kbd>.
  * </p>
  *
  * <p>
@@ -65,7 +71,7 @@ import android.util.Log;
 public class QuerystringWrapper extends DBHelper {
     public static final String TAG = QuerystringWrapper.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     public static final String QUERY_PREFIX_OR = "|";
 
@@ -75,9 +81,39 @@ public class QuerystringWrapper extends DBHelper {
         mWrappedHelper = wrappedHelper;
     }
 
-    @Override
-    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
+    private static class QueryStringResult {
+        public QueryStringResult(String selection, String[] selectionArgs) {
+            this.selection = selection;
+            this.selectionArgs = selectionArgs;
+        }
+
+        /**
+         * The new, composite selection string.
+         */
+        final String selection;
+        /**
+         * The new, composite selection arguments.
+         */
+        final String[] selectionArgs;
+    }
+
+    /**
+     * Performs the query string extraction.
+     *
+     * @param uri
+     *            the full URI, including the query string
+     * @param selection
+     *            the selection string passed in by the
+     *            {@link DBHelper#queryDir(SQLiteDatabase, Uri, String[], String, String[], String)
+     *            queryDir}, etc. method. Null is ok.
+     * @param selectionArgs
+     *            the arguments accompanying the aforementioned selection string. Null is ok.
+     * @return the query string translated and integrated into the selection and selectionArgs that
+     *         were passed in
+     * @throws SQLGenerationException
+     */
+    public static QueryStringResult queryStringToSelection(Uri uri, String selection,
+            String[] selectionArgs) throws SQLGenerationException {
         final String query = uri.getEncodedQuery();
         String newSelection = selection;
         String[] newSelectionArgs = selectionArgs;
@@ -132,9 +168,22 @@ public class QuerystringWrapper extends DBHelper {
             se.initCause(e);
             throw se;
         }
+        return new QueryStringResult(newSelection, newSelectionArgs);
+    }
 
-        return mWrappedHelper.queryDir(db, uri, projection, newSelection, newSelectionArgs,
+    @Override
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        final QueryStringResult qr = queryStringToSelection(uri, selection, selectionArgs);
+
+        return mWrappedHelper.queryDir(db, uri, projection, qr.selection, qr.selectionArgs,
                 sortOrder);
+    }
+
+    @Override
+    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        return mWrappedHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
     }
 
     @Override
@@ -153,7 +202,9 @@ public class QuerystringWrapper extends DBHelper {
     @Override
     public int updateDir(SQLiteDatabase db, ContentProvider provider, Uri uri,
             ContentValues values, String where, String[] whereArgs) {
-        return mWrappedHelper.updateDir(db, provider, uri, values, where, whereArgs);
+        final QueryStringResult qr = queryStringToSelection(uri, where, whereArgs);
+
+        return mWrappedHelper.updateDir(db, provider, uri, values, qr.selection, qr.selectionArgs);
     }
 
     @Override
@@ -165,13 +216,9 @@ public class QuerystringWrapper extends DBHelper {
     @Override
     public int deleteDir(SQLiteDatabase db, ContentProvider provider, Uri uri, String where,
             String[] whereArgs) {
-        return mWrappedHelper.deleteDir(db, provider, uri, where, whereArgs);
-    }
+        final QueryStringResult qr = queryStringToSelection(uri, where, whereArgs);
 
-    @Override
-    public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
-        return mWrappedHelper.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
+        return mWrappedHelper.deleteDir(db, provider, uri, qr.selection, qr.selectionArgs);
     }
 
     @Override
