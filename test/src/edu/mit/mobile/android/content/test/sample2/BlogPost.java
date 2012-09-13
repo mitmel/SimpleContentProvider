@@ -69,7 +69,7 @@ public class BlogPost implements ContentItem {
     public static final String PATH = "posts";
 
     // the DBSortOrder annotation on this class denotes the default sort order.
-    public static final String SORT_ORDER_DEFAULT = "DESC " + CREATED_DATE;
+    public static final String SORT_ORDER_DEFAULT = CREATED_DATE + " DESC";
 
     // This is a helpful tool connecting back to the "child" of this object. This is similar
     // to Django's relation manager, although we need to define it ourselves.
