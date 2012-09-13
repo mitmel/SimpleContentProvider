@@ -5,10 +5,17 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
+import edu.mit.mobile.android.content.m2m.M2MDBHelper;
+import edu.mit.mobile.android.content.m2m.M2MManager;
+import edu.mit.mobile.android.content.m2m.M2MReverseHelper;
 import edu.mit.mobile.android.content.test.sample3.Person;
 import edu.mit.mobile.android.content.test.sample3.Project;
 
 
+/**
+ * Tests {@link M2MDBHelper}, {@link M2MManager}, and {@link M2MReverseHelper}
+ * 
+ */
 public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
 
     public static final String

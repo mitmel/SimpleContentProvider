@@ -11,8 +11,13 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
+import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.test.sample1.Message;
 
+/**
+ * Tests basic CRUD using a single {@link GenericDBHelper}.
+ * 
+ */
 public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 
     private static final String

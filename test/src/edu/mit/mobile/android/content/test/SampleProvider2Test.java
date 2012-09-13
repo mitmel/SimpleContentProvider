@@ -32,10 +32,21 @@ import android.os.RemoteException;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 import edu.mit.mobile.android.content.AndroidVersions;
+import edu.mit.mobile.android.content.DBSortOrder;
+import edu.mit.mobile.android.content.DBTable;
+import edu.mit.mobile.android.content.ForeignKeyDBHelper;
+import edu.mit.mobile.android.content.ForeignKeyManager;
+import edu.mit.mobile.android.content.QuerystringWrapper;
 import edu.mit.mobile.android.content.SQLGenerationException;
+import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.test.sample2.BlogPost;
 import edu.mit.mobile.android.content.test.sample2.Comment;
 
+/**
+ * A test suite in two tables. Tests {@link ForeignKeyDBHelper}, {@link ForeignKeyManager},
+ * {@link QuerystringWrapper}, {@link DBSortOrder}, {@link DBTable}, {@link UriPath}, and more.
+ *
+ */
 public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
     private static final String
