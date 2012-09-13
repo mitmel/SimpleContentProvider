@@ -32,10 +32,21 @@ import android.os.RemoteException;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 import edu.mit.mobile.android.content.AndroidVersions;
+import edu.mit.mobile.android.content.DBSortOrder;
+import edu.mit.mobile.android.content.DBTable;
+import edu.mit.mobile.android.content.ForeignKeyDBHelper;
+import edu.mit.mobile.android.content.ForeignKeyManager;
+import edu.mit.mobile.android.content.QuerystringWrapper;
 import edu.mit.mobile.android.content.SQLGenerationException;
+import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.test.sample2.BlogPost;
 import edu.mit.mobile.android.content.test.sample2.Comment;
 
+/**
+ * A test suite in two tables. Tests {@link ForeignKeyDBHelper}, {@link ForeignKeyManager},
+ * {@link QuerystringWrapper}, {@link DBSortOrder}, {@link DBTable}, {@link UriPath}, and more.
+ *
+ */
 public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
     private static final String
@@ -225,6 +236,17 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         final Uri queryTitle1AndBody1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.BODY, TEST_BODY_1).build();
         ContentResolverTestUtils.testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1).close();
 
+        // /////////////////////////////////
+        // LIKE
+
+        final Uri queryLikeTitle1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE+ "~", TEST_TITLE).build();
+        ContentResolverTestUtils.testQuery(cr, queryLikeTitle1, null, null, null, null, 1).close();
+
+        final Uri queryLikeTitles = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE + "~", "title").build();
+        ContentResolverTestUtils.testQuery(cr, queryLikeTitles, null, null, null, null, 2).close();
+
+        final Uri queryLikeBody1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.BODY + "~", "body").build();
+        ContentResolverTestUtils.testQuery(cr, queryLikeBody1, null, null, null, null, 2).close();
 
         final Uri queryIllegalName = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter("foo'; '", TEST_TITLE).build();
 

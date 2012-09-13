@@ -23,8 +23,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
+import edu.mit.mobile.android.content.ForeignKeyDBHelper;
 import edu.mit.mobile.android.content.test.sample4.Person;
 
+/**
+ * Tests {@link ForeignKeyDBHelper} in the special case where there's only one table which points to
+ * itself.
+ * 
+ */
 public class SampleProvider4Test extends ProviderTestCase2<SampleProvider4> {
 
     //@formatter:off
