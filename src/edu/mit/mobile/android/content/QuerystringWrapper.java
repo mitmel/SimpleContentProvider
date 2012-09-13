@@ -75,6 +75,8 @@ public class QuerystringWrapper extends DBHelper {
 
     public static final String QUERY_PREFIX_OR = "|";
 
+    public static final String QUERIY_PREFIX_LIKE = "~";
+
     private final DBHelper mWrappedHelper;
 
     public QuerystringWrapper(DBHelper wrappedHelper) {
@@ -144,14 +146,25 @@ public class QuerystringWrapper extends DBHelper {
                             sb.append("AND ");
                         }
                     }
+                    boolean like = false;
+                    if (name.endsWith(QUERIY_PREFIX_LIKE)) {
+                        like = true;
+                        name = name.substring(0, name.length() - 1);
+                    }
                     if (!SQLGenUtils.isValidName(name)) {
                         throw new SQLGenerationException("illegal column name in query: '" + name
                                 + "'");
                     }
                     // this isn't escaped, as we check it for validity.
                     sb.append(name);
-                    sb.append("=? ");
-                    newSelectionArgs[i] = nvp.getValue();
+                    if (like) {
+                        sb.append(" like ? ");
+                        newSelectionArgs[i] = "%" + nvp.getValue() + "%";
+                    } else {
+                        sb.append("=? ");
+                        newSelectionArgs[i] = nvp.getValue();
+                    }
+
                     i++;
                 }
 
