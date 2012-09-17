@@ -345,6 +345,12 @@ public abstract class SimpleContentProvider extends ContentProvider {
     public void addChildDirAndItemUri(DBHelper helper, String parentPath, String childPath) {
         final String path = parentPath + "/#/" + childPath;
         addDirAndItemUri(helper, path);
+
+        // XXX this is a hack. There should be a better solution for this
+        if (helper instanceof ForeignKeyDBHelper || helper instanceof M2MDBHelper) {
+            final String path_all = parentPath + "/_all/" + childPath;
+            addDirAndItemUri(helper, path_all, getDirType(path), getItemType(path));
+        }
     }
 
     /**

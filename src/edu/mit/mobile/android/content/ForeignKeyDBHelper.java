@@ -10,31 +10,31 @@ import android.net.Uri;
 /**
  * Database helper to make it easier to access foreign key relationships between a parent and a
  * child with a foreign key pointing to that parent.
- *
+ * 
  * <pre>
  *      relation
  *          ↓
  * [parent] → [child]
  *          → [child 2]
  * </pre>
- *
+ * 
  * For example, you could have an BlogPost that has a relation to multiple Comments.
- *
+ * 
  * Unfortunately, if your version of SQLite doesn't support foreign keys (see
  * {@link AndroidVersions}), this will not automatically cascade deletes for you or verify any
  * relationships. It will otherwise function, though; you will just need to cascade deletes by hand.
- *
+ * 
  * The query function supports wildcard parent IDs. So to select all the children with any parent,
  * you can use {@link #WILDCARD_PATH_SEGMENT} instead of the parent's ID number. Eg.a path of
- *
+ * 
  * <pre>
- * /parent/&#42;/child/
+ * /parent/_all/child/
  * </pre>
- *
+ * 
  * to get a list of all the children in any parent.
- *
+ * 
  * @author steve
- *
+ * 
  */
 public class ForeignKeyDBHelper extends GenericDBHelper {
     public static final String WILDCARD_PATH_SEGMENT = "_all";

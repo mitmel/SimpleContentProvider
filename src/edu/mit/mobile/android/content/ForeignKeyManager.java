@@ -67,6 +67,19 @@ public class ForeignKeyManager implements Manager {
         return ContentUris.withAppendedId(getUri(parent), childId);
     }
 
+    /**
+     * Gets a URI that uses {@link ForeignKeyDBHelper#WILDCARD_PATH_SEGMENT WILDCARD_PATH_SEGMENT}
+     * to retrieve all the children stored using the given {@link ForeignKeyDBHelper}.
+     *
+     * @param parentDir
+     *            the dir URI of the parent
+     * @return a URI that will return all the children
+     */
+    public Uri getAll(Uri parentDir) {
+        return parentDir.buildUpon().appendPath(ForeignKeyDBHelper.WILDCARD_PATH_SEGMENT)
+                .appendPath(mPath).build();
+    }
+
     public Uri insert(ContentResolver cr, Uri parent, ContentValues cv) {
         return cr.insert(getUri(parent), cv);
     }
