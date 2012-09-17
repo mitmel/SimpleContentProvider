@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -35,6 +36,7 @@ import android.util.SparseArray;
  *
  */
 public final class DBHelperMapper {
+    private static final String TAG = DBHelperMapper.class.getSimpleName();
     private final SparseArray<DBHelperMapItem> mDbhMap = new SparseArray<DBHelperMapItem>();
 
     /**
@@ -54,6 +56,9 @@ public final class DBHelperMapper {
      *            the MIME type of the item to add.
      */
     public void addDirMapping(int code, DBHelper helper, int verb, String type) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "registered dir mapping of type " + type + " to " + helper);
+        }
         mDbhMap.put(code, new DBHelperMapItem(verb, false, type, helper));
     }
 
@@ -74,6 +79,9 @@ public final class DBHelperMapper {
      *            the MIME type of the item to add.
      */
     public void addItemMapping(int code, DBHelper helper, int verb, String type) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "registered item mapping of type " + type + " to " + helper);
+        }
         mDbhMap.put(code, new DBHelperMapItem(verb, true, type, helper));
     }
 

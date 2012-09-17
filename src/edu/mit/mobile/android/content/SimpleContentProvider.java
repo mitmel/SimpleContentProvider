@@ -34,6 +34,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.util.Log;
 import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.m2m.M2MDBHelper;
 
@@ -483,7 +484,9 @@ public abstract class SimpleContentProvider extends ContentProvider {
      *            the class of the associated {@link ContentItem}
      */
     public void registerContentItemType(String type, Class<? extends ContentItem> itemClass) {
-
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "registered " + itemClass + " for type " + type);
+        }
         mContentItemTypeMap.put(type, itemClass);
     }
 
