@@ -144,10 +144,11 @@ public class ProviderUtils {
 
     /**
      * Removes key from the given ContentValues and returns it in a new container.
-     *
+     * 
      * @param cv
+     *            the input ContentValues whose key will be removed
      * @param key
-     * @return a new {@link ContentValues} with the specified key removed.
+     * @return a new {@link ContentValues} containing only the removed key's value.
      */
     public static ContentValues extractContentValueItem(ContentValues cv, String key) {
         final String val = cv.getAsString(key);
