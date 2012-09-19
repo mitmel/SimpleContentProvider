@@ -68,7 +68,7 @@ import android.util.Log;
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  */
 // TODO provide ability to limit columns that can be queried.
-public class QuerystringWrapper extends DBHelper {
+public class QuerystringWrapper extends DBHelper implements ContentItemRegisterable {
     public static final String TAG = QuerystringWrapper.class.getSimpleName();
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
@@ -259,5 +259,15 @@ public class QuerystringWrapper extends DBHelper {
     @Override
     public void removeOnSaveListener() {
         mWrappedHelper.removeOnSaveListener();
+    }
+
+    @Override
+    public Class<? extends ContentItem> getContentItem(boolean isItem) {
+        if (mWrappedHelper instanceof ContentItemRegisterable) {
+            return ((ContentItemRegisterable) mWrappedHelper).getContentItem(isItem);
+        } else {
+            throw new IllegalArgumentException(
+                    "wrapped content item does not implement ContentItemRegisterable");
+        }
     }
 }
