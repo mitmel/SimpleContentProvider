@@ -75,7 +75,9 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     public static final String QUERY_PREFIX_OR = "|";
 
-    public static final String QUERIY_PREFIX_LIKE = "~";
+    public static final String QUERY_SUFFIX_LIKE = "~";
+
+    public static final String QUERY_SUFFIX_NOT = "!";
 
     private final DBHelper mWrappedHelper;
 
@@ -140,28 +142,48 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
                     if (i > 0) {
                         if (name.startsWith(QUERY_PREFIX_OR)) {
-                            sb.append("OR ");
+                            sb.append(" OR ");
                             name = name.substring(1);
                         } else {
-                            sb.append("AND ");
+                            sb.append(" AND ");
                         }
                     }
                     boolean like = false;
-                    if (name.endsWith(QUERIY_PREFIX_LIKE)) {
+                    boolean not = false;
+
+                    if (name.endsWith(QUERY_SUFFIX_LIKE)) {
                         like = true;
                         name = name.substring(0, name.length() - 1);
                     }
+
+                    if (name.endsWith(QUERY_SUFFIX_NOT)) {
+                        not = true;
+                        name = name.substring(0, name.length() - 1);
+                    }
+
                     if (!SQLGenUtils.isValidName(name)) {
                         throw new SQLGenerationException("illegal column name in query: '" + name
                                 + "'");
                     }
-                    // this isn't escaped, as we check it for validity.
+                    // this isn't escaped, as we check it for validity. However it's quoted to avoid
+                    // reserved words.
+                    sb.append('"');
                     sb.append(name);
+                    sb.append('"');
+
                     if (like) {
-                        sb.append(" like ? ");
+                        if (not) {
+                            sb.append(" NOT LIKE ?");
+                        } else {
+                            sb.append(" LIKE ?");
+                        }
                         newSelectionArgs[i] = "%" + nvp.getValue() + "%";
                     } else {
-                        sb.append("=? ");
+                        if (not) {
+                            sb.append(" IS NOT ?");
+                        } else {
+                            sb.append(" IS ?");
+                        }
                         newSelectionArgs[i] = nvp.getValue();
                     }
 
