@@ -276,6 +276,12 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         }
         assertTrue("expecting exception to be thrown", exceptionThrown);
 
+        // ///////////////////////////////////
+        // NOT
+
+        final Uri queryNotTitle1 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE + "!", TEST_TITLE).build();
+        ContentResolverTestUtils.testQuery(cr, queryNotTitle1, null, null, null, null, 1).close();
     }
 
     public void testForeignKeyCrud() {
