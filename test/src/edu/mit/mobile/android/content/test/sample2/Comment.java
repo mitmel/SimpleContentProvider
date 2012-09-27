@@ -17,7 +17,7 @@ public class Comment implements ContentItem {
     @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
     public static final String CREATED_DATE = "created";
 
-    @DBColumn(type=TextColumn.class)
+    @DBColumn(type = TextColumn.class)
     public static final String BODY = "body";
 
     // this creates a foreign key relationship to the blog post. In effect, this

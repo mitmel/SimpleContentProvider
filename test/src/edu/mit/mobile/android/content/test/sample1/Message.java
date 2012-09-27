@@ -8,7 +8,6 @@ import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.content.column.TimestampColumn;
 import edu.mit.mobile.android.content.test.SampleProvider1;
 
-
 /**
  * A simple message with a body and creation date.
  */
@@ -28,6 +27,7 @@ public class Message implements ContentItem {
     // The SimpleContentProvider constructs content URIs based on your provided
     // path and authority.
     // This constant is not necessary, but is very handy for doing queries.
-    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider1.AUTHORITY, PATH);
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider1.AUTHORITY,
+            PATH);
 
 }

@@ -15,7 +15,8 @@ public class SampleProvider4 extends SimpleContentProvider {
 
         final GenericDBHelper personHelper = new GenericDBHelper(Person.class);
 
-        final ForeignKeyDBHelper subordinateHelper = new ForeignKeyDBHelper(Person.class, Person.class, Person.SUPERVISOR);
+        final ForeignKeyDBHelper subordinateHelper = new ForeignKeyDBHelper(Person.class,
+                Person.class, Person.SUPERVISOR);
 
         //
         // define the interface.
@@ -27,5 +28,4 @@ public class SampleProvider4 extends SimpleContentProvider {
         // /person/1/subordinates/
         addChildDirAndItemUri(subordinateHelper, Person.PATH, Person.SUBORDINATE_PATH);
     }
-
 }

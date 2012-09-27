@@ -9,7 +9,7 @@ public class SampleProvider1 extends SimpleContentProvider {
     public static final String AUTHORITY = "edu.mit.mobile.android.content.test.sampleprovider1";
 
     public SampleProvider1() {
-        //    authority  DB ver
+        // authority DB ver
         super(AUTHORITY, 1);
 
         // This helper creates the table and can do basic CRUD for items that

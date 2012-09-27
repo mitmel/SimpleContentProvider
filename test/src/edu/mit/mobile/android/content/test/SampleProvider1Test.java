@@ -16,13 +16,12 @@ import edu.mit.mobile.android.content.test.sample1.Message;
 
 /**
  * Tests basic CRUD using a single {@link GenericDBHelper}.
- * 
+ *
  */
 public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 
-    private static final String
-        TEST_MESSAGE_1 = "test message 1",
-        TEST_MESSAGE_1_MOD = "test message 1 modified";
+    private static final String TEST_MESSAGE_1 = "test message 1",
+            TEST_MESSAGE_1_MOD = "test message 1 modified";
 
     public SampleProvider1Test() {
         super(SampleProvider1.class, SampleProvider1.AUTHORITY);
@@ -31,7 +30,7 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
     /**
      * Test basic functionality with simple, known-good data.
      */
-    public void testCRUD(){
+    public void testCRUD() {
         final MockContentResolver cr = getMockContentResolver();
 
         Cursor c = cr.query(Message.CONTENT_URI, null, null, null, null);
@@ -49,7 +48,6 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
         final Uri test1 = cr.insert(Message.CONTENT_URI, cv);
 
         assertNotNull(test1);
-
 
         // make sure that querying works
         c = cr.query(test1, null, null, null, null);
@@ -81,7 +79,8 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
         assertTrue(c.moveToFirst());
 
         assertEquals(TEST_MESSAGE_1_MOD, c.getString(c.getColumnIndex(Message.BODY)));
-        assertEquals(createdTimestamp, c.getString(c.getColumnIndex(Message.CREATED_DATE))); // this shouldn't update
+        // this shouldn't update
+        assertEquals(createdTimestamp, c.getString(c.getColumnIndex(Message.CREATED_DATE)));
 
         c.close();
 
@@ -95,7 +94,7 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
 
     private static final int BULK_INSERTS = 100;
 
-    public void testBulkInsert(){
+    public void testBulkInsert() {
         ContentResolverTestUtils.testBulkInsert(this, Message.CONTENT_URI, Message.BODY, null);
     }
 
@@ -104,7 +103,7 @@ public class SampleProvider1Test extends ProviderTestCase2<SampleProvider1> {
         final MockContentResolver cr = getMockContentResolver();
 
         final ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        for (int i = 0; i < BULK_INSERTS; i++){
+        for (int i = 0; i < BULK_INSERTS; i++) {
             final Builder ins = ContentProviderOperation.newInsert(Message.CONTENT_URI);
             ins.withValue(Message.BODY, ContentResolverTestUtils.getRandMessage());
             ops.add(ins.build());

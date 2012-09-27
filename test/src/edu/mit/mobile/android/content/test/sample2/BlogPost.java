@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.test.sample2;
+
 /*
  * Copyright (C) 2011  MIT Mobile Experience Lab
  *
@@ -32,9 +33,8 @@ import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.content.test.SampleProvider2;
 
 /**
- * A slightly more complex example to test. Doesn't entirely make sense as a
- * data item on a phone, but serves as a nice, well-understood demonstration and
- * test.
+ * A slightly more complex example to test. Doesn't entirely make sense as a data item on a phone,
+ * but serves as a nice, well-understood demonstration and test.
  *
  * @author steve
  *
@@ -78,13 +78,15 @@ public class BlogPost implements ContentItem {
     // The SimpleContentProvider constructs content URIs based on your provided
     // path and authority.
     // This constant is not necessary, but is very handy for doing queries.
-    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider2.AUTHORITY, PATH);
+    public static final Uri CONTENT_URI = ProviderUtils.toContentUri(SampleProvider2.AUTHORITY,
+            PATH);
 
-    public static final OnSaveListener ON_SAVE_LISTENER = new OnSaveListener(){
+    public static final OnSaveListener ON_SAVE_LISTENER = new OnSaveListener() {
         @Override
         public ContentValues onPreSave(SQLiteDatabase db, Uri uri, ContentValues cv) {
-            if (! cv.containsKey(SLUG) && cv.containsKey(TITLE)){
-                final String slug = cv.getAsString(TITLE).replaceAll("\\s+", "-").replaceAll("[^\\w-]+", "");
+            if (!cv.containsKey(SLUG) && cv.containsKey(TITLE)) {
+                final String slug = cv.getAsString(TITLE).replaceAll("\\s+", "-")
+                        .replaceAll("[^\\w-]+", "");
                 cv.put(SLUG, slug);
             }
             return cv;

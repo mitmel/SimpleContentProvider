@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.test;
+
 import java.util.GregorianCalendar;
 
 import android.database.Cursor;
@@ -11,13 +12,13 @@ import edu.mit.mobile.android.content.m2m.M2MReverseHelper;
 import edu.mit.mobile.android.content.test.sample3.Person;
 import edu.mit.mobile.android.content.test.sample3.Project;
 
-
 /**
  * Tests {@link M2MDBHelper}, {@link M2MManager}, and {@link M2MReverseHelper}
- * 
+ *
  */
 public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
 
+    //@formatter:off
     public static final String
         PERSON1_NAME = "Marco Dahlqvist",
         PERSON2_NAME = "Akira Roudiere",
@@ -28,13 +29,13 @@ public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
         PROJECT1_NAME = "Shufflestorm",
         PROJECT2_NAME = "Brightspot",
         PROJECT3_NAME = "Fivebean";
-
+    //@formatter:on
     public SampleProvider3Test() {
         super(SampleProvider3.class, SampleProvider3.AUTHORITY);
 
     }
 
-    public void testCRUD(){
+    public void testCRUD() {
         final MockContentResolver cr = getMockContentResolver();
 
         final Uri project1 = cr.insert(Project.CONTENT_URI,

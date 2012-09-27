@@ -29,7 +29,7 @@ import edu.mit.mobile.android.content.test.sample4.Person;
 /**
  * Tests {@link ForeignKeyDBHelper} in the special case where there's only one table which points to
  * itself.
- * 
+ *
  */
 public class SampleProvider4Test extends ProviderTestCase2<SampleProvider4> {
 
@@ -59,7 +59,8 @@ public class SampleProvider4Test extends ProviderTestCase2<SampleProvider4> {
 
         // person2 is person1's subordinate
         // URI is something like /person/1/subordinate/2
-        final Uri person2AsSubordinate = Person.SUBORDINATES.insert(cr, person1, Person.toCv(PERSON2_NAME));
+        final Uri person2AsSubordinate = Person.SUBORDINATES.insert(cr, person1,
+                Person.toCv(PERSON2_NAME));
 
         assertNotNull(person2AsSubordinate);
 

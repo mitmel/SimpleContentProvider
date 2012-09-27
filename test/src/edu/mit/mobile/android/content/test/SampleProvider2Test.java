@@ -1,6 +1,7 @@
 package edu.mit.mobile.android.content.test;
+
 /*
- * Copyright (C) 2011  MIT Mobile Experience Lab
+ * Copyright (C) 2011-2012  MIT Mobile Experience Lab
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,18 +50,19 @@ import edu.mit.mobile.android.content.test.sample2.Comment;
  */
 public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
+    //@formatter:off
     private static final String
-        TEST_BODY_1 = "test BlogPost body 1",
-        TEST_BODY_1_MOD = "test BlogPost body 1 modified",
-        TEST_BODY_2 = "test BlogPost body 2",
-        TEST_COMMENT_BODY_1 = "first post!!!",
-        TEST_COMMENT_BODY_1_MOD = "[comment poster has been banned]",
-        TEST_COMMENT_BODY_2 = "actually, comment #2 is better",
-        TEST_COMMENT_BODY_3 = "third time is the charm",
-        TEST_COMMENT_ALL_MOD = "everyone's comment has been edited",
-        TEST_TITLE = "test title 1",
-        TEST_TITLE_2 = "test title 2";
-
+            TEST_BODY_1 = "test BlogPost body 1",
+            TEST_BODY_1_MOD = "test BlogPost body 1 modified",
+            TEST_BODY_2 = "test BlogPost body 2",
+            TEST_COMMENT_BODY_1 = "first post!!!",
+            TEST_COMMENT_BODY_1_MOD = "[comment poster has been banned]",
+            TEST_COMMENT_BODY_2 = "actually, comment #2 is better",
+            TEST_COMMENT_BODY_3 = "third time is the charm",
+            TEST_COMMENT_ALL_MOD = "everyone's comment has been edited",
+            TEST_TITLE = "test title 1",
+            TEST_TITLE_2 = "test title 2";
+    //@formatter:on
 
     public SampleProvider2Test() {
         super(SampleProvider2.class, SampleProvider2.AUTHORITY);
@@ -69,7 +71,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
     /**
      * Test basic functionality with simple, known-good data.
      */
-    public void testCRUD(){
+    public void testCRUD() {
         final MockContentResolver cr = getMockContentResolver();
 
         final Cursor c = cr.query(BlogPost.CONTENT_URI, null, null, null, null);
@@ -87,7 +89,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         boolean exceptionThrown = false;
         try {
             createTestPost(cr, null, TEST_BODY_1);
-        }catch (final SQLException e){
+        } catch (final SQLException e) {
             exceptionThrown = true;
         }
         assertTrue("expecting an exception to be thrown", exceptionThrown);
@@ -96,8 +98,8 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         final Uri test1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 
         testQueryItem(cr, test1, TEST_TITLE, TEST_BODY_1).close();
-        // Update
 
+        // Update
 
         cv = new ContentValues();
         cv.put(BlogPost.BODY, TEST_BODY_1_MOD);
@@ -126,22 +128,24 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
      * @param expectedBody
      * @return
      */
-    private Cursor testQueryItem(ContentResolver cr, Uri uri, String expectedTitle, String expectedBody){
+    private Cursor testQueryItem(ContentResolver cr, Uri uri, String expectedTitle,
+            String expectedBody) {
 
         // make sure that querying works
         final Cursor c = ContentResolverTestUtils.testQuery(cr, uri, null, null, null, null, 1);
 
-        if (expectedBody != null){
+        if (expectedBody != null) {
             assertEquals(expectedBody, c.getString(c.getColumnIndex(BlogPost.BODY)));
         }
 
-        if (expectedTitle != null){
+        if (expectedTitle != null) {
             assertEquals(expectedTitle, c.getString(c.getColumnIndex(BlogPost.TITLE)));
         }
 
         assertFalse(c.isNull(c.getColumnIndex(BlogPost.CREATED_DATE)));
         final long createdDate = c.getLong(c.getColumnIndex(BlogPost.CREATED_DATE));
-        assertTrue("createdDate <"+createdDate+"> was not reasonably recent", createdDate > 1200000000); // reasonably recently
+        assertTrue("createdDate <" + createdDate + "> was not reasonably recent",
+                createdDate > 1200000000); // reasonably recently
 
         return c;
     }
@@ -155,31 +159,32 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
      * @param expectedBody
      * @return
      */
-    private Cursor testQueryCommentItem(ContentResolver cr, Uri uri, String expectedBody){
+    private Cursor testQueryCommentItem(ContentResolver cr, Uri uri, String expectedBody) {
 
         // make sure that querying works
         final Cursor c = ContentResolverTestUtils.testQuery(cr, uri, null, null, null, null, 1);
 
-        if (expectedBody != null){
+        if (expectedBody != null) {
             assertEquals(expectedBody, c.getString(c.getColumnIndex(Comment.BODY)));
         }
 
         assertFalse(c.isNull(c.getColumnIndex(Comment.CREATED_DATE)));
         final long createdDate = c.getLong(c.getColumnIndex(Comment.CREATED_DATE));
-        assertTrue("createdDate <"+createdDate+"> was not reasonably recent", createdDate > 1200000000); // reasonably recently
+        assertTrue("createdDate <" + createdDate + "> was not reasonably recent",
+                createdDate > 1200000000); // reasonably recently
 
         return c;
     }
 
-    private Uri createTestPost(ContentResolver cr, String title, String body){
+    private Uri createTestPost(ContentResolver cr, String title, String body) {
         final ContentValues cv = new ContentValues();
 
         // ok, now let's try with a title added:
-        if (title != null){
+        if (title != null) {
             cv.put(BlogPost.TITLE, title);
         }
 
-        if (body != null){
+        if (body != null) {
             cv.put(BlogPost.BODY, body);
         }
 
@@ -187,14 +192,13 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
         assertNotNull(newItem);
 
-
         return newItem;
     }
 
-    private Uri createTestComment(ContentResolver cr, Uri post, String body){
+    private Uri createTestComment(ContentResolver cr, Uri post, String body) {
         final ContentValues cv = new ContentValues();
 
-        if (body != null){
+        if (body != null) {
             cv.put(Comment.BODY, body);
         }
 
@@ -205,62 +209,76 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         return newItem;
     }
 
-    public void testQuerystring(){
+    public void testQuerystring() {
         final MockContentResolver cr = getMockContentResolver();
 
         final Uri item = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 
         testQueryItem(cr, item, TEST_TITLE, TEST_BODY_1).close();
 
-        final Uri queryTitle = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).build();
+        final Uri queryTitle = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE).build();
 
         testQueryItem(cr, queryTitle, TEST_TITLE, TEST_BODY_1).close();
 
         createTestPost(cr, TEST_TITLE_2, TEST_BODY_2);
 
+        // two posts have been created
+
         // should stay the same
         testQueryItem(cr, queryTitle, TEST_TITLE, TEST_BODY_1).close();
 
-        final Uri queryTitle2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
+        final Uri queryTitle2 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
         // should get the new item
         testQueryItem(cr, queryTitle2, TEST_TITLE_2, TEST_BODY_2).close();
 
-
-        final Uri queryTitle1Or2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter("|"+BlogPost.TITLE, TEST_TITLE_2).build();
+        final Uri queryTitle1Or2 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE)
+                .appendQueryParameter("|" + BlogPost.TITLE, TEST_TITLE_2).build();
         ContentResolverTestUtils.testQuery(cr, queryTitle1Or2, null, null, null, null, 2).close();
 
-
-        final Uri queryTitle1And2 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
+        final Uri queryTitle1And2 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE)
+                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE_2).build();
         ContentResolverTestUtils.testQuery(cr, queryTitle1And2, null, null, null, null, 0).close();
 
-        final Uri queryTitle1AndBody1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE, TEST_TITLE).appendQueryParameter(BlogPost.BODY, TEST_BODY_1).build();
-        ContentResolverTestUtils.testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1).close();
+        final Uri queryTitle1AndBody1 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE)
+                .appendQueryParameter(BlogPost.BODY, TEST_BODY_1).build();
+        ContentResolverTestUtils.testQuery(cr, queryTitle1AndBody1, null, null, null, null, 1)
+                .close();
 
         // /////////////////////////////////
         // LIKE
 
-        final Uri queryLikeTitle1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE+ "~", TEST_TITLE).build();
+        final Uri queryLikeTitle1 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE + "~", TEST_TITLE).build();
         ContentResolverTestUtils.testQuery(cr, queryLikeTitle1, null, null, null, null, 1).close();
 
-        final Uri queryLikeTitles = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.TITLE + "~", "title").build();
+        final Uri queryLikeTitles = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.TITLE + "~", "title").build();
         ContentResolverTestUtils.testQuery(cr, queryLikeTitles, null, null, null, null, 2).close();
 
-        final Uri queryLikeBody1 = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter(BlogPost.BODY + "~", "body").build();
+        final Uri queryLikeBody1 = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter(BlogPost.BODY + "~", "body").build();
         ContentResolverTestUtils.testQuery(cr, queryLikeBody1, null, null, null, null, 2).close();
 
-        final Uri queryIllegalName = BlogPost.CONTENT_URI.buildUpon().appendQueryParameter("foo'; '", TEST_TITLE).build();
+        final Uri queryIllegalName = BlogPost.CONTENT_URI.buildUpon()
+                .appendQueryParameter("Robert'); DROP TABLE Students; --", TEST_TITLE).build();
 
         boolean exceptionThrown = false;
         try {
-            ContentResolverTestUtils.testQuery(cr, queryIllegalName, null, null, null, null, 1).close();
-        }catch (final SQLGenerationException e) {
+            ContentResolverTestUtils.testQuery(cr, queryIllegalName, null, null, null, null, 1)
+                    .close();
+        } catch (final SQLGenerationException e) {
             exceptionThrown = true;
         }
         assertTrue("expecting exception to be thrown", exceptionThrown);
 
     }
 
-    public void testForeignKeyCrud(){
+    public void testForeignKeyCrud() {
         final MockContentResolver cr = getMockContentResolver();
 
         final Uri post1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
@@ -272,19 +290,22 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         final Uri comment1 = createTestComment(cr, post1, TEST_COMMENT_BODY_1);
 
         // ensure path creation is correct
-        assertEquals(Uri.withAppendedPath(post1, Comment.PATH + "/1").toString(), comment1.toString());
+        assertEquals(Uri.withAppendedPath(post1, Comment.PATH + "/1").toString(),
+                comment1.toString());
 
         testQueryCommentItem(cr, comment1, TEST_COMMENT_BODY_1).close();
 
         // ensure that we actually handle the IDs
-        ContentResolverTestUtils.testQuery(cr, Uri.withAppendedPath(post1, Comment.PATH + "/2"), null, null, null, null, 0).close();
+        ContentResolverTestUtils.testQuery(cr, Uri.withAppendedPath(post1, Comment.PATH + "/2"),
+                null, null, null, null, 0).close();
 
         final Uri comment2 = createTestComment(cr, post1, TEST_COMMENT_BODY_2);
 
         testQueryCommentItem(cr, comment2, TEST_COMMENT_BODY_2).close();
 
         // ensure that comments are bound to their appropriate parent
-        ContentResolverTestUtils.testQuery(cr, BlogPost.COMMENTS.getUri(post2), null, null, null, null, 0).close();
+        ContentResolverTestUtils.testQuery(cr, BlogPost.COMMENTS.getUri(post2), null, null, null,
+                null, 0).close();
 
         final Uri comment1_post2 = createTestComment(cr, post2, TEST_COMMENT_BODY_1);
 
@@ -321,7 +342,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
                 ContentUris.withAppendedId(Comment.ALL_COMMENTS, 100), null, null, null, null, 0)
                 .close();
 
-        //////////////////////////////////////////
+        // ////////////////////////////////////////
         // update
 
         final ContentValues cv2 = new ContentValues();
@@ -352,7 +373,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         testQueryCommentItem(cr, comment1, TEST_COMMENT_ALL_MOD).close();
         testQueryCommentItem(cr, comment2, TEST_COMMENT_ALL_MOD).close();
 
-        ///////////////////////////////////////////
+        // /////////////////////////////////////////
         // delete
 
         int deletedCount = cr.delete(comment1, null, null);
@@ -376,24 +397,26 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         ContentResolverTestUtils.testQuery(cr, post2Comments, null, null, null, null, 1).close();
 
         // only do this if we know that cascade deletes are supported.
-        if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS){
+        if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
             // let's try deleting the post and ensuring that the child actually gets deleted too.
             cr.delete(post2, null, null);
 
             // This should work, as it only checks the foreign key field of the child (comment)
             // and doesn't ensure that the parent exists
-            ContentResolverTestUtils.testQuery(cr, post2Comments, null, null, null, null, 0).close();
+            ContentResolverTestUtils.testQuery(cr, post2Comments, null, null, null, null, 0)
+                    .close();
         }
 
     }
+
     private static final int BULK_INSERTS = 100;
 
-    public void testBulkInsert(){
+    public void testBulkInsert() {
 
         final MockContentResolver cr = getMockContentResolver();
 
         final ContentValues[] cvs = new ContentValues[BULK_INSERTS];
-        for (int i = 0; i < BULK_INSERTS; i++){
+        for (int i = 0; i < BULK_INSERTS; i++) {
             final ContentValues cv = new ContentValues();
 
             cv.put(BlogPost.BODY, ContentResolverTestUtils.getRandMessage());
@@ -406,7 +429,8 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
         Assert.assertEquals(BULK_INSERTS, created);
 
-        ContentResolverTestUtils.testQuery(cr, BlogPost.CONTENT_URI, null, null, null, null, BULK_INSERTS).close();
+        ContentResolverTestUtils.testQuery(cr, BlogPost.CONTENT_URI, null, null, null, null,
+                BULK_INSERTS).close();
     }
 
     // this API was added in API level 5.
@@ -414,7 +438,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         final MockContentResolver cr = getMockContentResolver();
 
         final ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        for (int i = 0; i < BULK_INSERTS; i++){
+        for (int i = 0; i < BULK_INSERTS; i++) {
             final Builder ins = ContentProviderOperation.newInsert(BlogPost.CONTENT_URI);
             ins.withValue(BlogPost.BODY, ContentResolverTestUtils.getRandMessage());
             ins.withValue(BlogPost.TITLE, "my title " + i);

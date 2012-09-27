@@ -1,6 +1,7 @@
 package edu.mit.mobile.android.content.test;
+
 /*
- * Copyright (C) 2011  MIT Mobile Experience Lab
+ * Copyright (C) 2011-2012  MIT Mobile Experience Lab
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,16 +28,18 @@ public class SampleProvider2 extends SimpleContentProvider {
     public static final String AUTHORITY = "edu.mit.mobile.android.content.test.sampleprovider2";
 
     public SampleProvider2() {
-        //    authority   DB ver
+        // authority DB ver
         super(AUTHORITY, 1);
 
-        final QuerystringWrapper blogPosts = new QuerystringWrapper(new GenericDBHelper(BlogPost.class));
+        final QuerystringWrapper blogPosts = new QuerystringWrapper(new GenericDBHelper(
+                BlogPost.class));
 
         blogPosts.setOnSaveListener(BlogPost.ON_SAVE_LISTENER);
 
         // creates a relationship between BlogPosts and Comments, using Comment.POST as the column.
         // It's also responsible for creating the tables for the child.
-        final ForeignKeyDBHelper comments = new ForeignKeyDBHelper(BlogPost.class, Comment.class, Comment.POST);
+        final ForeignKeyDBHelper comments = new ForeignKeyDBHelper(BlogPost.class, Comment.class,
+                Comment.POST);
 
         addDirAndItemUri(blogPosts, BlogPost.PATH);
         addChildDirAndItemUri(comments, BlogPost.PATH, Comment.PATH);

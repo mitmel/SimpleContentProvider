@@ -46,5 +46,4 @@ public class SampleProvider3 extends SimpleContentProvider {
         // the list of all people on a project
         addDirUri(projectPersonHelper, Project.PATH + "/#/" + Person.PATH);
     }
-
 }
