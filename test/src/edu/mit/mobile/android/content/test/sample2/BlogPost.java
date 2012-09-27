@@ -53,7 +53,7 @@ public class BlogPost implements ContentItem {
     @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
     public static final String CREATED_DATE = "created";
 
-    @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
+    @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS, flags = DatetimeColumn.FLAG_AUTO_NOW)
     public static final String MODIFIED_DATE = "modified";
 
     @DBColumn(type = TextColumn.class, notnull = true)

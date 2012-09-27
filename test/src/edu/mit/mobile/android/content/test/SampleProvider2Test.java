@@ -453,4 +453,63 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
         cr.applyBatch(SampleProvider2.AUTHORITY, ops);
     }
+
+    public void testAutoNow() {
+        final ContentResolver cr = getMockContentResolver();
+
+        final Uri test1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
+
+        final Cursor post1 = testQueryItem(cr, test1, TEST_TITLE, TEST_BODY_1);
+
+        final long createdInitial;
+        long modifiedInitial;
+        try {
+            final long created = post1.getLong(post1.getColumnIndexOrThrow(BlogPost.CREATED_DATE));
+            final long modified = post1
+                    .getLong(post1.getColumnIndexOrThrow(BlogPost.MODIFIED_DATE));
+            createdInitial = created;
+            modifiedInitial = modified;
+
+            assertEquals(created, modified);
+        } finally {
+            post1.close();
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put(BlogPost.BODY, TEST_BODY_1_MOD);
+        cr.update(test1, cv, null, null);
+
+        modifiedInitial = assertModifiedDateChanged(cr, test1, createdInitial, modifiedInitial);
+
+        cv = new ContentValues();
+        cv.put(BlogPost.BODY, TEST_BODY_1_MOD);
+        cr.update(test1, cv, null, null);
+
+        assertModifiedDateChanged(cr, test1, createdInitial, modifiedInitial);
+    }
+
+    private long assertModifiedDateChanged(final ContentResolver cr, final Uri post,
+            final long createdInitial, final long modifiedInitial) {
+        final Cursor post1 = testQueryItem(cr, post, TEST_TITLE, TEST_BODY_1_MOD);
+
+        try {
+            final long created = post1.getLong(post1.getColumnIndexOrThrow(BlogPost.CREATED_DATE));
+            final long modified = post1
+                    .getLong(post1.getColumnIndexOrThrow(BlogPost.MODIFIED_DATE));
+
+            // created date should remain unchanged
+            assertEquals(createdInitial, created);
+
+            // however the trigger should auto-update the modified date
+            assertTrue("modified date is unchanged", modified != modifiedInitial);
+            assertTrue("modified date older than created", modified > created);
+
+            // one more sanity check
+            final long now = System.currentTimeMillis();
+            assertTrue("modified date is newer than now. Time traveling?", modified <= now);
+            return modified;
+        } finally {
+            post1.close();
+        }
+    }
 }

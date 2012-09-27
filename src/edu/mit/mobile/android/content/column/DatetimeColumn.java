@@ -29,13 +29,26 @@ import android.database.Cursor;
  */
 public class DatetimeColumn extends DBColumnType<Date> {
 
-    public static final String
+    public static final int FLAG_AUTO_NOW = 0x1;
+
     // the formula below is from SQLite's manual
-    NOW_IN_MILLISECONDS = DEFAULT_VALUE_ESCAPE + "((julianday('now') - 2440587.5)*86400000)";
+    private static final String NOW_IN_MILLISECONDS_RAW = "((julianday('now') - 2440587.5)*86400000)";
+    public static final String NOW_IN_MILLISECONDS = DEFAULT_VALUE_ESCAPE + NOW_IN_MILLISECONDS_RAW;
 
     @Override
     public String toCreateColumn(String colName) {
         return toColumnDef(colName, "INTEGER");
+    }
+
+    @Override
+    public String postTableSql(String table, String column, int flags) {
+        if ((flags & FLAG_AUTO_NOW) != 0) {
+            return "CREATE TRIGGER trigger_" + table + "_" + column + "_update AFTER UPDATE ON \""
+                    + table + "\" FOR EACH ROW BEGIN UPDATE \"" + table + "\" SET \"" + column
+                    + "\" = " + NOW_IN_MILLISECONDS_RAW + ";END";
+        } else {
+            return null;
+        }
     }
 
     @Override
