@@ -26,7 +26,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import edu.mit.mobile.android.content.column.DBColumn;
+import edu.mit.mobile.android.content.column.DBColumn.Extractor;
 
 /**
  * Provides basic CRUD database calls to handle very simple object types, eg:
@@ -45,6 +45,7 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
     private final String mTable;
     private final Class<? extends ContentItem> mDataItem;
     private final String mSortOrder;
+    private final Extractor mExtractor;
 
     /**
      * @param contentItem
@@ -52,7 +53,8 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
      */
     public GenericDBHelper(Class<? extends ContentItem> contentItem) {
         mDataItem = contentItem;
-        mTable = DBColumn.Extractor.extractTableName(contentItem);
+        mExtractor = new Extractor(contentItem);
+        mTable = mExtractor.getTableName();
         final DBSortOrder sortOrder = contentItem.getAnnotation(DBSortOrder.class);
         mSortOrder = sortOrder != null ? sortOrder.value() : null;
     }
@@ -85,7 +87,9 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
 
     @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
-        db.execSQL(DBColumn.Extractor.getTableCreation(mDataItem, mTable));
+        for (final String sqlExpression : mExtractor.getTableCreation()) {
+            db.execSQL(sqlExpression);
+        }
     }
 
     protected ContentValues callOnPreSaveListener(SQLiteDatabase db, Uri uri, ContentValues values) {

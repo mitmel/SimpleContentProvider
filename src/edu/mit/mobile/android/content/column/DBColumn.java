@@ -24,6 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.database.DatabaseUtils;
 import edu.mit.mobile.android.content.AndroidVersions;
@@ -172,10 +174,33 @@ public @interface DBColumn {
      */
     String extraColDef() default NULL;
 
+    /**
+     * Column type-specific flags.
+     *
+     * @return
+     */
+    int flags() default 0;
+
+    /**
+     * Generates SQL from a {@link ContentItem}. This inspects the class, parses all its
+     * annotations, and so on.
+     *
+     * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
+     *
+     */
     public static class Extractor {
 
         private static final String DOUBLE_ESCAPE = DBColumnType.DEFAULT_VALUE_ESCAPE
                 + DBColumnType.DEFAULT_VALUE_ESCAPE;
+
+        private final Class<? extends ContentItem> mDataItem;
+
+        private final String mTable;
+
+        public Extractor(Class<? extends ContentItem> contentItem) throws SQLGenerationException {
+            mDataItem = contentItem;
+            mTable = extractTableName(mDataItem);
+        }
 
         /**
          * Inspects the {@link ContentItem} and extracts a table name from it. If there is a @DBTable
@@ -201,7 +226,11 @@ public @interface DBColumn {
             return tableName;
         }
 
-        public static String getDbColumnName(Field field) throws SQLGenerationException {
+        public String getTableName() {
+            return mTable;
+        }
+
+        public String getDbColumnName(Field field) throws SQLGenerationException {
             String dbColumnName;
             try {
                 dbColumnName = (String) field.get(null);
@@ -225,14 +254,16 @@ public @interface DBColumn {
             return dbColumnName;
         }
 
-        private static void appendColumnDef(StringBuilder tableSQL, DBColumn t, Field field)
+        private void appendColumnDef(StringBuilder tableSQL, DBColumn t, Field field,
+                List<String> preSql, List<String> postSql)
                 throws IllegalAccessException, InstantiationException {
             @SuppressWarnings("rawtypes")
             final Class<? extends DBColumnType> columnType = t.type();
             @SuppressWarnings("rawtypes")
             final DBColumnType typeInstance = columnType.newInstance();
 
-            tableSQL.append(typeInstance.toCreateColumn(getDbColumnName(field)));
+            final String colName = getDbColumnName(field);
+            tableSQL.append(typeInstance.toCreateColumn(colName));
             if (t.primaryKey()) {
                 tableSQL.append(" PRIMARY KEY");
                 if (t.autoIncrement()) {
@@ -261,6 +292,8 @@ public @interface DBColumn {
                     case ROLLBACK:
                         tableSQL.append(" ROLLBACK");
                         break;
+                    case UNSPECIFIED:
+                        break;
                 }
             }
 
@@ -278,7 +311,8 @@ public @interface DBColumn {
                 case RTRIM:
                     tableSQL.append(" COLLATE RTRIM");
                     break;
-
+                case DEFAULT:
+                    break;
             }
 
             final String defaultValue = t.defaultValue();
@@ -321,9 +355,21 @@ public @interface DBColumn {
             if (!DBColumn.NULL.equals(extraColDef)) {
                 tableSQL.append(extraColDef);
             }
+
+            final int flags = t.flags();
+
+            final String pre = typeInstance.preTableSql(mTable, colName, flags);
+            if (pre != null) {
+                preSql.add(pre);
+            }
+
+            final String post = typeInstance.postTableSql(mTable, colName, flags);
+            if (post != null) {
+                postSql.add(post);
+            }
         }
 
-        public static Class<? extends DBColumnType<?>> getFieldType(
+        public Class<? extends DBColumnType<?>> getFieldType(
                 Class<? extends ContentItem> mDataItem, String fieldName)
                 throws SQLGenerationException, NoSuchFieldException {
 
@@ -332,7 +378,7 @@ public @interface DBColumn {
             return getFieldType(mDataItem, field);
         }
 
-        public static Class<? extends DBColumnType<?>> getFieldType(
+        public Class<? extends DBColumnType<?>> getFieldType(
                 Class<? extends ContentItem> mDataItem, Field field) throws SQLGenerationException {
             try {
 
@@ -371,8 +417,12 @@ public @interface DBColumn {
          * @see DBColumn
          * @see DBTable
          */
-        public static String getTableCreation(Class<? extends ContentItem> mDataItem, String mTable)
+        public List<String> getTableCreation()
                 throws SQLGenerationException {
+            // pre, create table, post
+            final LinkedList<String> preTableSql = new LinkedList<String>();
+            final LinkedList<String> postTableSql = new LinkedList<String>();
+
             try {
                 final StringBuilder tableSQL = new StringBuilder();
 
@@ -401,7 +451,7 @@ public @interface DBColumn {
                     }
 
                     if (t != null) {
-                        appendColumnDef(tableSQL, t, field);
+                        appendColumnDef(tableSQL, t, field, preTableSql, postTableSql);
 
                     } else if (fk != null) {
                         appendFKColumnDef(tableSQL, fk, field);
@@ -411,9 +461,11 @@ public @interface DBColumn {
                 }
                 tableSQL.append(")");
 
-                final String result = tableSQL.toString();
+                preTableSql.add(tableSQL.toString());
 
-                return result;
+                preTableSql.addAll(postTableSql);
+
+                return preTableSql;
 
             } catch (final IllegalArgumentException e) {
                 throw new SQLGenerationException(
@@ -430,8 +482,8 @@ public @interface DBColumn {
             }
         }
 
-        private static void appendFKColumnDef(StringBuilder tableSQL, DBForeignKeyColumn fk,
-                Field field) throws IllegalArgumentException, IllegalAccessException {
+        private void appendFKColumnDef(StringBuilder tableSQL, DBForeignKeyColumn fk, Field field)
+                throws IllegalArgumentException, IllegalAccessException {
 
             tableSQL.append("'");
             tableSQL.append(getDbColumnName(field));

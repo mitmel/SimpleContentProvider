@@ -29,6 +29,30 @@ public abstract class DBColumnType<T> {
     public abstract String toCreateColumn(String colName);
 
     /**
+     * If you wish to execute extra SQL before the table is created, override this method. No need
+     * to call the superclass.
+     * 
+     * @param column
+     *            the name of this column
+     * @return SQL to execute or null (this class's implementation)
+     */
+    public String preTableSql(String table, String column, int flags) {
+        return null;
+    };
+
+    /**
+     * If you wish to execute extra SQL after the table is created, override this method. No need to
+     * call the superclass.
+     * 
+     * @param column
+     *            the name of this column
+     * @return SQL to execute or null (this class's implementation)
+     */
+    public String postTableSql(String table, String column, int flags) {
+        return null;
+    };
+
+    /**
      * @param c
      * @param colNumber
      * @return the value of the given column on the supplied cursor
