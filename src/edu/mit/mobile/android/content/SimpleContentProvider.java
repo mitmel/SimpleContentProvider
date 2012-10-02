@@ -133,8 +133,6 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *
  */
 public abstract class SimpleContentProvider extends ContentProvider {
-
-    @SuppressWarnings("unused")
     private static final String TAG = SimpleContentProvider.class.getSimpleName();
 
     // /////////////////// public API constants
