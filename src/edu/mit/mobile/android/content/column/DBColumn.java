@@ -49,7 +49,7 @@ import edu.mit.mobile.android.content.SimpleContentProvider;
  *
  * The names and structure of this are based loosely on Django's Model/Field framework.
  *
- * @author steve
+ * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -186,6 +186,7 @@ public @interface DBColumn {
      * annotations, and so on.
      *
      * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
+     * @see DBColumn
      *
      */
     public static class Extractor {
@@ -226,10 +227,26 @@ public @interface DBColumn {
             return tableName;
         }
 
+        /**
+         * The table name is auto-generated using {@link #extractTableName(Class)}.
+         *
+         * @return the name of the table for this {@link ContentItem}.
+         */
         public String getTableName() {
             return mTable;
         }
 
+        /**
+         * For a given {@code field}, return the value of the field. All fields must be
+         * {@code static String}s whose content is the column name. This method ensures that they
+         * fit this requirement.
+         *
+         * @param field
+         *            the {@code static String} field
+         * @return the value of the field.
+         * @throws SQLGenerationException
+         *             if the field doesn't meet the necessary requirements.
+         */
         public String getDbColumnName(Field field) throws SQLGenerationException {
             String dbColumnName;
             try {
@@ -255,8 +272,8 @@ public @interface DBColumn {
         }
 
         private void appendColumnDef(StringBuilder tableSQL, DBColumn t, Field field,
-                List<String> preSql, List<String> postSql)
-                throws IllegalAccessException, InstantiationException {
+                List<String> preSql, List<String> postSql) throws IllegalAccessException,
+                InstantiationException {
             @SuppressWarnings("rawtypes")
             final Class<? extends DBColumnType> columnType = t.type();
             @SuppressWarnings("rawtypes")
@@ -437,8 +454,7 @@ public @interface DBColumn {
          * @see DBColumn
          * @see DBTable
          */
-        public List<String> getTableCreation()
-                throws SQLGenerationException {
+        public List<String> getTableCreation() throws SQLGenerationException {
             // pre, create table, post
             final LinkedList<String> preTableSql = new LinkedList<String>();
             final LinkedList<String> postTableSql = new LinkedList<String>();
