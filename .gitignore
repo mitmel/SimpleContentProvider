@@ -2,5 +2,7 @@ bin/
 gen/
 doc/
 .project
+test/.project
+test/.classpath
 local.properties
 build.xml
