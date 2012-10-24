@@ -41,6 +41,11 @@ public class ProviderUtils {
      * @return a query string with the extra clauses added in
      */
     public static String addExtraWhere(String where, String... extraWhere) {
+        // shortcut a common case
+        if (where == null && extraWhere.length == 1) {
+            return extraWhere[0];
+        }
+
         final String extraWhereJoined = "(" + TextUtils.join(") AND (", Arrays.asList(extraWhere))
                 + ")";
         return extraWhereJoined
@@ -58,12 +63,17 @@ public class ProviderUtils {
      * @return a new String[] with the extra arguments added in
      */
     public static String[] addExtraWhereArgs(String[] whereArgs, String... extraArgs) {
+        // shortcut a common case
+        if (whereArgs == null) {
+            return extraArgs;
+        }
+
         final List<String> whereArgs2 = new ArrayList<String>();
         if (whereArgs != null) {
             whereArgs2.addAll(Arrays.asList(whereArgs));
         }
         whereArgs2.addAll(0, Arrays.asList(extraArgs));
-        return whereArgs2.toArray(new String[] {});
+        return whereArgs2.toArray(new String[whereArgs2.size()]);
     }
 
     /**
@@ -144,7 +154,7 @@ public class ProviderUtils {
 
     /**
      * Removes key from the given ContentValues and returns it in a new container.
-     * 
+     *
      * @param cv
      *            the input ContentValues whose key will be removed
      * @param key
