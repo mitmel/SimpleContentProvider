@@ -49,7 +49,7 @@ import edu.mit.mobile.android.content.SimpleContentProvider;
  *
  * The names and structure of this are based loosely on Django's Model/Field framework.
  *
- * @author steve
+ * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -186,6 +186,7 @@ public @interface DBColumn {
      * annotations, and so on.
      *
      * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
+     * @see DBColumn
      *
      */
     public static class Extractor {
@@ -226,10 +227,26 @@ public @interface DBColumn {
             return tableName;
         }
 
+        /**
+         * The table name is auto-generated using {@link #extractTableName(Class)}.
+         *
+         * @return the name of the table for this {@link ContentItem}.
+         */
         public String getTableName() {
             return mTable;
         }
 
+        /**
+         * For a given {@code field}, return the value of the field. All fields must be
+         * {@code static String}s whose content is the column name. This method ensures that they
+         * fit this requirement.
+         *
+         * @param field
+         *            the {@code static String} field
+         * @return the value of the field.
+         * @throws SQLGenerationException
+         *             if the field doesn't meet the necessary requirements.
+         */
         public String getDbColumnName(Field field) throws SQLGenerationException {
             String dbColumnName;
             try {
@@ -255,8 +272,8 @@ public @interface DBColumn {
         }
 
         private void appendColumnDef(StringBuilder tableSQL, DBColumn t, Field field,
-                List<String> preSql, List<String> postSql)
-                throws IllegalAccessException, InstantiationException {
+                List<String> preSql, List<String> postSql) throws IllegalAccessException,
+                InstantiationException {
             @SuppressWarnings("rawtypes")
             final Class<? extends DBColumnType> columnType = t.type();
             @SuppressWarnings("rawtypes")
@@ -369,17 +386,38 @@ public @interface DBColumn {
             }
         }
 
-        public Class<? extends DBColumnType<?>> getFieldType(
-                Class<? extends ContentItem> mDataItem, String fieldName)
+        /**
+         * Gets the database column type of the field. The field must have a {@link DBColumn}
+         * annotation.
+         *
+         * @param fieldName
+         *            the name of the field. This is whatever name you've used for the
+         *            {@code static String}, not its value.
+         * @return the {@link DBColumnType} of the field
+         * @throws SQLGenerationException
+         * @throws NoSuchFieldException
+         */
+        public Class<? extends DBColumnType<?>> getFieldType(String fieldName)
                 throws SQLGenerationException, NoSuchFieldException {
 
             final Field field = mDataItem.getField(fieldName);
 
-            return getFieldType(mDataItem, field);
+            return getFieldType(field);
         }
 
-        public Class<? extends DBColumnType<?>> getFieldType(
-                Class<? extends ContentItem> mDataItem, Field field) throws SQLGenerationException {
+        /**
+         * Gets the database column type of the field. The field must have a {@link DBColumn}
+         * annotation.
+         *
+         * @param field
+         *            the given {@code static String} field.
+         * @return the type of the field, as defined in the annotation or {@code null} if the given
+         *         field has no {@link DBColumn} annotation.
+         * @throws SQLGenerationException
+         *             if an annotation is present, but there's an error in the field definition.
+         */
+        public Class<? extends DBColumnType<?>> getFieldType(Field field)
+                throws SQLGenerationException {
             try {
 
                 final DBColumn t = field.getAnnotation(DBColumn.class);
@@ -403,7 +441,6 @@ public @interface DBColumn {
 
             } catch (final SecurityException e) {
                 throw new SQLGenerationException("cannot access class fields", e);
-
             }
         }
 
@@ -417,8 +454,7 @@ public @interface DBColumn {
          * @see DBColumn
          * @see DBTable
          */
-        public List<String> getTableCreation()
-                throws SQLGenerationException {
+        public List<String> getTableCreation() throws SQLGenerationException {
             // pre, create table, post
             final LinkedList<String> preTableSql = new LinkedList<String>();
             final LinkedList<String> postTableSql = new LinkedList<String>();
