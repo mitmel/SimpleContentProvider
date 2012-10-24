@@ -20,9 +20,64 @@ import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.SQLGenerationException;
 
 /**
- *
+ * <p>
+ * An implementation of the {@link SearchManager} interface. This handles queries made to the search
+ * URI, searching one or more tables and one or more columns within that table. Results contain
+ * appropriate data URIs to link back to the application.
+ * </p>
+ * 
+ * <h2>To Use</h2>
+ * 
+ * <p>
+ * Create one or more {@link GenericDBHelper}s that you wish to search. For example, a blog post:
+ * </p>
+ * 
+ * <code><pre>
+ * final GenericDBHelper blogPosts = new GenericDBHelper(BlogPost.class);
+ * 
+ * </pre></code>
+ * <p>
+ * ...and comments on those posts:
+ * </p>
+ * <code><pre>
+ * 
+ * final ForeignKeyDBHelper comments = new ForeignKeyDBHelper(BlogPost.class, Comment.class,
+ *         Comment.POST);
+ * </pre></code>
+ * <p>
+ * Add in the search interface:
+ * </p>
+ * <code><pre>
+ * final SearchDBHelper searchHelper = new SearchDBHelper();
+ * </pre></code>
+ * <p>
+ * And register your helpers with the search helper. The columns specified below indicate which
+ * columns will be returned (in this case, the title and the body) in the search results and which
+ * columns will be searched (the body and the title).
+ * </p>
+ * <code><pre>
+ * searchHelper.registerDBHelper(blogPosts, BlogPost.CONTENT_URI, BlogPost.TITLE, BlogPost.BODY,
+ *         BlogPost.BODY, BlogPost.TITLE);
+ * 
+ * searchHelper.registerDBHelper(comments, Comment.ALL_COMMENTS, Comment.BODY, null, Comment.BODY);
+ * </pre></code>
+ * <p>
+ * Define these as constants to make them easier to use in other contexts
+ * </p>
+ * <code><pre>
+ * public static final String SEARCH_PATH = &quot;search&quot;;
+ * public static final Uri SEARCH = ProviderUtils.toContentUri(AUTHORITY, SEARCH_PATH);
+ * </pre></code>
+ * <p>
+ * This hooks in the search helper at the given path. In this case, the path will be
+ * <code>content://vnd.android..../search</code>
+ * </p>
+ * <code><pre>
+ * addSearchUri(searchHelper, SEARCH_PATH);
+ * </pre></code>
+ * 
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
- *
+ * 
  */
 public class SearchDBHelper extends DBHelper {
 
@@ -32,6 +87,33 @@ public class SearchDBHelper extends DBHelper {
 
     }
 
+    /**
+     * <p>
+     * Adds a {@link GenericDBHelper} to the list of search helpers that will be queried for this
+     * search. All the registered DBHelpers will be searched and results will be mixed together.
+     * </p>
+     *
+     * <p>
+     * The columns to search, provided in {@code searchColumns}, will be queried using a simple
+     * {@code LIKE "%query%"} substring search. The results are concatenate using {@code UNION ALL}.
+     * </p>
+     *
+     * @param helper
+     *            the helper you wish to search. This must return a valid result for
+     *            {@link GenericDBHelper#getTable()}.
+     * @param contentUri
+     *            the base URI that will be used when linking back to the item from the search
+     *            results (see {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA}). This can be null
+     *            to disable this feature.
+     * @param text1Column
+     *            the text column that will be used for {@link SearchManager#SUGGEST_COLUMN_TEXT_1}.
+     *            This is required.
+     * @param text2Column
+     *            the text column that will be used for {@link SearchManager#SUGGEST_COLUMN_TEXT_2}.
+     *            This is optional and can be null.
+     * @param searchColumns
+     *            a list of the columns that will be searched for the given keyword.
+     */
     public void registerDBHelper(GenericDBHelper helper, Uri contentUri, String text1Column,
             String text2Column, String... searchColumns) {
         mRegisteredHelpers.add(new RegisteredHelper(helper, contentUri, text1Column, text2Column,
