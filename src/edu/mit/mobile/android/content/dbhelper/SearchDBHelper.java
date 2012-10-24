@@ -227,6 +227,10 @@ public class SearchDBHelper extends DBHelper {
                         + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
                 extProj.add(tablePrefix + ContentItem._ID + " AS "
                         + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+            } else {
+                // this is needed as sqlite3 crashes otherwise.
+                extProj.add("'' AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+                extProj.add("'' AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
             }
 
             qb.setTables(table);
