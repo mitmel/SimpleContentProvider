@@ -69,11 +69,12 @@ public class SQLGenUtils {
 
     /**
      * Escapes table names so they can be used in SQL queries.
-     *
+     * 
      * @param tableName
      *            a plain table name
      * @return a quoted, escaped table name
-     * @see http://stackoverflow.com/a/6701665/90934
+     * @see <a
+     *      href="http://stackoverflow.com/a/6701665/90934">http://stackoverflow.com/a/6701665/90934</a>
      */
     public static String escapeTableName(String tableName) {
         return '"' + tableName.replaceAll("\"", "\"\"") + '"';
