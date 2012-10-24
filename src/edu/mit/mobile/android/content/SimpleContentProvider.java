@@ -374,8 +374,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
         mDBHelperMapper.addItemMapping(mMatcherID, dbHelper, verb, type);
         MATCHER.addURI(mAuthority, path, mMatcherID);
         if (dbHelper instanceof ContentItemRegisterable) {
-            registerContentItemType(type,
-                    ((ContentItemRegisterable) dbHelper).getContentItem(true));
+            registerContentItemType(type, ((ContentItemRegisterable) dbHelper).getContentItem(true));
         }
         mMatcherID++;
     }
@@ -402,11 +401,24 @@ public abstract class SimpleContentProvider extends ContentProvider {
      * @param searchHelper
      * @param path
      *            the path, without any starting or ending slashes. This will be suffixed with
-     *            {@code /*}
+     *            {@link SearchManager#SUGGEST_URI_PATH_QUERY}{@code /*}. Can be null.
      */
     public void addSearchUri(SearchDBHelper searchHelper, String path) {
-        addItemUri(searchHelper, path + "/*", SearchManager.SUGGEST_MIME_TYPE,
+        addItemUri(searchHelper, getSearchPath(path) + "/*", SearchManager.SUGGEST_MIME_TYPE,
                 DBHelperMapper.VERB_QUERY);
+    }
+
+    /**
+     * Constructs a full search path based on the given path. Equivalent to {@code path/}
+     * {@link SearchManager#SUGGEST_URI_PATH_QUERY}
+     * 
+     * @param path
+     *            the path to suffix the whole query. can be null, which will simply output
+     *            {@link SearchManager#SUGGEST_URI_PATH_QUERY}.
+     * @return the full search path
+     */
+    public static String getSearchPath(String path) {
+        return (path != null ? path + "/" : "") + SearchManager.SUGGEST_URI_PATH_QUERY;
     }
 
     @Override

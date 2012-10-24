@@ -30,8 +30,9 @@ import edu.mit.mobile.android.content.test.sample2.Comment;
 public class SampleProvider2 extends SimpleContentProvider {
     public static final String AUTHORITY = "edu.mit.mobile.android.content.test.sampleprovider2";
 
-    public static final String SEARCH_PATH = "search";
-    public static final Uri SEARCH = ProviderUtils.toContentUri(AUTHORITY, SEARCH_PATH);
+    public static final String SEARCH_PATH = null; // use the default search path
+    public static final Uri SEARCH = ProviderUtils.toContentUri(AUTHORITY,
+            getSearchPath(SEARCH_PATH));
 
     public SampleProvider2() {
         // authority DB ver
