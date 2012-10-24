@@ -495,6 +495,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
     public void testSearchManually() {
         final ContentResolver cr = getMockContentResolver();
 
+
         final Uri post1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 
         final Uri post2 = createTestPost(cr, TEST_TITLE_2, TEST_BODY_2);

@@ -3,13 +3,16 @@ package edu.mit.mobile.android.content.dbhelper;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Build;
 import edu.mit.mobile.android.content.ContentItem;
 import edu.mit.mobile.android.content.DBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
@@ -82,56 +85,87 @@ public class SearchDBHelper extends DBHelper {
         throw new UnsupportedOperationException("delete not supported for this helper");
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @SuppressWarnings("deprecation")
     @Override
     public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
             String[] selectionArgs, String sortOrder) {
         final String searchQuery = uri.getLastPathSegment();
 
-        final RegisteredHelper searchReg = mRegisteredHelpers.get(0); // XXX
+        final StringBuilder multiSelect = new StringBuilder();
 
-        final StringBuilder extSel = new StringBuilder();
+        multiSelect.append('(');
 
-        // build the selection that matches the search string in the given
-        int i = 0;
-        extSel.append('(');
-        for (final String column : searchReg.mColumns) {
-            if (i > 0) {
-                extSel.append(" OR ");
+        final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        boolean addUnion = false;
+        for (final RegisteredHelper searchReg : mRegisteredHelpers) {
+
+            // UNION ALL concatenates the inner queries
+            if (addUnion) {
+                multiSelect.append(" UNION ALL ");
+            }
+            addUnion = true;
+
+            final StringBuilder extSel = new StringBuilder();
+
+            // build the selection that matches the search string in the given
+            int i = 0;
+            for (final String column : searchReg.mColumns) {
+                if (i > 0) {
+                    extSel.append(" OR ");
+                }
+
+                extSel.append("\"");
+                extSel.append(column);
+                extSel.append("\" LIKE ?1");
+
+                i++;
             }
 
-            extSel.append("\"");
-            extSel.append(column);
-            extSel.append("\" LIKE ?1");
+            final ArrayList<String> extProj = new ArrayList<String>();
+            final String table = searchReg.mHelper.getTable();
+            final String tablePrefix = '"' + table + "\".";
 
-            i++;
-        }
-        extSel.append(')');
+            extProj.add(tablePrefix + ContentItem._ID + " AS " + ContentItem._ID);
 
-        final ArrayList<String> extProj = new ArrayList<String>();
-        final String table = searchReg.mHelper.getTable();
-        final String tablePrefix = '"' + table + "\".";
+            extProj.add(tablePrefix + searchReg.mText1Column + " AS "
+                    + SearchManager.SUGGEST_COLUMN_TEXT_1);
 
-        extProj.add(tablePrefix + ContentItem._ID + " AS " + ContentItem._ID);
+            if (searchReg.mText2Column != null) {
+                extProj.add(tablePrefix + searchReg.mText2Column + "  AS "
+                        + SearchManager.SUGGEST_COLUMN_TEXT_2);
+            } else {
+                // this is needed as sqlite3 crashes otherwise.
+                extProj.add("'' AS " + SearchManager.SUGGEST_COLUMN_TEXT_2);
+            }
 
-        extProj.add(tablePrefix + searchReg.mText1Column + "  AS "
-                + SearchManager.SUGGEST_COLUMN_TEXT_1);
+            if (searchReg.mContentUri != null) {
+                extProj.add("'" + searchReg.mContentUri.toString() + "' AS "
+                        + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+                extProj.add(tablePrefix + ContentItem._ID + " AS "
+                        + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+            }
 
-        if (searchReg.mText2Column != null) {
-            extProj.add(tablePrefix + searchReg.mText2Column + "  AS "
-                    + SearchManager.SUGGEST_COLUMN_TEXT_2);
-        }
+            qb.setTables(table);
 
-        if (searchReg.mContentUri != null) {
-            extProj.add("'" + searchReg.mContentUri.toString() + "' AS "
-                    + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
-            extProj.add(tablePrefix + ContentItem._ID + " AS "
-                    + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
-        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                multiSelect.append(qb.buildQuery(extProj.toArray(new String[extProj.size()]),
+                        ProviderUtils.addExtraWhere(selection, extSel.toString()), null, null,
+                        sortOrder, null));
+            } else {
+                multiSelect.append(qb.buildQuery(extProj.toArray(new String[extProj.size()]),
+                        ProviderUtils.addExtraWhere(selection, extSel.toString()), null, null,
+                        null, sortOrder, null));
+            }
 
-        return searchReg.mHelper.queryDir(db, searchReg.mContentUri,
-                extProj.toArray(new String[extProj.size()]),
-                ProviderUtils.addExtraWhere(selection, extSel.toString()),
-                ProviderUtils.addExtraWhereArgs(selectionArgs, "%" + searchQuery + "%"), sortOrder);
+        } // inner selects
+
+        multiSelect.append(')');
+
+        return db.query(multiSelect.toString(), null, selection,
+                ProviderUtils.addExtraWhereArgs(selectionArgs, "%" + searchQuery + "%"), null,
+                null, sortOrder);
     }
 
     @Override
@@ -142,17 +176,19 @@ public class SearchDBHelper extends DBHelper {
 
     @Override
     public String getPath() {
-        // TODO Auto-generated method stub
+        // unused
         return null;
     }
 
     @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
+        // unused
     }
 
     @Override
     public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
             throws SQLGenerationException {
+        // unused
     }
 
 }
