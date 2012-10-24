@@ -25,22 +25,22 @@ import edu.mit.mobile.android.content.SQLGenerationException;
  * URI, searching one or more tables and one or more columns within that table. Results contain
  * appropriate data URIs to link back to the application.
  * </p>
- * 
+ *
  * <h2>To Use</h2>
- * 
+ *
  * <p>
  * Create one or more {@link GenericDBHelper}s that you wish to search. For example, a blog post:
  * </p>
- * 
+ *
  * <code><pre>
  * final GenericDBHelper blogPosts = new GenericDBHelper(BlogPost.class);
- * 
+ *
  * </pre></code>
  * <p>
  * ...and comments on those posts:
  * </p>
  * <code><pre>
- * 
+ *
  * final ForeignKeyDBHelper comments = new ForeignKeyDBHelper(BlogPost.class, Comment.class,
  *         Comment.POST);
  * </pre></code>
@@ -58,7 +58,7 @@ import edu.mit.mobile.android.content.SQLGenerationException;
  * <code><pre>
  * searchHelper.registerDBHelper(blogPosts, BlogPost.CONTENT_URI, BlogPost.TITLE, BlogPost.BODY,
  *         BlogPost.BODY, BlogPost.TITLE);
- * 
+ *
  * searchHelper.registerDBHelper(comments, Comment.ALL_COMMENTS, Comment.BODY, null, Comment.BODY);
  * </pre></code>
  * <p>
@@ -75,9 +75,9 @@ import edu.mit.mobile.android.content.SQLGenerationException;
  * <code><pre>
  * addSearchUri(searchHelper, SEARCH_PATH);
  * </pre></code>
- * 
+ *
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
- * 
+ *
  */
 public class SearchDBHelper extends DBHelper {
 
@@ -167,12 +167,26 @@ public class SearchDBHelper extends DBHelper {
         throw new UnsupportedOperationException("delete not supported for this helper");
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @SuppressWarnings("deprecation")
+    @Override
+    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        return search(db, uri, projection, selection, selectionArgs, sortOrder, true);
+    }
+
     @Override
     public Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection, String selection,
             String[] selectionArgs, String sortOrder) {
-        final String searchQuery = uri.getLastPathSegment();
+        return search(db, uri, projection, selection, selectionArgs, sortOrder, false);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @SuppressWarnings("deprecation")
+    private Cursor search(SQLiteDatabase db, Uri uri, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder, boolean isDir) {
+
+        final String searchQuery = isDir ? null : "%" + uri.getLastPathSegment() + "%";
+
+        final String limit = uri.getQueryParameter("limit");
 
         final StringBuilder multiSelect = new StringBuilder();
 
@@ -189,20 +203,24 @@ public class SearchDBHelper extends DBHelper {
             }
             addUnion = true;
 
-            final StringBuilder extSel = new StringBuilder();
+            String searchSelection = null;
 
-            // build the selection that matches the search string in the given
-            int i = 0;
-            for (final String column : searchReg.mColumns) {
-                if (i > 0) {
-                    extSel.append(" OR ");
+            if (!isDir) {
+                final StringBuilder extSel = new StringBuilder();
+                // build the selection that matches the search string in the given
+                int i = 0;
+                for (final String column : searchReg.mColumns) {
+                    if (i > 0) {
+                        extSel.append(" OR ");
+                    }
+
+                    extSel.append("\"");
+                    extSel.append(column);
+                    extSel.append("\" LIKE ?1");
+
+                    i++;
                 }
-
-                extSel.append("\"");
-                extSel.append(column);
-                extSel.append("\" LIKE ?1");
-
-                i++;
+                searchSelection = extSel.toString();
             }
 
             final ArrayList<String> extProj = new ArrayList<String>();
@@ -236,13 +254,15 @@ public class SearchDBHelper extends DBHelper {
             qb.setTables(table);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                multiSelect.append(qb.buildQuery(extProj.toArray(new String[extProj.size()]),
-                        ProviderUtils.addExtraWhere(selection, extSel.toString()), null, null,
-                        sortOrder, null));
+                multiSelect.append(qb.buildQuery(
+                        extProj.toArray(new String[extProj.size()]),
+                        searchSelection != null ? ProviderUtils.addExtraWhere(selection,
+                                searchSelection) : selection, null, null, sortOrder, null));
             } else {
-                multiSelect.append(qb.buildQuery(extProj.toArray(new String[extProj.size()]),
-                        ProviderUtils.addExtraWhere(selection, extSel.toString()), null, null,
-                        null, sortOrder, null));
+                multiSelect.append(qb.buildQuery(
+                        extProj.toArray(new String[extProj.size()]),
+                        searchSelection != null ? ProviderUtils.addExtraWhere(selection,
+                                searchSelection) : selection, null, null, null, sortOrder, null));
             }
 
         } // inner selects
@@ -250,14 +270,8 @@ public class SearchDBHelper extends DBHelper {
         multiSelect.append(')');
 
         return db.query(multiSelect.toString(), null, selection,
-                ProviderUtils.addExtraWhereArgs(selectionArgs, "%" + searchQuery + "%"), null,
-                null, sortOrder);
-    }
-
-    @Override
-    public Cursor queryDir(SQLiteDatabase db, Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
-        throw new UnsupportedOperationException("query dir not supported for this helper");
+                searchQuery != null ? ProviderUtils.addExtraWhereArgs(selectionArgs, searchQuery)
+                        : selectionArgs, null, null, sortOrder, limit);
     }
 
     @Override

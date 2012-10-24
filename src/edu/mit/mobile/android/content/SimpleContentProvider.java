@@ -404,6 +404,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
      *            {@link SearchManager#SUGGEST_URI_PATH_QUERY}{@code /*}. Can be null.
      */
     public void addSearchUri(SearchDBHelper searchHelper, String path) {
+        addDirUri(searchHelper, getSearchPath(path), SearchManager.SUGGEST_MIME_TYPE,
+                DBHelperMapper.VERB_QUERY);
         addItemUri(searchHelper, getSearchPath(path) + "/*", SearchManager.SUGGEST_MIME_TYPE,
                 DBHelperMapper.VERB_QUERY);
     }
@@ -411,7 +413,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
     /**
      * Constructs a full search path based on the given path. Equivalent to {@code path/}
      * {@link SearchManager#SUGGEST_URI_PATH_QUERY}
-     * 
+     *
      * @param path
      *            the path to suffix the whole query. can be null, which will simply output
      *            {@link SearchManager#SUGGEST_URI_PATH_QUERY}.
