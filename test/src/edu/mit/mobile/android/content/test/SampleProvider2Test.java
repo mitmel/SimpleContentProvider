@@ -514,7 +514,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
                 Context.SEARCH_SERVICE);
         // searchManager.triggerSearch("robot", , appSearchData)
 
-        Cursor c = manualSearch(cr, "robot", 1);
+        Cursor c = manualSearch(cr, "robot", 1, -1);
 
         int text1Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1);
         int text2Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_2);
@@ -531,7 +531,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
         c.close();
 
-        c = manualSearch(cr, "kitten", 1);
+        c = manualSearch(cr, "kitten", 1, -1);
 
         text1Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1);
         text2Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_2);
@@ -542,27 +542,47 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         c.close();
 
         // there are no fnords here
-        manualSearch(cr, "fnord", 0).close();
+        manualSearch(cr, "fnord", 0, -1).close();
 
         // but there is a television
-        manualSearch(cr, "television", 1).close();
+        manualSearch(cr, "television", 1, -1).close();
 
         // and a case-insensitive robot
-        manualSearch(cr, "ROBOT", 1).close();
+        manualSearch(cr, "ROBOT", 1, -1).close();
 
         // and a guy named Rob (he's a bot)
-        manualSearch(cr, "Rob", 1).close();
+        manualSearch(cr, "Rob", 1, -1).close();
 
         // as well as two tests
-        manualSearch(cr, "test", 2).close();
+        manualSearch(cr, "test", 2, -1).close();
 
         // and someone who's been banned
-        manualSearch(cr, "banned", 1).close();
+        manualSearch(cr, "banned", 1, -1).close();
 
+        // find all of them
+        manualSearch(cr, null, 7, -1).close();
+
+        // try limiting the search results.
+        manualSearch(cr, null, 4, 4).close();
     }
 
-    private Cursor manualSearch(ContentResolver cr, String query, int expectedCount) {
-        final Cursor c = cr.query(Uri.withAppendedPath(SampleProvider2.SEARCH, query), null, null,
+    /**
+     * @param cr
+     * @param query
+     *            can be null
+     * @param expectedCount
+     * @param limit
+     *            -1 if undesired
+     * @return
+     */
+    private Cursor manualSearch(ContentResolver cr, String query, int expectedCount, int limit) {
+        Uri uri = query != null ? Uri.withAppendedPath(SampleProvider2.SEARCH, query)
+                : SampleProvider2.SEARCH;
+
+        if (limit >= 0) {
+            uri = uri.buildUpon().appendQueryParameter("limit", String.valueOf(limit)).build();
+        }
+        final Cursor c = cr.query(uri, null, null,
                 null, null);
 
         assertNotNull(c);
