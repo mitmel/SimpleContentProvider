@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import android.app.Application;
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
@@ -36,6 +37,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.util.Log;
 import edu.mit.mobile.android.content.column.DBColumn;
+import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
 import edu.mit.mobile.android.content.m2m.M2MDBHelper;
 
 /**
@@ -394,6 +396,19 @@ public abstract class SimpleContentProvider extends ContentProvider {
      */
     public void addItemUri(DBHelper dbHelper, String path, String type) {
         addItemUri(dbHelper, path, type, DBHelperMapper.VERB_ALL);
+    }
+
+    /**
+     * Registers a search helper at the given path.
+     *
+     * @param searchHelper
+     * @param path
+     *            the path, without any starting or ending slashes. This will be suffixed with
+     *            {@code /*}
+     */
+    public void addSearchUri(SearchDBHelper searchHelper, String path) {
+        addItemUri(searchHelper, path + "/*", SearchManager.SUGGEST_MIME_TYPE,
+                DBHelperMapper.VERB_QUERY);
     }
 
     @Override

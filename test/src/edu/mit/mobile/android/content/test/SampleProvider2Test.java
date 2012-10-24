@@ -20,11 +20,13 @@ package edu.mit.mobile.android.content.test;
 import java.util.ArrayList;
 
 import junit.framework.Assert;
+import android.app.SearchManager;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderOperation.Builder;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -55,13 +57,15 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
             TEST_BODY_1 = "test BlogPost body 1",
             TEST_BODY_1_MOD = "test BlogPost body 1 modified",
             TEST_BODY_2 = "test BlogPost body 2",
+            TEST_BODY_3 = "This is a television. On screen you see a robot strangely similar to yourself.",
             TEST_COMMENT_BODY_1 = "first post!!!",
             TEST_COMMENT_BODY_1_MOD = "[comment poster has been banned]",
             TEST_COMMENT_BODY_2 = "actually, comment #2 is better",
             TEST_COMMENT_BODY_3 = "third time is the charm",
             TEST_COMMENT_ALL_MOD = "everyone's comment has been edited",
             TEST_TITLE = "test title 1",
-            TEST_TITLE_2 = "test title 2";
+            TEST_TITLE_2 = "test title 2",
+            TEST_TITLE_3 = "robotfindskitten";
     //@formatter:on
 
     public SampleProvider2Test() {
@@ -486,6 +490,91 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         cr.update(test1, cv, null, null);
 
         assertModifiedDateChanged(cr, test1, createdInitial, modifiedInitial);
+    }
+
+    public void testSearchManually() {
+        final ContentResolver cr = getMockContentResolver();
+
+        final Uri post1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
+
+        final Uri post2 = createTestPost(cr, TEST_TITLE_2, TEST_BODY_2);
+
+        final Uri post3 = createTestPost(cr, TEST_TITLE_3, TEST_BODY_3);
+
+        createTestComment(cr, post1, TEST_COMMENT_BODY_1);
+
+        createTestComment(cr, post2, TEST_COMMENT_BODY_2);
+
+        createTestComment(cr, post1, TEST_COMMENT_BODY_3);
+
+        createTestComment(cr, post1, TEST_COMMENT_BODY_1_MOD);
+
+        final SearchManager searchManager = (SearchManager) getMockContext().getSystemService(
+                Context.SEARCH_SERVICE);
+        // searchManager.triggerSearch("robot", , appSearchData)
+
+        Cursor c = manualSearch(cr, "robot", 1);
+
+        int text1Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1);
+        int text2Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_2);
+        final int dataCol = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+        final int dataIdCol = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+
+        assertTrue(TEST_TITLE_3.equals(c.getString(text1Col)));
+        assertTrue(TEST_BODY_3.equals(c.getString(text2Col)));
+
+        final Uri post3FromSearch = ContentUris.withAppendedId(Uri.parse(c.getString(dataCol)),
+                c.getLong(dataIdCol));
+
+        assertTrue(post3.equals(post3FromSearch));
+
+        c.close();
+
+        c = manualSearch(cr, "kitten", 1);
+
+        text1Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1);
+        text2Col = c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_2);
+
+        assertTrue(TEST_TITLE_3.equals(c.getString(text1Col)));
+        assertTrue(TEST_BODY_3.equals(c.getString(text2Col)));
+
+        c.close();
+
+        // there are no fnords here
+        manualSearch(cr, "fnord", 0).close();
+
+        // but there is a television
+        manualSearch(cr, "television", 1).close();
+
+        // and a case-insensitive robot
+        manualSearch(cr, "ROBOT", 1).close();
+
+        // and a guy named Rob (he's a bot)
+        manualSearch(cr, "Rob", 1).close();
+
+        // as well as two tests
+        manualSearch(cr, "test", 2).close();
+
+        // and someone who's been banned
+        manualSearch(cr, "banned", 1).close();
+
+    }
+
+    private Cursor manualSearch(ContentResolver cr, String query, int expectedCount) {
+        final Cursor c = cr.query(Uri.withAppendedPath(SampleProvider2.SEARCH, query), null, null,
+                null, null);
+
+        assertNotNull(c);
+        assertEquals(expectedCount, c.getCount());
+        assertTrue(expectedCount == 0 || c.moveToFirst());
+
+
+        c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1);
+        c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_2);
+        c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+        c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+
+        return c;
     }
 
     private long assertModifiedDateChanged(final ContentResolver cr, final Uri post,
