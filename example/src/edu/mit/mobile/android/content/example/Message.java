@@ -39,4 +39,6 @@ public class Message implements ContentItem {
     public static final Uri CONTENT_URI = ProviderUtils.toContentUri(
             SampleProvider.AUTHORITY, PATH);
 
+    public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd.edu.mit.mobile.android.content.example.sampleprovider.message";
+
 }

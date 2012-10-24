@@ -46,6 +46,8 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        onNewIntent(getIntent());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -88,6 +90,36 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         setListAdapter(mListAdapter);
 
         registerForContextMenu(getListView());
+    }
+
+    // this is called when the activity is re-started by the system with a new intent. This is only
+    // really used with the
+    @Override
+    protected void onNewIntent(Intent intent) {
+        final String action = intent.getAction();
+        final Uri data = intent.getData();
+
+        // When an item from the search list is clicked, it will deliver this intent to this
+        // activity. The action is defined in the res/xml/searchable and the data is defined in the
+        // SampleProvider's SearchDBHelper configuration.
+        if (Intent.ACTION_VIEW.equals(action) && data != null
+                && Message.CONTENT_TYPE.equals(getContentResolver().getType(data))) {
+
+            // the intent delivered to this activity contains extra component information that
+            // forces this activity to be displayed. We don't actually want that (it's
+            // probably in place for security reasons), so we re-launch the intent without
+            // specifying the activity to show. This will cause the system to look at all of the
+            // Category.DEFAULT intent filters on the system that match the given action and content
+            // type. See the onListItemClick below for another example of this.
+            startActivity(new Intent(action, data));
+            finish();
+            return;
+
+        } else if (Intent.ACTION_SEARCH.equals(action)) {
+            // TODO add
+        }
+
+        setIntent(intent);
     }
 
     @Override

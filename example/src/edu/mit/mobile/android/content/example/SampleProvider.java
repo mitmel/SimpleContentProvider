@@ -1,9 +1,11 @@
 package edu.mit.mobile.android.content.example;
 
 import android.content.ContentUris;
-import edu.mit.mobile.android.content.DBHelper;
+import android.net.Uri;
 import edu.mit.mobile.android.content.GenericDBHelper;
+import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.SimpleContentProvider;
+import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
 
 /**
  * <p>
@@ -58,6 +60,11 @@ public class SampleProvider extends SimpleContentProvider {
     // specify one here starting from your your Application's package string:
     public static final String AUTHORITY = "edu.mit.mobile.android.content.example.sampleprovider";
 
+    public static final String SEARCH_PATH = null;
+
+    public static final Uri SEARCH = ProviderUtils.toContentUri(AUTHORITY,
+            getSearchPath(SEARCH_PATH));
+
     // Every time you update your database schema, you must increment the
     // database version.
     private static final int DB_VERSION = 1;
@@ -67,7 +74,7 @@ public class SampleProvider extends SimpleContentProvider {
 
         // This helper creates the table and can do basic database queries. See
         // Message for more info.
-        final DBHelper messageHelper = new GenericDBHelper(Message.class);
+        final GenericDBHelper messageHelper = new GenericDBHelper(Message.class);
 
         // This adds a mapping between the given content:// URI path and the
         // helper.
@@ -75,5 +82,14 @@ public class SampleProvider extends SimpleContentProvider {
 
         // the above three statements can be repeated to create multiple data
         // stores. Each will have separate tables and URIs.
+
+        // this hooks in search
+        final SearchDBHelper searchHelper = new SearchDBHelper();
+
+        searchHelper.registerDBHelper(messageHelper, Message.CONTENT_URI, Message.TITLE,
+                Message.BODY, Message.TITLE, Message.BODY);
+
+        addSearchUri(searchHelper, SEARCH_PATH);
+
     }
 }

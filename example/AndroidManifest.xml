@@ -22,6 +22,14 @@
 				<action	android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
+			
+			<!-- this hooks in search -->
+			
+			<intent-filter>
+	            <action android:name="android.intent.action.SEARCH" />
+    	    </intent-filter>
+        
+			<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
 		</activity>
 		
 		<!-- MessageDetails displays the contents of one message. Android will automatically
