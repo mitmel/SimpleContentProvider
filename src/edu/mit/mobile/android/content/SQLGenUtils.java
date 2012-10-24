@@ -18,6 +18,7 @@ package edu.mit.mobile.android.content;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +42,7 @@ public class SQLGenUtils {
      * @return a valid SQL name
      */
     public static final String toValidName(Class<? extends Object> myClass) {
-        return toValidName(myClass.getSimpleName().toLowerCase());
+        return toValidName(myClass.getSimpleName().toLowerCase(Locale.US));
     }
 
     /**
