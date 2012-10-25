@@ -13,6 +13,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
+import edu.mit.mobile.android.content.BuildConfig;
 import edu.mit.mobile.android.content.ContentItem;
 import edu.mit.mobile.android.content.DBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
@@ -81,6 +83,7 @@ import edu.mit.mobile.android.content.SQLGenerationException;
  */
 public class SearchDBHelper extends DBHelper {
 
+    private static final String TAG = SearchDBHelper.class.getSimpleName();
     LinkedList<RegisteredHelper> mRegisteredHelpers = new LinkedList<SearchDBHelper.RegisteredHelper>();
 
     public SearchDBHelper() {
@@ -184,6 +187,9 @@ public class SearchDBHelper extends DBHelper {
     private Cursor search(SQLiteDatabase db, Uri uri, String[] projection, String selection,
             String[] selectionArgs, String sortOrder, boolean isDir) {
 
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "search(" + uri + ")");
+        }
         final String searchQuery = isDir ? null : "%" + uri.getLastPathSegment() + "%";
 
         final String limit = uri.getQueryParameter("limit");
@@ -269,9 +275,13 @@ public class SearchDBHelper extends DBHelper {
 
         multiSelect.append(')');
 
-        return db.query(multiSelect.toString(), null, selection,
+        final Cursor c = db.query(multiSelect.toString(), null, selection,
                 searchQuery != null ? ProviderUtils.addExtraWhereArgs(selectionArgs, searchQuery)
                         : selectionArgs, null, null, sortOrder, limit);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "search found " + c.getCount() + " results");
+        }
+        return c;
     }
 
     @Override
