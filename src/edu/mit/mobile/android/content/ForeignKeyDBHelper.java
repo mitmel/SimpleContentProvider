@@ -10,37 +10,38 @@ import android.net.Uri;
 /**
  * Database helper to make it easier to access foreign key relationships between a parent and a
  * child with a foreign key pointing to that parent.
- * 
+ *
  * <pre>
  *      relation
  *          ↓
  * [parent] → [child]
  *          → [child 2]
  * </pre>
- * 
+ *
  * For example, you could have an BlogPost that has a relation to multiple Comments.
- * 
+ *
  * Unfortunately, if your version of SQLite doesn't support foreign keys (see
  * {@link AndroidVersions}), this will not automatically cascade deletes for you or verify any
  * relationships. It will otherwise function, though; you will just need to cascade deletes by hand.
- * 
+ *
  * The query function supports wildcard parent IDs. So to select all the children with any parent,
  * you can use {@link #WILDCARD_PATH_SEGMENT} instead of the parent's ID number. Eg.a path of
- * 
+ *
  * <pre>
  * /parent/_all/child/
  * </pre>
- * 
+ *
  * to get a list of all the children in any parent.
- * 
+ *
  * @author steve
- * 
+ *
  */
 public class ForeignKeyDBHelper extends GenericDBHelper {
     public static final String WILDCARD_PATH_SEGMENT = "_all";
     private final String mColumn;
     private final Class<? extends ContentItem> mChild;
     private final Class<? extends ContentItem> mParent;
+    private final String mColumnQuoted;
 
     public ForeignKeyDBHelper(Class<? extends ContentItem> parent,
             Class<? extends ContentItem> child, String column) {
@@ -48,6 +49,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         mChild = child;
         mParent = parent;
         mColumn = column;
+        mColumnQuoted = '"' + mColumn + '"';
     }
 
     @Override
@@ -64,7 +66,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
         return super.updateItem(db, provider, uri, values,
-                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhere(where, mColumnQuoted + "=?"),
                 ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
     }
 
@@ -74,7 +76,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
         return super.updateDir(db, provider, uri, values,
-                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhere(where, mColumnQuoted + "=?"),
                 ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
     }
 
@@ -84,7 +86,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
         return super.deleteItem(db, provider, uri,
-                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhere(where, mColumnQuoted + "=?"),
                 ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
     }
 
@@ -94,7 +96,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
         return super.deleteDir(db, provider, uri,
-                ProviderUtils.addExtraWhere(where, mColumn + "=?"),
+                ProviderUtils.addExtraWhere(where, mColumnQuoted + "=?"),
                 ProviderUtils.addExtraWhereArgs(whereArgs, parentId));
     }
 
@@ -108,7 +110,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
 
         } else {
             return super.queryDir(db, uri, projection,
-                    ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
+                    ProviderUtils.addExtraWhere(selection, mColumnQuoted + "=?"),
                     ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
         }
     }
@@ -123,7 +125,7 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
 
         } else {
             return super.queryItem(db, uri, projection,
-                    ProviderUtils.addExtraWhere(selection, mColumn + "=?"),
+                    ProviderUtils.addExtraWhere(selection, mColumnQuoted + "=?"),
                     ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
         }
     }
