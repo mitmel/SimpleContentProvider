@@ -1,7 +1,10 @@
 package edu.mit.mobile.android.content.test;
 
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.test.ProviderTestCase2;
@@ -143,4 +146,52 @@ public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
         return c;
 
     }
+
+    public void testMimeTypes() {
+        final ContentResolver cr = getMockContentResolver();
+
+        final HashSet<String> typemap = new HashSet<String>();
+
+        checkContentType(cr, typemap, Person.CONTENT_URI, false);
+
+        checkContentType(cr, typemap, Project.CONTENT_URI, false);
+
+        checkContentType(cr, typemap,
+                Person.PROJECTS.getUri(ContentUris.withAppendedId(Person.CONTENT_URI, 1)), true);
+
+        checkContentType(cr, typemap,
+                Project.PEOPLE.getUri(ContentUris.withAppendedId(Project.CONTENT_URI, 1)), true);
+
+        assertTypesEqual(cr, Person.CONTENT_URI,
+                Project.PEOPLE.getUri(ContentUris.withAppendedId(Project.CONTENT_URI, 1)));
+
+        assertTypesEqual(cr, Project.CONTENT_URI,
+                Person.PROJECTS.getUri(ContentUris.withAppendedId(Person.CONTENT_URI, 1)));
+    }
+
+    private void assertTypesEqual(ContentResolver cr, Uri dir1, Uri dir2) {
+        assertEquals(cr.getType(dir1), cr.getType(dir2));
+        assertEquals(cr.getType(ContentUris.withAppendedId(dir1, 1)),
+                cr.getType(ContentUris.withAppendedId(dir2, 1)));
+    }
+
+    private void checkContentType(ContentResolver cr, HashSet<String> typemap, Uri dir,
+            boolean shouldExist) {
+        final String typeD = cr.getType(dir);
+
+        assertNotNull(typeD);
+
+        assertEquals(shouldExist, typemap.contains(typeD));
+
+        typemap.add(typeD);
+
+        final String typeI = cr.getType(ContentUris.withAppendedId(dir, 1));
+
+        assertNotNull(typeI);
+
+        assertEquals(shouldExist, typemap.contains(typeI));
+
+        typemap.add(typeI);
+    }
+
 }

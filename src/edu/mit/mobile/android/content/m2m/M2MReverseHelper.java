@@ -61,6 +61,16 @@ public class M2MReverseHelper extends DBHelper {
     }
 
     @Override
+    public String getDirType(String authority, String path) {
+        return ProviderUtils.toDirType(authority, mFromTable);
+    }
+
+    @Override
+    public String getItemType(String authority, String path) {
+        return ProviderUtils.toItemType(authority, mFromTable);
+    }
+
+    @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
         // the wrapped helper will handle this.
     }

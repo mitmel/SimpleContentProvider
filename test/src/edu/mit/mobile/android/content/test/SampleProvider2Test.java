@@ -18,6 +18,7 @@ package edu.mit.mobile.android.content.test;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import junit.framework.Assert;
 import android.app.SearchManager;
@@ -492,9 +493,51 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         assertModifiedDateChanged(cr, test1, createdInitial, modifiedInitial);
     }
 
-    public void testSearchManually() {
+    public void testMimeTypes() {
         final ContentResolver cr = getMockContentResolver();
 
+        final HashSet<String> typemap = new HashSet<String>();
+
+        checkContentType(cr, typemap, BlogPost.CONTENT_URI, false);
+
+        checkContentType(cr, typemap, BlogPost.COMMENTS.getAll(BlogPost.CONTENT_URI), false);
+
+        checkContentType(cr, typemap,
+                BlogPost.COMMENTS.getUri(ContentUris.withAppendedId(BlogPost.CONTENT_URI, 1)), true);
+
+        assertTypesEqual(cr,
+                BlogPost.COMMENTS.getUri(ContentUris.withAppendedId(BlogPost.CONTENT_URI, 1)),
+                Comment.ALL_COMMENTS);
+
+    }
+
+    private void checkContentType(ContentResolver cr, HashSet<String> typemap, Uri dir,
+            boolean shouldExist) {
+        final String typeD = cr.getType(dir);
+
+        assertNotNull(typeD);
+
+        assertEquals(shouldExist, typemap.contains(typeD));
+
+        typemap.add(typeD);
+
+        final String typeI = cr.getType(ContentUris.withAppendedId(dir, 1));
+
+        assertNotNull(typeI);
+
+        assertEquals(shouldExist, typemap.contains(typeI));
+
+        typemap.add(typeI);
+    }
+
+    private void assertTypesEqual(ContentResolver cr, Uri dir1, Uri dir2) {
+        assertEquals(cr.getType(dir1), cr.getType(dir2));
+        assertEquals(cr.getType(ContentUris.withAppendedId(dir1, 1)),
+                cr.getType(ContentUris.withAppendedId(dir2, 1)));
+    }
+
+    public void testSearchManually() {
+        final ContentResolver cr = getMockContentResolver();
 
         final Uri post1 = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
 
@@ -582,13 +625,11 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         if (limit >= 0) {
             uri = uri.buildUpon().appendQueryParameter("limit", String.valueOf(limit)).build();
         }
-        final Cursor c = cr.query(uri, null, null,
-                null, null);
+        final Cursor c = cr.query(uri, null, null, null, null);
 
         assertNotNull(c);
         assertEquals(expectedCount, c.getCount());
         assertTrue(expectedCount == 0 || c.moveToFirst());
-
 
         c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_1);
         c.getColumnIndexOrThrow(SearchManager.SUGGEST_COLUMN_TEXT_2);

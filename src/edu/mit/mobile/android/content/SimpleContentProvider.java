@@ -20,7 +20,6 @@ package edu.mit.mobile.android.content;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import android.app.Application;
 import android.app.SearchManager;
@@ -105,17 +104,17 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  * <pre>
  * public class MyProvider extends SimpleContentProvider {
  *     public static final String AUTHORITY = &quot;edu.mit.mobile.android.content.test.sampleprovider1&quot;;
- *
+ * 
  *     public MyProvider() {
  *         // authority DB name DB ver
  *         super(AUTHORITY, &quot;myprovider&quot;, 1);
- *
+ * 
  *         // This helper creates the table and can do basic CRUD for items
  *         // that
  *         // use the dir/item scheme with the BaseColumns._ID integer primary
  *         // key.
  *         final DBHelper messageHelper = new GenericDBHelper(Message.class, Message.CONTENT_URI);
- *
+ * 
  *         // Adds a mapping between the given content:// URI path and the
  *         // helper.
  *         //
@@ -124,9 +123,14 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *         // helpers handle different SQL verbs (eg. use a GenericDBHelper for
  *         // basic insert, delete, update, but have a custom helper for
  *         // querying).
- *         addDirUri(messageHelper, Message.PATH, getDirType(Message.PATH));
- *         addItemUri(messageHelper, Message.PATH + &quot;/#&quot;, getItemType(Message.PATH));
- *
+ * 
+ *         // addDirUri(messageHelper, Message.PATH);
+ *         // addItemUri(messageHelper, Message.PATH + &quot;/#&quot;);
+ * 
+ *         // or more simply:
+ * 
+ *         addDirAndItemUri(messageHelper, Message.PATH);
+ * 
  *     }
  * }
  * </pre>
@@ -280,7 +284,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
      *            the complete MIME type for the item's directory.
      */
     public void addDirUri(DBHelper dbHelper, String path) {
-        addDirUri(dbHelper, path, getDirType(path), DBHelperMapper.VERB_ALL);
+        addDirUri(dbHelper, path, dbHelper.getDirType(mAuthority, path), DBHelperMapper.VERB_ALL);
     }
 
     /**
@@ -303,15 +307,16 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
     /**
      * Adds dir and item entries for the given helper at the given path. The types are generated
-     * using {@link #getDirType(String)} and {@link #getItemType(String)} passing path in for the
-     * suffix.
+     * using {@link DBHelper#getDirType(String, String)} and
+     * {@link DBHelper#getItemType(String, String)} passing path in for the suffix.
      *
      * @param dbHelper
      * @param path
      *            a complete path on top of the content provider's authority.
      */
     public void addDirAndItemUri(DBHelper dbHelper, String path) {
-        addDirAndItemUri(dbHelper, path, getDirType(path), getItemType(path));
+        addDirAndItemUri(dbHelper, path, dbHelper.getDirType(mAuthority, path),
+                dbHelper.getItemType(mAuthority, path));
     }
 
     /**
@@ -349,7 +354,8 @@ public abstract class SimpleContentProvider extends ContentProvider {
         // XXX this is a hack. There should be a better solution for this
         if (helper instanceof ForeignKeyDBHelper || helper instanceof M2MDBHelper) {
             final String path_all = parentPath + "/_all/" + childPath;
-            addDirAndItemUri(helper, path_all, getDirType(path), getItemType(path));
+            addDirAndItemUri(helper, path_all, helper.getDirType(mAuthority, path),
+                    helper.getItemType(mAuthority, path));
         }
     }
 
@@ -463,48 +469,25 @@ public abstract class SimpleContentProvider extends ContentProvider {
         return mDBHelperMapper.getType(match);
     }
 
-    private static final Pattern MIME_INVALID_CHARS = Pattern.compile("[^\\w!#$&.+^-]+");
-    public static final String MIME_INVALID_CHAR_REPLACEMENT = ".";
 
     /**
-     * <p>
-     * Generates a complete MIME type string in the following format:
-     * {@code vnd.android.cursor.dir/vnd.AUTHORITY.SUFFIX}
-     * </p>
+     * This has been moved to {@link ProviderUtils#toDirType(String, String)}
      *
-     * <p>
-     * SUFFIX is filtered so all invalid characters (see <a
-     * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
-     * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
-     * </p>
-     *
-     * @param suffix
-     * @return the MIME type for the given suffix
+     * @deprecated
      */
+    @Deprecated
     public String getDirType(String suffix) {
-        suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
-        return ProviderUtils.TYPE_DIR_PREFIX + mAuthority + "." + suffix;
+        return ProviderUtils.toDirType(mAuthority, suffix);
     }
 
     /**
-     * <p>
-     * Generates a complete MIME type string in the following format:
-     * {@code vnd.android.cursor.item/vnd.AUTHORITY.SUFFIX}
-     * </p>
+     * This has been moved to {@link ProviderUtils#toItemType(String, String)}
      *
-     *
-     * <p>
-     * SUFFIX is filtered so all invalid characters (see <a
-     * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
-     * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
-     * </p>
-     *
-     * @param suffix
-     * @return the MIME type for the given suffix
+     * @deprecated
      */
+    @Deprecated
     public String getItemType(String suffix) {
-        suffix = MIME_INVALID_CHARS.matcher(suffix).replaceAll(MIME_INVALID_CHAR_REPLACEMENT);
-        return ProviderUtils.TYPE_ITEM_PREFIX + mAuthority + "." + suffix;
+        return ProviderUtils.toItemType(mAuthority, suffix);
     }
 
     /**

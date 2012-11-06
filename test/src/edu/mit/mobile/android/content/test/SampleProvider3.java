@@ -40,10 +40,10 @@ public class SampleProvider3 extends SimpleContentProvider {
         addDirAndItemUri(projectHelper, Project.PATH);
 
         // the list of all projects that a person is on
-        addDirUri(personProjectHelper, Person.PATH + "/#/" + Project.PATH);
+        addDirAndItemUri(personProjectHelper, Person.PATH + "/#/" + Project.PATH);
 
         // /project/1/person/
         // the list of all people on a project
-        addDirUri(projectPersonHelper, Project.PATH + "/#/" + Person.PATH);
+        addDirAndItemUri(projectPersonHelper, Project.PATH + "/#/" + Person.PATH);
     }
 }

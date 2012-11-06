@@ -285,6 +285,16 @@ public class SearchDBHelper extends DBHelper {
     }
 
     @Override
+    public String getDirType(String authority, String path) {
+        return SearchManager.SUGGEST_MIME_TYPE;
+    }
+
+    @Override
+    public String getItemType(String authority, String path) {
+        return SearchManager.SUGGEST_MIME_TYPE;
+    }
+
+    @Override
     public String getPath() {
         // unused
         return null;

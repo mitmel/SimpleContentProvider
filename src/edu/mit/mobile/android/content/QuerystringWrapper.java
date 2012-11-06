@@ -292,4 +292,14 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
                     "wrapped content item does not implement ContentItemRegisterable");
         }
     }
+
+    @Override
+    public String getDirType(String authority, String path) {
+        return mWrappedHelper.getDirType(authority, path);
+    }
+
+    @Override
+    public String getItemType(String authority, String path) {
+        return mWrappedHelper.getItemType(authority, path);
+    }
 }

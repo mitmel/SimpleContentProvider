@@ -76,6 +76,16 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
         return mTable;
     }
 
+    @Override
+    public String getDirType(String authority, String path) {
+        return ProviderUtils.toDirType(authority, mTable);
+    }
+
+    @Override
+    public String getItemType(String authority, String path) {
+        return ProviderUtils.toItemType(authority, mTable);
+    }
+
     public Class<? extends ContentItem> getContentItem() {
         return mDataItem;
     }
