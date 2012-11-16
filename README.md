@@ -60,10 +60,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 [1]: http://developer.android.com/intl/de/guide/topics/providers/content-providers.html
 [2]: https://www.djangoproject.com/
-[3]: src/edu/mit/mobile/android/content/SimpleContentProvider.java
-[4]: example/src/edu/mit/mobile/android/content/example/SampleProvider.java
-[5]: example/src/edu/mit/mobile/android/content/example/Message.java
-[6]: example/
+[3]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/SimpleContentProvider.html
+[4]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/SampleProvider.html
+[5]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/Message.html
+[6]: tree/master/example/
 [7]: http://mobile.mit.edu/
 [8]: http://en.wikipedia.org/wiki/Representational_State_Transfer
 [9]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/
