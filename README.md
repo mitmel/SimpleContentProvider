@@ -63,7 +63,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 [3]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/SimpleContentProvider.html
 [4]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/SampleProvider.html
 [5]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/Message.html
-[6]: tree/master/example/
+[6]: SimpleContentProvider/tree/master/example/
 [7]: http://mobile.mit.edu/
 [8]: http://en.wikipedia.org/wiki/Representational_State_Transfer
 [9]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/
