@@ -55,8 +55,22 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
         mDataItem = contentItem;
         mExtractor = new Extractor(contentItem);
         mTable = mExtractor.getTableName();
-        final DBSortOrder sortOrder = contentItem.getAnnotation(DBSortOrder.class);
-        mSortOrder = sortOrder != null ? sortOrder.value() : null;
+
+        mSortOrder = extractSortOrder();
+    }
+
+    private String extractSortOrder() {
+        final DBSortOrder sortOrder = mDataItem.getAnnotation(DBSortOrder.class);
+        return sortOrder != null ? sortOrder.value() : null;
+    }
+
+    /**
+     * Gets the sort order that was specified by the @{@link DBSortOrder} annotation.
+     *
+     * @return the default sort order on null if there was none specified
+     */
+    public String getDefaultSortOrder() {
+        return mSortOrder;
     }
 
     /**
