@@ -88,12 +88,16 @@ public class M2MDBHelper extends DBHelper {
 
     private String getToDefaultSortOrder(GenericDBHelper to) {
 
-        String toTable = to.getDefaultSortOrder();
+        String sortOrder = to.getDefaultSortOrder();
 
-        toTable = toTable.replaceAll("(?i)((?<!\\.)\\b\\w+\\s+(?:DESC|ASC))", mToTableEscaped
+        if (sortOrder == null) {
+            return null;
+        }
+
+        sortOrder = sortOrder.replaceAll("(?i)((?<!\\.)\\b\\w+\\s+(?:DESC|ASC))", mToTableEscaped
                 + ".$1");
 
-        return toTable;
+        return sortOrder;
     }
 
     @Override
