@@ -9,7 +9,7 @@
 		android:minSdkVersion="7" android:targetSdkVersion="15" />
 
 	<application
-		android:icon="@drawable/icon"
+		android:icon="@drawable/ic_launcher"
 		android:label="@string/app_name">
 		
 	    <!-- singleTop is used here, as we don't need multiple instances of the list
