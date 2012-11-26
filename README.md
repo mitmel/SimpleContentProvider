@@ -29,15 +29,33 @@ Content Provider Android already exposes (contacts, media, calendars, etc.).
 Additionally, this library aims to be flexible enough to allow for easy
 extension if what it provides is too simple for your application.
 
+Features
+--------
+
+* Drastically simplifies the creation of SQLite-backed ContentProviders — Android's core data persistence layer — for most common cases
+* Supports basic table/object creation as well as foreign key and m2m relationships
+* URI-based automatic query generation makes it easy to pass views of data between activities
+* Provides easy integration into Android's global search
+* Multi-process, multi-threading access is handled automatically
+* Designed to be used alongside other libraries
+* ContentProviders made with this library can be exported to other Android apps
+
+Example
+-------
+
+For an example / demo of the library, please see the [example code][6] (also
+available on [Google Play][10]). The example shows the core features as
+well as demonstrates how to hook the library into a UI.
+
+It's probably best to start at [SampleProvider][4] and eventually make your way
+through [Message][5] and the accompanying activities.
+
 Using
 -----
 
 The [Javadocs][9] try to be extensive. You should start at
 [SimpleContentProvider][3] which includes a brief walk-through of the system.
 
-For a complete example, please see the [example code][6]. It's probably best to
-start at [SampleProvider][4] and eventually make your way through [Message][5]
-and the accompanying activities.
 
 License
 -------
@@ -63,7 +81,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 [3]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/SimpleContentProvider.html
 [4]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/SampleProvider.html
 [5]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/Message.html
-[6]: SimpleContentProvider/tree/master/example/
+[6]: https://github.com/mitmel/SimpleContentProvider/tree/master/example/
 [7]: http://mobile.mit.edu/
 [8]: http://en.wikipedia.org/wiki/Representational_State_Transfer
 [9]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/
+[10]: https://play.google.com/store/apps/details?id=edu.mit.mobile.android.content.example
