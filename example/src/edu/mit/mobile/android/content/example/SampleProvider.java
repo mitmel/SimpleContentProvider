@@ -56,8 +56,9 @@ import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
  */
 public class SampleProvider extends SimpleContentProvider {
 
-    // Each ContentProvider must have a globally unique authority. You should
-    // specify one here starting from your your Application's package string:
+    // Each ContentProvider must have a globally-unique authority. You can choose an arbitrary
+    // string here, however to ensure that they will be globally-unique, best-practice is to build
+    // one off your Application's package string.
     public static final String AUTHORITY = "edu.mit.mobile.android.content.example.sampleprovider";
 
     public static final String SEARCH_PATH = null;
