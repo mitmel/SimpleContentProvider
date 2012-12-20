@@ -82,7 +82,7 @@
 		<!-- Each ContentProvider must be defined in the manifest, so that Android 
 			knows how to find the Provider given the authority. -->
 		<provider
-			android:name="SampleProvider"
+			android:name=".SampleProvider"
 			android:authorities="edu.mit.mobile.android.content.example.sampleprovider" />
 
 	</application>
