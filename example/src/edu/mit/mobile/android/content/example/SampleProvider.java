@@ -2,6 +2,7 @@ package edu.mit.mobile.android.content.example;
 
 import android.content.ContentUris;
 import android.net.Uri;
+import edu.mit.mobile.android.content.ContentItem;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.SimpleContentProvider;
@@ -9,19 +10,22 @@ import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
 
 /**
  * <p>
- * This creates a ContentProvider (which you must define in your
- * AndroidManifest.xml) that you can use to store all your data. You should only
- * need one ContentProvider per Application, as each ContentProvider can contain
- * multiple types of data.
+ * This creates a ContentProvider (which you must define in your AndroidManifest.xml) that you can
+ * use to store all your data. You should only need one ContentProvider per Application, as each
+ * ContentProvider can contain multiple types of data.
  * </p>
  *
  * <p>
- * ContentProviders are accessed by querying content:// URIs. These helpers
- * create URIs for you using the following scheme:
+ * ContentProviders are accessed by querying content:// URIs. Content URIs have two types: "dir" and
+ * "item". "dir" indicates that the URI represents a collection of logical items and "item"
+ * indicates that it refers to a unique item. In {@link SimpleContentProvider}-generated providers,
+ * this usually means that "dir" is a list of all the content of a given type, while "item" is an
+ * individual content item, identified uniquely by its serial database row ID
+ * {@link ContentItem#_ID}.
  * </p>
  *
  * <p>
- * a list of messages:
+ * A "dir" URI ends in a non-numerical path:
  * </p>
  *
  * <pre>
@@ -35,10 +39,12 @@ import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
  * content://edu.mit.mobile.android.content.example.sampleprovider/message
  * </pre>
  *
- * <p>To make it easier to query in the future, that URI is stored in {@link Message#CONTENT_URI}.</p>
+ * <p>
+ * To make it easier to query in the future, that URI is stored in {@link Message#CONTENT_URI}.
+ * </p>
  *
  * <p>
- * a single message:
+ * An "item" URI builds off the "dir" URI and ends in a number.
  * </p>
  *
  * <pre>
@@ -52,7 +58,10 @@ import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
  * content://edu.mit.mobile.android.content.example.sampleprovider/message/3
  * </pre>
  *
- * <p>URIs of this type can be constructed using {@link ContentUris#withAppendedId(android.net.Uri, long)}.</p>
+ * <p>
+ * URIs of this type can be constructed using
+ * {@link ContentUris#withAppendedId(android.net.Uri, long)}.
+ * </p>
  */
 public class SampleProvider extends SimpleContentProvider {
 
@@ -73,15 +82,15 @@ public class SampleProvider extends SimpleContentProvider {
     public SampleProvider() {
         super(AUTHORITY, DB_VERSION);
 
-        // This helper creates the table and can do basic database queries. See
-        // Message for more info.
+        // This helper is responsible for creating the tables and performing the actual database
+        // queries. See Message for more info.
         final GenericDBHelper messageHelper = new GenericDBHelper(Message.class);
 
         // This adds a mapping between the given content:// URI path and the
         // helper.
         addDirAndItemUri(messageHelper, Message.PATH);
 
-        // the above three statements can be repeated to create multiple data
+        // the above statements can be repeated to create multiple data
         // stores. Each will have separate tables and URIs.
 
         // this hooks in search
