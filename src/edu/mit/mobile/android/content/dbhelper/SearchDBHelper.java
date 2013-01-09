@@ -275,9 +275,9 @@ public class SearchDBHelper extends DBHelper {
 
         multiSelect.append(')');
 
-        final Cursor c = db.query(multiSelect.toString(), null, selection,
-                searchQuery != null ? ProviderUtils.addExtraWhereArgs(selectionArgs, searchQuery)
-                        : selectionArgs, null, null, sortOrder, limit);
+        final Cursor c = db.query(multiSelect.toString(), null, null,
+                searchQuery != null ? new String[] { searchQuery } : null, null, null, sortOrder,
+                limit);
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "search found " + c.getCount() + " results");
         }
