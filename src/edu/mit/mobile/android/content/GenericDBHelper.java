@@ -91,11 +91,6 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
     }
 
     @Override
-    public String getPath() {
-        return null; // XXX is this used? Paths need to be fixed.
-    }
-
-    @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
         for (final String sqlExpression : mExtractor.getTableCreation()) {
             db.execSQL(sqlExpression);

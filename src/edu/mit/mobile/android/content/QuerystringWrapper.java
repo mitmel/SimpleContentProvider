@@ -257,12 +257,6 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
     }
 
     @Override
-    public String getPath() {
-
-        return mWrappedHelper.getPath();
-    }
-
-    @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
         mWrappedHelper.createTables(db);
     }

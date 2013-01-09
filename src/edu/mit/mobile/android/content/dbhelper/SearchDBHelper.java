@@ -295,12 +295,6 @@ public class SearchDBHelper extends DBHelper {
     }
 
     @Override
-    public String getPath() {
-        // unused
-        return null;
-    }
-
-    @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
         // unused
     }

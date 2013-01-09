@@ -54,13 +54,6 @@ public abstract class DBHelper {
     public abstract Cursor queryItem(SQLiteDatabase db, Uri uri, String[] projection,
             String selection, String[] selectionArgs, String sortOrder);
 
-    /**
-     * @return the path within a content URI that represents the dir index of an item.
-     * @deprecated I'm pretty sure this is unused.
-     */
-    @Deprecated
-    public abstract String getPath();
-
     public abstract String getDirType(String authority, String path);
 
     public abstract String getItemType(String authority, String path);

@@ -81,11 +81,6 @@ public class M2MDBHelper extends DBHelper {
     }
 
     @Override
-    public String getPath() {
-        return mJoinTable;
-    }
-
-    @Override
     public String getDirType(String authority, String path) {
         return ProviderUtils.toDirType(authority, mToTable);
     }

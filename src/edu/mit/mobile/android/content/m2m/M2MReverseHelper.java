@@ -55,12 +55,6 @@ public class M2MReverseHelper extends DBHelper {
     }
 
     @Override
-    public String getPath() {
-        // XXX is this method ever used?
-        return mFromTable;
-    }
-
-    @Override
     public String getDirType(String authority, String path) {
         return ProviderUtils.toDirType(authority, mFromTable);
     }
