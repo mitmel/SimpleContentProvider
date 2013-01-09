@@ -106,12 +106,14 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 1);
 
         if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
-            return super.queryDir(db, uri, projection, selection, selectionArgs, sortOrder);
+            return super.queryDir(db, uri, projection, selection, selectionArgs,
+                    sortOrder != null ? sortOrder : getDefaultSortOrder());
 
         } else {
             return super.queryDir(db, uri, projection,
                     ProviderUtils.addExtraWhere(selection, mColumnQuoted + "=?"),
-                    ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, parentId),
+                    sortOrder != null ? sortOrder : getDefaultSortOrder());
         }
     }
 
@@ -121,12 +123,14 @@ public class ForeignKeyDBHelper extends GenericDBHelper {
         final String parentId = ProviderUtils.getNthPathFromEnd(uri, 2);
 
         if (WILDCARD_PATH_SEGMENT.equals(parentId)) {
-            return super.queryItem(db, uri, projection, selection, selectionArgs, sortOrder);
+            return super.queryItem(db, uri, projection, selection, selectionArgs,
+                    sortOrder != null ? sortOrder : getDefaultSortOrder());
 
         } else {
             return super.queryItem(db, uri, projection,
                     ProviderUtils.addExtraWhere(selection, mColumnQuoted + "=?"),
-                    ProviderUtils.addExtraWhereArgs(selectionArgs, parentId), sortOrder);
+                    ProviderUtils.addExtraWhereArgs(selectionArgs, parentId),
+                    sortOrder != null ? sortOrder : getDefaultSortOrder());
         }
     }
 

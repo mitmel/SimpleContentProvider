@@ -37,34 +37,37 @@ public class M2MDBHelper extends DBHelper {
     private final Uri mToContentUri;
 
     private final IdenticalChildFinder mIdenticalChildFinder;
+    private final String mToDefaultSortOrder;
+    private final String mToTableEscaped;
+    private final String mJoinTableEscaped;
 
     public M2MDBHelper(GenericDBHelper from, GenericDBHelper to) {
-        mFromTable = from.getTable();
-        mToTable = to.getTable();
-        mJoinTable = genJoinTableName(mFromTable, mToTable);
-
-        mIdenticalChildFinder = null;
-        mToContentUri = null;
+        this(from, to, (Uri) null);
     }
 
     public M2MDBHelper(GenericDBHelper from, GenericDBHelper to, Uri toContentUri) {
-        mFromTable = from.getTable();
-        mToTable = to.getTable();
-        mJoinTable = genJoinTableName(mFromTable, mToTable);
-
-        mIdenticalChildFinder = null;
-        mToContentUri = toContentUri;
+        this(from, to, toContentUri, null);
     }
 
     public M2MDBHelper(GenericDBHelper from, GenericDBHelper to,
             IdenticalChildFinder identicalChildFinder) {
+        this(from, to, null, identicalChildFinder);
+    }
+
+    public M2MDBHelper(GenericDBHelper from, GenericDBHelper to, Uri toContentUri,
+            IdenticalChildFinder identicalChildFinder) {
         mFromTable = from.getTable();
         mToTable = to.getTable();
+        mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
+        mToDefaultSortOrder = getToDefaultSortOrder(to);
         mJoinTable = genJoinTableName(mFromTable, mToTable);
+        mJoinTableEscaped = SQLGenUtils.escapeTableName(mJoinTable);
 
         mIdenticalChildFinder = identicalChildFinder;
-        mToContentUri = null;
+        mToContentUri = toContentUri;
     }
+
+    // constructors based on table names instead of GenericDBHelpers
 
     public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder) {
         this(fromTable, toTable, identicalChildFinder, null);
@@ -74,10 +77,27 @@ public class M2MDBHelper extends DBHelper {
             Uri toContentUri) {
         mFromTable = fromTable;
         mToTable = toTable;
+        mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
+        mToDefaultSortOrder = null;
         mJoinTable = genJoinTableName(mFromTable, mToTable);
+        mJoinTableEscaped = SQLGenUtils.escapeTableName(mJoinTable);
 
         mIdenticalChildFinder = identicalChildFinder;
         mToContentUri = toContentUri;
+    }
+
+    private String getToDefaultSortOrder(GenericDBHelper to) {
+
+        String sortOrder = to.getDefaultSortOrder();
+
+        if (sortOrder == null) {
+            return null;
+        }
+
+        sortOrder = sortOrder.replaceAll("(?i)((?<!\\.)\\b\\w+\\s+(?:DESC|ASC))", mToTableEscaped
+                + ".$1");
+
+        return sortOrder;
     }
 
     @Override
@@ -121,7 +141,7 @@ public class M2MDBHelper extends DBHelper {
     @Override
     public void createTables(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE "
-                + SQLGenUtils.escapeTableName(mJoinTable)
+                + mJoinTableEscaped
                 + " ("
                 + M2MColumns._ID
                 + " INTEGER PRIMARY KEY,"
@@ -141,7 +161,7 @@ public class M2MDBHelper extends DBHelper {
      *
      */
     public void deleteJoinTable(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + SQLGenUtils.escapeTableName(mJoinTable));
+        db.execSQL("DROP TABLE IF EXISTS " + mJoinTableEscaped);
     }
 
     /**
@@ -378,17 +398,14 @@ public class M2MDBHelper extends DBHelper {
         // XXX hack to get around ambiguous column names. Is there a better way to write this query?
         if (selection != null) {
             // matches "foo=bar" but not "foo.baz=bar"; only qualifies unqualified column names
-            selection = selection.replaceAll("((?<!\\.)\\b\\w+=\\?)",
-                    SQLGenUtils.escapeTableName(mToTable) + ".$1");
+            selection = selection.replaceAll("((?<!\\.)\\b\\w+=\\?)", mToTableEscaped + ".$1");
         }
 
-        return db.query(
-                SQLGenUtils.escapeTableName(mToTable) + " INNER JOIN "
-                        + SQLGenUtils.escapeTableName(mJoinTable) + " ON "
-                        + SQLGenUtils.escapeTableName(mJoinTable) + "." + M2MColumns.TO_ID + "="
-                        + SQLGenUtils.escapeTableName(mToTable) + "." + BaseColumns._ID,
-                ProviderUtils.addPrefixToProjection(mToTable, toProjection), selection,
-                selectionArgs, null, null, sortOrder);
+        return db.query(mToTableEscaped + " INNER JOIN " + mJoinTableEscaped + " ON "
+                + mJoinTableEscaped + "." + M2MColumns.TO_ID + "=" + mToTableEscaped + "."
+                + BaseColumns._ID, ProviderUtils.addPrefixToProjection(mToTable, toProjection),
+                selection, selectionArgs, null, null, sortOrder != null ? sortOrder
+                        : mToDefaultSortOrder);
     }
 
     /**
@@ -413,8 +430,8 @@ public class M2MDBHelper extends DBHelper {
         return queryTo(
                 db,
                 toProjection,
-                ProviderUtils.addExtraWhere(selection, SQLGenUtils.escapeTableName(mJoinTable)
-                        + "." + M2MColumns.FROM_ID + "=?"),
+                ProviderUtils.addExtraWhere(selection, mJoinTableEscaped + "." + M2MColumns.FROM_ID
+                        + "=?"),
                 ProviderUtils.addExtraWhereArgs(selectionArgs, Long.toString(fromId)), sortOrder);
     }
 
@@ -448,7 +465,7 @@ public class M2MDBHelper extends DBHelper {
 
     @Override
     public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + SQLGenUtils.escapeTableName(mJoinTable));
+        deleteJoinTable(db);
         createTables(db);
 
     }
