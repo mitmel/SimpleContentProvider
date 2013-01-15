@@ -18,13 +18,8 @@ package edu.mit.mobile.android.content;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -34,6 +29,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import edu.mit.mobile.android.content.query.QuerystringParser;
 
 /**
  * <p>
@@ -127,79 +123,23 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
         try {
             if (query != null) {
 
-                final StringBuilder sb = new StringBuilder();
-                final List<NameValuePair> qs = URLEncodedUtils.parse(new URI(uri.toString()),
-                        "utf-8");
-                // reset the URI for querying down the road
-                uri = uri.buildUpon().query(null).build();
+                final QuerystringParser parser = new QuerystringParser(query);
 
-                final int count = qs.size();
-                newSelectionArgs = new String[count];
-                int i = 0;
-                String name;
-                for (final NameValuePair nvp : qs) {
-                    name = nvp.getName();
+                parser.parse();
 
-                    if (i > 0) {
-                        if (name.startsWith(QUERY_PREFIX_OR)) {
-                            sb.append(" OR ");
-                            name = name.substring(1);
-                        } else {
-                            sb.append(" AND ");
-                        }
-                    }
-                    boolean like = false;
-                    boolean not = false;
-
-                    if (name.endsWith(QUERY_SUFFIX_LIKE)) {
-                        like = true;
-                        name = name.substring(0, name.length() - 1);
-                    }
-
-                    if (name.endsWith(QUERY_SUFFIX_NOT)) {
-                        not = true;
-                        name = name.substring(0, name.length() - 1);
-                    }
-
-                    if (!SQLGenUtils.isValidName(name)) {
-                        throw new SQLGenerationException("illegal column name in query: '" + name
-                                + "'");
-                    }
-                    // this isn't escaped, as we check it for validity. However it's quoted to avoid
-                    // reserved words.
-                    sb.append('"');
-                    sb.append(name);
-                    sb.append('"');
-
-                    if (like) {
-                        if (not) {
-                            sb.append(" NOT LIKE ?");
-                        } else {
-                            sb.append(" LIKE ?");
-                        }
-                        newSelectionArgs[i] = "%" + nvp.getValue() + "%";
-                    } else {
-                        if (not) {
-                            sb.append(" IS NOT ?");
-                        } else {
-                            sb.append(" IS ?");
-                        }
-                        newSelectionArgs[i] = nvp.getValue();
-                    }
-
-                    i++;
-                }
-
-                newSelection = ProviderUtils.addExtraWhere(selection, sb.toString());
-                newSelectionArgs = ProviderUtils.addExtraWhereArgs(selectionArgs, newSelectionArgs);
+                newSelection = ProviderUtils.addExtraWhere(selection, parser.getResult());
+                newSelectionArgs = ProviderUtils.addExtraWhereArgs(selectionArgs,
+                        parser.getSelectionArgs());
                 if (DEBUG) {
                     Log.d(TAG,
                             "query:" + newSelection + "; args: ["
                                     + TextUtils.join(",", Arrays.asList(newSelectionArgs)) + "]");
                 }
             }
-        } catch (final URISyntaxException e) {
-            final SQLGenerationException se = new SQLGenerationException("could not construct URL");
+
+        } catch (final IOException e) {
+            final SQLGenerationException se = new SQLGenerationException(
+                    "could not understand query string");
             se.initCause(e);
             throw se;
         }
