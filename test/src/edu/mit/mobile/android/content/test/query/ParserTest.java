@@ -5,6 +5,7 @@ import java.io.IOException;
 import android.test.AndroidTestCase;
 import edu.mit.mobile.android.content.SQLGenerationException;
 import edu.mit.mobile.android.content.query.QuerystringParser;
+import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
 
 public class ParserTest extends AndroidTestCase {
 
@@ -13,7 +14,6 @@ public class ParserTest extends AndroidTestCase {
         final QuerystringParser q = new QuerystringParser(query);
 
         q.parse();
-        assertNull(q.getError());
 
         assertEquals(qIs("a"), q.getResult());
 
@@ -96,14 +96,8 @@ public class ParserTest extends AndroidTestCase {
         testExpectFailure("a='; drop students; //");
 
         // bad column name
-        boolean thrown = false;
-        try {
-            testExpectFailure("a%b=c");
-        } catch (final SQLGenerationException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
 
+        testExpectFailure("a%b=c");
     }
 
     /**
@@ -116,12 +110,12 @@ public class ParserTest extends AndroidTestCase {
         return "\"" + params + "\" IS ?";
     }
 
-    public String testParser(String query, String[] expectedParams) throws IOException {
+    public String testParser(String query, String[] expectedParams) throws IOException,
+            SQLGenerationException, ParseException {
 
         final QuerystringParser q = new QuerystringParser(query);
 
         q.parse();
-        assertNull("Parser returned an error: " + q.getError(), q.getError());
 
         final String sqlQuery = q.getResult();
 
@@ -136,15 +130,19 @@ public class ParserTest extends AndroidTestCase {
         return sqlQuery;
     }
 
-    private void testExpectFailure(String query) throws IOException, SQLGenerationException {
+    private void testExpectFailure(String query) throws IOException {
+
         final QuerystringParser q = new QuerystringParser(query);
+        boolean thrown = false;
 
-        q.parse();
+        try {
+            q.parse();
+        } catch (final ParseException e) {
+            thrown = true;
+        } catch (final SQLGenerationException e) {
+            thrown = true;
+        }
 
-        assertNotNull(q.getError());
-
-        assertNull(q.getResult());
-
-        assertNull(q.getSelectionArgs());
+        assertTrue("exception not thrown", thrown);
     }
 }
