@@ -21,15 +21,19 @@ public class ParserTest extends AndroidTestCase {
     }
 
     public void testParser() throws IOException {
-        String sql = testParser("a=b", new String[] { "b" });
+        String sql;
+
+        // empty is allowed
+        sql = testParser("", new String[] {});
+        assertEquals("", sql);
+
+        // one parameter
+        sql = testParser("a=b", new String[] { "b" });
         assertEquals("\"a\" IS ?", sql);
 
         // longer keywords and reserved words
         sql = testParser("select=insert", new String[] { "insert" });
         assertEquals("\"select\" IS ?", sql);
-
-        sql = testParser("", new String[] {});
-        assertEquals("", sql);
 
         sql = testParser("a=foo&b=bar", new String[] { "foo", "bar" });
         assertEquals(qIs("a") + " AND " + qIs("b"), sql);
@@ -45,6 +49,17 @@ public class ParserTest extends AndroidTestCase {
 
         sql = testParser("(a=foo|b=bar)&c=baz", new String[] { "foo", "bar", "baz" });
         assertEquals("(" + qIs("a") + " OR " + qIs("b") + ") AND " + qIs("c"), sql);
+
+        sql = testParser("a=foo&(b=bar|c=baz)", new String[] { "foo", "bar", "baz" });
+        assertEquals(qIs("a") + " AND (" + qIs("b") + " OR " + qIs("c") + ")", sql);
+
+        sql = testParser("(a=foo)&(b=bar|c=baz)", new String[] { "foo", "bar", "baz" });
+        assertEquals("(" + qIs("a") + ") AND (" + qIs("b") + " OR " + qIs("c") + ")", sql);
+
+        sql = testParser("(a=foo|d=snth)&(b=bar|c=baz)",
+                new String[] { "foo", "snth", "bar", "baz" });
+        assertEquals("(" + qIs("a") + " OR " + qIs("d") + ") AND (" + qIs("b") + " OR " + qIs("c")
+                + ")", sql);
 
         sql = testParser("a~=foo", new String[] { "%foo%" });
         assertEquals("\"a\" LIKE ?", sql);
@@ -68,8 +83,14 @@ public class ParserTest extends AndroidTestCase {
     }
 
     public void testFailures() throws IOException {
+
         // missing operator
         testExpectFailure("a");
+        testExpectFailure("a=1b=2");
+        testExpectFailure("(a=1)b=2");
+        testExpectFailure("a=1(b=2)");
+        testExpectFailure("(a=1)(b=2)");
+        testExpectFailure("()");
 
         // missing value
         testExpectFailure("a=");
@@ -88,6 +109,16 @@ public class ParserTest extends AndroidTestCase {
         testExpectFailure("a==b");
         testExpectFailure("a======b");
         testExpectFailure("a~~=b");
+
+        // symbols out of place
+        testExpectFailure("a~b");
+        testExpectFailure("a!b");
+        testExpectFailure("a=1~b=2");
+        testExpectFailure("a=1!b=2");
+        testExpectFailure("!a=1");
+        testExpectFailure("a=1!");
+        testExpectFailure("a=!1");
+        testExpectFailure("a=~1");
 
         testExpectFailure("a!!=b");
         testExpectFailure("a!!!!!=b");
@@ -138,14 +169,15 @@ public class ParserTest extends AndroidTestCase {
 
         final QuerystringParser q = new QuerystringParser(query);
         boolean thrown = false;
-
+        boolean parsed = false;
         try {
-            q.parse();
+            parsed = q.parse();
         } catch (final ParseException e) {
             thrown = true;
         } catch (final SQLGenerationException e) {
             thrown = true;
         }
+        assertFalse("parser succeeded when it was expected to fail", parsed);
 
         assertTrue("exception not thrown", thrown);
     }
