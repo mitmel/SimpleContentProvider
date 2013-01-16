@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import edu.mit.mobile.android.content.query.QuerystringParser;
+import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
 
 /**
  * <p>
@@ -99,7 +100,7 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     /**
      * Performs the query string extraction.
-     *
+     * 
      * @param uri
      *            the full URI, including the query string
      * @param selection
@@ -110,7 +111,8 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
      *            the arguments accompanying the aforementioned selection string. Null is ok.
      * @return the query string translated and integrated into the selection and selectionArgs that
      *         were passed in
-     * @throws SQLGenerationException
+     * @throws IllegalArgumentException
+     *             if there are any errors parsing the query
      */
     public static QueryStringResult queryStringToSelection(Uri uri, String selection,
             String[] selectionArgs) throws SQLGenerationException {
@@ -137,8 +139,14 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
                 }
             }
 
+
+        } catch (final ParseException e) {
+            final IllegalArgumentException e2 = new IllegalArgumentException("parse error");
+            e2.initCause(e);
+            throw e2;
+
         } catch (final IOException e) {
-            final SQLGenerationException se = new SQLGenerationException(
+            final IllegalArgumentException se = new IllegalArgumentException(
                     "could not understand query string");
             se.initCause(e);
             throw se;

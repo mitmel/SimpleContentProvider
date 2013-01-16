@@ -43,7 +43,6 @@ import edu.mit.mobile.android.content.DBTable;
 import edu.mit.mobile.android.content.ForeignKeyDBHelper;
 import edu.mit.mobile.android.content.ForeignKeyManager;
 import edu.mit.mobile.android.content.QuerystringWrapper;
-import edu.mit.mobile.android.content.SQLGenerationException;
 import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.test.sample2.BlogPost;
 import edu.mit.mobile.android.content.test.sample2.Comment;
@@ -278,9 +277,9 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
 
         boolean exceptionThrown = false;
         try {
-            ContentResolverTestUtils.testQuery(cr, queryIllegalName, null, null, null, null, 1)
+            ContentResolverTestUtils.testQuery(cr, queryIllegalName, null, null, null, null, 0)
                     .close();
-        } catch (final SQLGenerationException e) {
+        } catch (final IllegalArgumentException e) {
             exceptionThrown = true;
         }
         assertTrue("expecting exception to be thrown", exceptionThrown);
