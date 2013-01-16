@@ -63,7 +63,7 @@ public class ParserTest extends AndroidTestCase {
         assertEquals(qIs("a") + " AND " + qIs("b"), sql);
 
         // symbols
-        sql = testParser("a=__3.14152+12%28", new String[] { "__3.14152+12%28" });
+        sql = testParser("a=__%283.14152+*+2%29", new String[] { "__(3.14152 * 2)" });
         assertEquals(qIs("a"), sql);
     }
 
@@ -94,10 +94,14 @@ public class ParserTest extends AndroidTestCase {
 
         // invalid symbols
         testExpectFailure("a='; drop students; //");
+        testExpectFailure("a='");
+        testExpectFailure("a=\"");
 
         // bad column name
-
         testExpectFailure("a%b=c");
+
+        // whitespace is invalid
+        testExpectFailure("a=b c");
     }
 
     /**

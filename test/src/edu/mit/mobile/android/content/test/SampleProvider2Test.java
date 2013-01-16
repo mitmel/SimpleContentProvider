@@ -17,6 +17,8 @@ package edu.mit.mobile.android.content.test;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -214,7 +216,7 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         return newItem;
     }
 
-    public void testQuerystring() {
+    public void testQuerystring() throws UnsupportedEncodingException {
         final MockContentResolver cr = getMockContentResolver();
 
         final Uri item = createTestPost(cr, TEST_TITLE, TEST_BODY_1);
@@ -239,8 +241,10 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
         testQueryItem(cr, queryTitle2, TEST_TITLE_2, TEST_BODY_2).close();
 
         final Uri queryTitle1Or2 = BlogPost.CONTENT_URI.buildUpon()
-                .appendQueryParameter(BlogPost.TITLE, TEST_TITLE)
-                .appendQueryParameter("|" + BlogPost.TITLE, TEST_TITLE_2).build();
+                .encodedQuery(
+                        BlogPost.TITLE + "=" + URLEncoder.encode(TEST_TITLE, "utf-8") + "|"
+                        + BlogPost.TITLE + "=" + URLEncoder.encode(TEST_TITLE_2, "utf-8"))
+                .build();
         ContentResolverTestUtils.testQuery(cr, queryTitle1Or2, null, null, null, null, 2).close();
 
         final Uri queryTitle1And2 = BlogPost.CONTENT_URI.buildUpon()

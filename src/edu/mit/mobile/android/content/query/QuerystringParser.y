@@ -36,7 +36,9 @@
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.StringBuilder;
+import java.net.URLDecoder;
 import java.util.LinkedList;
 
 import edu.mit.mobile.android.content.SQLGenUtils;
@@ -70,6 +72,8 @@ public String[] getSelectionArgs(){
  */
 public static class ParseException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     public ParseException(String msg){
         super(msg);
     }
@@ -95,7 +99,6 @@ private void appendValidated(String key){
             mTokenizer = new StreamTokenizer(new StringReader(str));
             mTokenizer.resetSyntax();
             mTokenizer.eolIsSignificant(false);
-            mTokenizer.whitespaceChars(0, 0x20);
             mTokenizer.lowerCaseMode(false);
 
             // standard words, no symbols.
@@ -161,7 +164,14 @@ not: /* empty */ | '!' { mSb.append(" NOT"); }
 
 key: STR { appendValidated($1); }
 
-value: STR { mSelectionArgs.add($1); }
-
+value: STR {
+    try {
+        mSelectionArgs.add(URLDecoder.decode($1, "utf-8"));
+     }catch(UnsupportedEncodingException e){
+         SQLGenerationException sqle = new SQLGenerationException();
+         sqle.initCause(e);
+         throw sqle;
+     }
+}
 %%
 
