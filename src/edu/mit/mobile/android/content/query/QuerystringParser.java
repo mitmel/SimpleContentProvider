@@ -366,7 +366,7 @@ public class QuerystringParser
   if (yyn == 4)
     
 /* Line 351 of lalr1.java  */
-/* Line 154 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 155 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append('('); };
   break;
     
@@ -375,7 +375,7 @@ public class QuerystringParser
   if (yyn == 5)
     
 /* Line 351 of lalr1.java  */
-/* Line 155 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 156 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(')'); };
   break;
     
@@ -384,7 +384,7 @@ public class QuerystringParser
   if (yyn == 6)
     
 /* Line 351 of lalr1.java  */
-/* Line 157 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 158 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" AND "); };
   break;
     
@@ -393,7 +393,7 @@ public class QuerystringParser
   if (yyn == 7)
     
 /* Line 351 of lalr1.java  */
-/* Line 157 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 159 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" OR "); };
   break;
     
@@ -402,7 +402,7 @@ public class QuerystringParser
   if (yyn == 15)
     
 /* Line 351 of lalr1.java  */
-/* Line 165 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 171 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" IS NOT ?"); };
   break;
     
@@ -411,7 +411,7 @@ public class QuerystringParser
   if (yyn == 16)
     
 /* Line 351 of lalr1.java  */
-/* Line 167 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 173 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" IS ?"); };
   break;
     
@@ -420,7 +420,7 @@ public class QuerystringParser
   if (yyn == 17)
     
 /* Line 351 of lalr1.java  */
-/* Line 169 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 175 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" LIKE ?"); };
   break;
     
@@ -429,7 +429,7 @@ public class QuerystringParser
   if (yyn == 19)
     
 /* Line 351 of lalr1.java  */
-/* Line 171 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 178 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" NOT"); };
   break;
     
@@ -438,7 +438,7 @@ public class QuerystringParser
   if (yyn == 20)
     
 /* Line 351 of lalr1.java  */
-/* Line 173 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 180 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { appendValidated(((String)(yystack.valueAt (1-(1))))); };
   break;
     
@@ -447,7 +447,7 @@ public class QuerystringParser
   if (yyn == 21)
     
 /* Line 351 of lalr1.java  */
-/* Line 175 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 182 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add(URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8"));
@@ -464,7 +464,7 @@ public class QuerystringParser
   if (yyn == 22)
     
 /* Line 351 of lalr1.java  */
-/* Line 185 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 192 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add('%' + URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8") + '%');
@@ -1009,9 +1009,9 @@ public class QuerystringParser
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
-         0,   152,   152,   152,   154,   155,   157,   157,   159,   159,
-     159,   161,   161,   163,   163,   165,   167,   169,   171,   171,
-     173,   175,   185
+         0,   152,   152,   153,   155,   156,   158,   159,   161,   162,
+     163,   165,   166,   168,   169,   171,   173,   175,   177,   178,
+     180,   182,   192
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -1141,7 +1141,7 @@ private void appendValidated(String key){
 
 
 /* Line 931 of lalr1.java  */
-/* Line 195 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 202 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 

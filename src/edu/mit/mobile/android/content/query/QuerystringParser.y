@@ -149,18 +149,24 @@ private void appendValidated(String key){
 %type <String> value
 
 %%
-query: /* empty */ | query params
+query: /* empty */
+     | query params
 
 open_paren: '(' { mSb.append('('); }
 close_paren: ')' { mSb.append(')'); }
 
-join: '&' { mSb.append(" AND "); } | '|' { mSb.append(" OR "); }
+join: '&' { mSb.append(" AND "); }
+    | '|' { mSb.append(" OR "); }
 
-params: param | params join params | open_paren params close_paren
+params: param
+      | params join params
+      | open_paren params close_paren
 
-param: key eq_neq value | key not like likevalue
+param: key eq_neq value
+     | key not like likevalue
 
-eq_neq: equals | not_equals
+eq_neq: equals
+      | not_equals
 
 not_equals: '!' '=' { mSb.append(" IS NOT ?"); }
 
@@ -168,7 +174,8 @@ equals: '=' { mSb.append(" IS ?"); }
 
 like: '~' '=' { mSb.append(" LIKE ?"); }
 
-not: /* empty */ | '!' { mSb.append(" NOT"); }
+not: /* empty */
+   | '!' { mSb.append(" NOT"); }
 
 key: STR { appendValidated($1); }
 
