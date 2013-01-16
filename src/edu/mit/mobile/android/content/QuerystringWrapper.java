@@ -1,7 +1,7 @@
 package edu.mit.mobile.android.content;
 
 /*
- * Copyright (C) 2011-2012 MIT Mobile Experience Lab
+ * Copyright (C) 2011-2013 MIT Mobile Experience Lab
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,8 @@ import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
 /**
  * <p>
  * This class wraps another {@link DBHelper} and makes it searchable by passing it special URIs.
+ * </p>
+ * 
  * <p>
  * This overrides the {@link #queryDir(SQLiteDatabase, Uri, String[], String, String[], String)
  * queryDir},
@@ -42,24 +44,54 @@ import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
  * updateDir}, and {@link #deleteDir(SQLiteDatabase, ContentProvider, Uri, String, String[])
  * deleteDir} method in order to provide handling of select statement building using URI query
  * strings. To use, first construct a content uri for a content item's directory. For example
- * <kbd>content://org.example.test/message</kbd>. Then add query parameters to limit the result set
- * (ideally, using {@link Uri.Builder#appendQueryParameter(String, String) appendQueryParameter}) so
- * that your uri looks more like: <kbd>content://org.example.test/message?to=steve</kbd>.
+ * <kbd>content://org.example.test/message</kbd>. Then use the URI's query string (eg.
+ * <kbd>content://org.example.test/message?QUERY</kbd>) to pass in the query parameters.
+ * </p>
+ * 
+ * <h3>Query Parameters</h3>
+ * <p>
+ * A query for this wrapper is different than standard URI query strings, although it may
+ * superficially look similar or the same. The rules of the query are as follows:
+ * </p>
+ *
+ * <dl>
+ * <dt><kbd>=</kbd> exact match for value (SQL "IS")</dt>
+ * <dd><kbd>column=value</kbd></dd>
+ *
+ * <dt><kbd>~=</kbd> inexact match for value (substring, case-insensitive; SQL "LIKE")</dt>
+ * <dd><kbd>column~=value</kbd></dd>
+ *
+ * <dt><kbd>!=</kbd> exact non-match for value</dt>
+ * <dd><kbd>column!=value</kbd></dd>
+ *
+ * <dt><kbd>!~=</kbd> inexact non-match</dt>
+ * <dd><kbd>column!~=value</kbd></dd>
+ *
+ * <dt><kbd>&</kbd> joining parameters with AND</dt>
+ * <dd><kbd>column1=value1&column2!=value2</kbd></dd>
+ *
+ * <dt><kbd>|</kbd> joining parameters with OR</dt>
+ * <dd><kbd>column1=value1|column2~=value2</kbd></dd>
+ *
+ * <dt><kbd>()</kbd> grouping parameters</dt>
+ * <dd><kbd>(column1=value1|column1=value2)&column2=value3</kbd></dd>
+ * </dl>
+ *
+ * <p>
+ * These rules can be combined together to make arbitrarily-complex queries which map directly to
+ * SQL queries. They should be passed to the URI unescaped (that is, not percent-encoded). For
+ * example, <kbd>content://org.example.test/message?(title~=robot|title~=kitten)&verb=find</kbd>
+ * would match a message whose title contains either "robot" or "kitten" and whose verb is "find".
  * </p>
  *
  * <p>
- * This will translate the queries to select statements using the key for column name and the value
- * for the value, so you can easily provide links to specific lists of your content items.
+ * Column names are validity-checked and values are passed in by reference in order to avoid SQL
+ * injections.
  * </p>
  *
  * <p>
- * Keys and values are automatically escaped to prevent any SQL injections.
- * </p>
- *
- * <p>
- * By default, multiple items are joined with AND, but can be joined by OR by prefixing the query
- * name with {@value #QUERY_PREFIX_OR}. For example:
- * <kbd>content://org.example.test/message?to=bob&amp;|to=alice
+ * Note: the use of the "|" character in the query is technically illegal according to RFC3986,
+ * however the Android Uri class doesn't seem to mind.
  * </p>
  *
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
@@ -100,7 +132,7 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     /**
      * Performs the query string extraction.
-     * 
+     *
      * @param uri
      *            the full URI, including the query string
      * @param selection
