@@ -46,17 +46,17 @@ public class ParserTest extends AndroidTestCase {
         sql = testParser("(a=foo|b=bar)&c=baz", new String[] { "foo", "bar", "baz" });
         assertEquals("(" + qIs("a") + " OR " + qIs("b") + ") AND " + qIs("c"), sql);
 
-        sql = testParser("a~=foo", new String[] { "foo" });
+        sql = testParser("a~=foo", new String[] { "%foo%" });
         assertEquals("\"a\" LIKE ?", sql);
 
-        sql = testParser("a!~=foo", new String[] { "foo" });
+        sql = testParser("a!~=foo", new String[] { "%foo%" });
         assertEquals("\"a\" NOT LIKE ?", sql);
 
         sql = testParser("a!=foo", new String[] { "foo" });
-        assertEquals("\"a\" NOT IS ?", sql);
+        assertEquals("\"a\" IS NOT ?", sql);
 
-        sql = testParser("(((a~=foo|b!=bar)))", new String[] { "foo", "bar" });
-        assertEquals("(((\"a\" LIKE ? OR \"b\" NOT IS ?)))", sql);
+        sql = testParser("(((a~=foo|b!=bar)))", new String[] { "%foo%", "bar" });
+        assertEquals("(((\"a\" LIKE ? OR \"b\" IS NOT ?)))", sql);
 
         // unicode
         sql = testParser("a=flambée&b=☃♥⃠☀", new String[] { "flambée", "☃♥⃠☀" });

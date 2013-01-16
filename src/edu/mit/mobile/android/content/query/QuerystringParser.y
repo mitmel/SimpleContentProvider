@@ -142,6 +142,8 @@ private void appendValidated(String key){
         }
 }
 
+/* grammar declaration */
+
 %token <String> STR "string"
 %type <String> key
 %type <String> value
@@ -156,9 +158,15 @@ join: '&' { mSb.append(" AND "); } | '|' { mSb.append(" OR "); }
 
 params: param | params join params | open_paren params close_paren
 
-param: key not oper value
+param: key eq_neq value | key not like likevalue
 
-oper: '=' { mSb.append(" IS ?"); } | '~' '=' { mSb.append(" LIKE ?"); }
+eq_neq: equals | not_equals
+
+not_equals: '!' '=' { mSb.append(" IS NOT ?"); }
+
+equals: '=' { mSb.append(" IS ?"); }
+
+like: '~' '=' { mSb.append(" LIKE ?"); }
 
 not: /* empty */ | '!' { mSb.append(" NOT"); }
 
@@ -173,5 +181,16 @@ value: STR {
          throw sqle;
      }
 }
+/* LIKE values are prefixed/suffixed with the SQL '%' wildcard */
+likevalue: STR {
+    try {
+        mSelectionArgs.add('%' + URLDecoder.decode($1, "utf-8") + '%');
+     }catch(UnsupportedEncodingException e){
+         SQLGenerationException sqle = new SQLGenerationException();
+         sqle.initCause(e);
+         throw sqle;
+     }
+}
+
 %%
 
