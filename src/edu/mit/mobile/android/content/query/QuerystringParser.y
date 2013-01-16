@@ -150,7 +150,12 @@ private void appendValidated(String key){
 
 %%
 query: /* empty */
-     | query params
+     | params
+
+params: param
+      | params join param
+      | params join open_paren params close_paren
+      | open_paren params close_paren
 
 open_paren: '(' { mSb.append('('); }
 close_paren: ')' { mSb.append(')'); }
@@ -158,9 +163,6 @@ close_paren: ')' { mSb.append(')'); }
 join: '&' { mSb.append(" AND "); }
     | '|' { mSb.append(" OR "); }
 
-params: param
-      | params join params
-      | open_paren params close_paren
 
 param: key eq_neq value
      | key not like likevalue
