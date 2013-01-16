@@ -36,7 +36,7 @@ import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
  * <p>
  * This class wraps another {@link DBHelper} and makes it searchable by passing it special URIs.
  * </p>
- * 
+ *
  * <p>
  * This overrides the {@link #queryDir(SQLiteDatabase, Uri, String[], String, String[], String)
  * queryDir},
@@ -47,7 +47,7 @@ import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
  * <kbd>content://org.example.test/message</kbd>. Then use the URI's query string (eg.
  * <kbd>content://org.example.test/message?QUERY</kbd>) to pass in the query parameters.
  * </p>
- * 
+ *
  * <h3>Query Parameters</h3>
  * <p>
  * A query for this wrapper is different than standard URI query strings, although it may
@@ -102,11 +102,17 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
-    public static final String QUERY_PREFIX_OR = "|";
+    public static final String QUERY_OPERATOR_OR = "|";
 
-    public static final String QUERY_SUFFIX_LIKE = "~";
+    public static final String QUERY_OPERATOR_AND = "&";
 
-    public static final String QUERY_SUFFIX_NOT = "!";
+    public static final String QUERY_OPERATOR_EQUALS = "=";
+
+    public static final String QUERY_OPERATOR_NOT_EQUALS = "!=";
+
+    public static final String QUERY_OPERATOR_LIKE = "~=";
+
+    public static final String QUERY_OPERATOR_NOT_LIKE = "!~=";
 
     private final DBHelper mWrappedHelper;
 
@@ -149,6 +155,7 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
     public static QueryStringResult queryStringToSelection(Uri uri, String selection,
             String[] selectionArgs) throws SQLGenerationException {
         final String query = uri.getEncodedQuery();
+
         String newSelection = selection;
         String[] newSelectionArgs = selectionArgs;
         if (DEBUG) {
@@ -170,8 +177,6 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
                                     + TextUtils.join(",", Arrays.asList(newSelectionArgs)) + "]");
                 }
             }
-
-
         } catch (final ParseException e) {
             final IllegalArgumentException e2 = new IllegalArgumentException("parse error");
             e2.initCause(e);
