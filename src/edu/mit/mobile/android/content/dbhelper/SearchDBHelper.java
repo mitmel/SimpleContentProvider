@@ -192,7 +192,14 @@ public class SearchDBHelper extends DBHelper {
         }
         final String searchQuery = isDir ? null : "%" + uri.getLastPathSegment() + "%";
 
-        final String limit = uri.getQueryParameter("limit");
+        String limit = uri.getQueryParameter("limit");
+
+        // only allow a limit string that's an integer
+        try {
+            Integer.valueOf(limit);
+        } catch (final NumberFormatException e) {
+            limit = null;
+        }
 
         final StringBuilder multiSelect = new StringBuilder();
 
