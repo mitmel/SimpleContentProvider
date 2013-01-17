@@ -164,15 +164,24 @@ join: '&' { mSb.append(" AND "); }
     | '|' { mSb.append(" OR "); }
 
 
-param: key eq_neq value
+param: key comparison value
      | key not like likevalue
 
-eq_neq: equals
-      | not_equals
+comparison: equals
+          | not_equals
+	  | gt
+	  | gte
+	  | lt
+	  | lte
 
 not_equals: '!' '=' { mSb.append(" IS NOT ?"); }
 
 equals: '=' { mSb.append(" IS ?"); }
+
+gt:  '>'     { mSb.append(" > ?"); }
+gte: '>' '=' { mSb.append(" >= ?"); }
+lt:  '<'     { mSb.append(" < ?"); }
+lte: '<' '=' { mSb.append(" <= ?"); }
 
 like: '~' '=' { mSb.append(" LIKE ?"); }
 

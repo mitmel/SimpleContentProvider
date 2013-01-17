@@ -398,39 +398,12 @@ public class QuerystringParser
   break;
     
 
-  case 16:
-  if (yyn == 16)
-    
-/* Line 351 of lalr1.java  */
-/* Line 173 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { mSb.append(" IS NOT ?"); };
-  break;
-    
-
-  case 17:
-  if (yyn == 17)
-    
-/* Line 351 of lalr1.java  */
-/* Line 175 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { mSb.append(" IS ?"); };
-  break;
-    
-
-  case 18:
-  if (yyn == 18)
-    
-/* Line 351 of lalr1.java  */
-/* Line 177 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { mSb.append(" LIKE ?"); };
-  break;
-    
-
   case 20:
   if (yyn == 20)
     
 /* Line 351 of lalr1.java  */
-/* Line 180 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { mSb.append(" NOT"); };
+/* Line 177 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" IS NOT ?"); };
   break;
     
 
@@ -438,8 +411,8 @@ public class QuerystringParser
   if (yyn == 21)
     
 /* Line 351 of lalr1.java  */
-/* Line 182 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { appendValidated(((String)(yystack.valueAt (1-(1))))); };
+/* Line 179 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" IS ?"); };
   break;
     
 
@@ -447,7 +420,70 @@ public class QuerystringParser
   if (yyn == 22)
     
 /* Line 351 of lalr1.java  */
+/* Line 181 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" > ?"); };
+  break;
+    
+
+  case 23:
+  if (yyn == 23)
+    
+/* Line 351 of lalr1.java  */
+/* Line 182 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" >= ?"); };
+  break;
+    
+
+  case 24:
+  if (yyn == 24)
+    
+/* Line 351 of lalr1.java  */
+/* Line 183 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" < ?"); };
+  break;
+    
+
+  case 25:
+  if (yyn == 25)
+    
+/* Line 351 of lalr1.java  */
 /* Line 184 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" <= ?"); };
+  break;
+    
+
+  case 26:
+  if (yyn == 26)
+    
+/* Line 351 of lalr1.java  */
+/* Line 186 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" LIKE ?"); };
+  break;
+    
+
+  case 28:
+  if (yyn == 28)
+    
+/* Line 351 of lalr1.java  */
+/* Line 189 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(" NOT"); };
+  break;
+    
+
+  case 29:
+  if (yyn == 29)
+    
+/* Line 351 of lalr1.java  */
+/* Line 191 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { appendValidated(((String)(yystack.valueAt (1-(1))))); };
+  break;
+    
+
+  case 30:
+  if (yyn == 30)
+    
+/* Line 351 of lalr1.java  */
+/* Line 193 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add(URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8"));
@@ -460,11 +496,11 @@ public class QuerystringParser
   break;
     
 
-  case 23:
-  if (yyn == 23)
+  case 31:
+  if (yyn == 31)
     
 /* Line 351 of lalr1.java  */
-/* Line 194 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 203 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add('%' + URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8") + '%');
@@ -480,7 +516,7 @@ public class QuerystringParser
 
 
 /* Line 351 of lalr1.java  */
-/* Line 484 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
+/* Line 520 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
 	default: break;
       }
 
@@ -887,13 +923,14 @@ public class QuerystringParser
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-  private static final byte yypact_ninf_ = -12;
+  private static final byte yypact_ninf_ = -16;
   private static final byte yypact_[] =
   {
-         1,   -12,   -12,     8,     0,     1,   -12,     2,   -12,   -12,
-     -12,     1,    -4,     3,   -12,     6,   -12,   -12,     5,     1,
-     -12,   -12,   -12,   -12,   -12,   -12,     4,    13,    -4,   -12,
-     -12,   -12,   -12
+         5,   -16,   -16,    12,     4,     5,   -16,    -7,   -16,   -16,
+     -16,     5,     0,     6,   -16,     7,     8,    10,   -16,   -16,
+     -16,   -16,   -16,   -16,     2,     5,   -16,   -16,   -16,   -16,
+     -16,   -16,   -16,   -16,     9,    16,     0,   -16,   -16,   -16,
+     -16
   };
 
   /* YYDEFACT[S] -- default reduction number in state S.  Performed when
@@ -901,25 +938,26 @@ public class QuerystringParser
      default is an error.  */
   private static final byte yydefact_[] =
   {
-         2,    21,     8,     0,     3,     0,     4,    19,     1,    10,
-      11,     0,     0,    20,    17,     0,    15,    14,     0,     0,
-       5,     9,     7,    16,    22,    12,     0,     0,     0,    18,
-      23,    13,     6
+         2,    29,     8,     0,     3,     0,     4,    27,     1,    10,
+      11,     0,     0,    28,    21,    22,    24,     0,    15,    14,
+      16,    17,    18,    19,     0,     0,     5,     9,     7,    20,
+      23,    25,    30,    12,     0,     0,     0,    26,    31,    13,
+       6
   };
 
   /* YYPGOTO[NTERM-NUM].  */
   private static final byte yypgoto_[] =
   {
-       -12,   -12,    -5,     7,   -11,   -12,     9,   -12,   -12,   -12,
-     -12,   -12,   -12,   -12,   -12
+       -16,   -16,    -5,    11,   -15,   -16,    13,   -16,   -16,   -16,
+     -16,   -16,   -16,   -16,   -16,   -16,   -16,   -16,   -16
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   private static final byte
   yydefgoto_[] =
   {
-        -1,     3,     4,     5,    22,    11,     6,    15,    16,    17,
-      27,    18,     7,    25,    31
+        -1,     3,     4,     5,    28,    11,     6,    17,    18,    19,
+      20,    21,    22,    23,    35,    24,     7,    33,    39
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -929,18 +967,18 @@ public class QuerystringParser
   private static final byte
   yytable_[] =
   {
-        12,    21,     9,    10,     1,     2,     9,    10,     8,    24,
-      13,    14,    23,    29,    28,    26,    30,    32,    19,     0,
-      20
+        12,    13,    14,    15,    16,    27,     9,    10,     1,     2,
+       9,    10,     8,    32,    34,    29,    30,    31,    37,    38,
+      36,    40,    25,     0,    26
   };
 
   /* YYCHECK.  */
   private static final byte
   yycheck_[] =
   {
-         5,     5,     6,     7,     3,     4,     6,     7,     0,     3,
-       8,     9,     9,     9,    19,    10,     3,    28,    11,    -1,
-      11
+         5,     8,     9,    10,    11,     5,     6,     7,     3,     4,
+       6,     7,     0,     3,    12,     9,     9,     9,     9,     3,
+      25,    36,    11,    -1,    11
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -948,10 +986,11 @@ public class QuerystringParser
   private static final byte
   yystos_[] =
   {
-         0,     3,     4,    12,    13,    14,    17,    23,     0,     6,
-       7,    16,    13,     8,     9,    18,    19,    20,    22,    14,
-      17,     5,    15,     9,     3,    24,    10,    21,    13,     9,
-       3,    25,    15
+         0,     3,     4,    14,    15,    16,    19,    29,     0,     6,
+       7,    18,    15,     8,     9,    10,    11,    20,    21,    22,
+      23,    24,    25,    26,    28,    16,    19,     5,    17,     9,
+       9,     9,     3,    30,    12,    27,    15,     9,     3,    31,
+      17
   };
 
   /* TOKEN_NUMBER_[YYLEX-NUM] -- Internal symbol number corresponding
@@ -960,16 +999,17 @@ public class QuerystringParser
   yytoken_number_[] =
   {
          0,   256,   257,   258,    40,    41,    38,   124,    33,    61,
-     126
+      62,    60,   126
   };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
   private static final byte
   yyr1_[] =
   {
-         0,    11,    12,    12,    13,    13,    13,    13,    14,    15,
-      16,    16,    17,    17,    18,    18,    19,    20,    21,    22,
-      22,    23,    24,    25
+         0,    13,    14,    14,    15,    15,    15,    15,    16,    17,
+      18,    18,    19,    19,    20,    20,    20,    20,    20,    20,
+      21,    22,    23,    24,    25,    26,    27,    28,    28,    29,
+      30,    31
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -977,8 +1017,9 @@ public class QuerystringParser
   yyr2_[] =
   {
          0,     2,     0,     1,     1,     3,     5,     3,     1,     1,
-       1,     1,     3,     4,     1,     1,     2,     1,     2,     0,
-       1,     1,     1,     1
+       1,     1,     3,     4,     1,     1,     1,     1,     1,     1,
+       2,     1,     1,     2,     1,     2,     2,     0,     1,     1,
+       1,     1
   };
 
   /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
@@ -986,20 +1027,23 @@ public class QuerystringParser
   private static final String yytname_[] =
   {
     "$end", "error", "$undefined", "\"string\"", "'('", "')'", "'&'", "'|'",
-  "'!'", "'='", "'~'", "$accept", "query", "params", "open_paren",
-  "close_paren", "join", "param", "eq_neq", "not_equals", "equals", "like",
-  "not", "key", "value", "likevalue", null
+  "'!'", "'='", "'>'", "'<'", "'~'", "$accept", "query", "params",
+  "open_paren", "close_paren", "join", "param", "comparison", "not_equals",
+  "equals", "gt", "gte", "lt", "lte", "like", "not", "key", "value",
+  "likevalue", null
   };
 
   /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
   private static final byte yyrhs_[] =
   {
-        12,     0,    -1,    -1,    13,    -1,    17,    -1,    13,    16,
-      17,    -1,    13,    16,    14,    13,    15,    -1,    14,    13,
-      15,    -1,     4,    -1,     5,    -1,     6,    -1,     7,    -1,
-      23,    18,    24,    -1,    23,    22,    21,    25,    -1,    20,
-      -1,    19,    -1,     8,     9,    -1,     9,    -1,    10,     9,
-      -1,    -1,     8,    -1,     3,    -1,     3,    -1,     3,    -1
+        14,     0,    -1,    -1,    15,    -1,    19,    -1,    15,    18,
+      19,    -1,    15,    18,    16,    15,    17,    -1,    16,    15,
+      17,    -1,     4,    -1,     5,    -1,     6,    -1,     7,    -1,
+      29,    20,    30,    -1,    29,    28,    27,    31,    -1,    22,
+      -1,    21,    -1,    23,    -1,    24,    -1,    25,    -1,    26,
+      -1,     8,     9,    -1,     9,    -1,    10,    -1,    10,     9,
+      -1,    11,    -1,    11,     9,    -1,    12,     9,    -1,    -1,
+       8,    -1,     3,    -1,     3,    -1,     3,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -1007,16 +1051,18 @@ public class QuerystringParser
   private static final byte yyprhs_[] =
   {
          0,     0,     3,     4,     6,     8,    12,    18,    22,    24,
-      26,    28,    30,    34,    39,    41,    43,    46,    48,    51,
-      52,    54,    56,    58
+      26,    28,    30,    34,    39,    41,    43,    45,    47,    49,
+      51,    54,    56,    58,    61,    63,    66,    69,    70,    72,
+      74,    76
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
          0,   152,   152,   153,   155,   156,   157,   158,   160,   161,
-     163,   164,   167,   168,   170,   171,   173,   175,   177,   179,
-     180,   182,   184,   194
+     163,   164,   167,   168,   170,   171,   172,   173,   174,   175,
+     177,   179,   181,   182,   183,   184,   186,   188,   189,   191,
+     193,   203
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -1047,13 +1093,13 @@ public class QuerystringParser
        2,     2,     2,     8,     2,     2,     2,     2,     6,     2,
        4,     5,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     9,     2,     2,     2,     2,     2,     2,     2,     2,
+      11,     9,    10,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     7,     2,    10,     2,     2,     2,
+       2,     2,     2,     2,     7,     2,    12,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1077,13 +1123,13 @@ public class QuerystringParser
       return yyundef_token_;
   }
 
-  private static final int yylast_ = 20;
-  private static final int yynnts_ = 15;
+  private static final int yylast_ = 24;
+  private static final int yynnts_ = 19;
   private static final int yyempty_ = -2;
   private static final int yyfinal_ = 8;
   private static final int yyterror_ = 1;
   private static final int yyerrcode_ = 256;
-  private static final int yyntokens_ = 11;
+  private static final int yyntokens_ = 13;
 
   private static final int yyuser_token_number_max_ = 258;
   private static final int yyundef_token_ = 2;
@@ -1140,13 +1186,13 @@ private void appendValidated(String key){
 
 
 /* Line 927 of lalr1.java  */
-/* Line 1144 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
+/* Line 1190 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
 
 }
 
 
 /* Line 931 of lalr1.java  */
-/* Line 204 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 213 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 

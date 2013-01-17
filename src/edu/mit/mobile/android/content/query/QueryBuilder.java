@@ -71,6 +71,32 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder greater(String column, String value) {
+        operParam(column, QuerystringWrapper.QUERY_OPERATOR_GREATER_THAN, value);
+
+        return this;
+    }
+
+    public QueryBuilder greaterEquals(String column, String value) {
+        operParam(column, QuerystringWrapper.QUERY_OPERATOR_GREATER_THAN_EQUALS, value);
+
+        return this;
+    }
+
+    public QueryBuilder less(String column, String value) {
+        operParam(column, QuerystringWrapper.QUERY_OPERATOR_LESS_THAN, value);
+
+        return this;
+    }
+
+    public QueryBuilder lessEquals(String column, String value) {
+        operParam(column, QuerystringWrapper.QUERY_OPERATOR_LESS_THAN_EQUALS, value);
+
+        return this;
+    }
+
+    // AND
+
     public QueryBuilder andIs(String column, String value) {
 
         joinOperParam(QuerystringWrapper.QUERY_OPERATOR_AND, column,
@@ -99,6 +125,36 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder andGreater(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_AND, column,
+                QuerystringWrapper.QUERY_OPERATOR_GREATER_THAN, value);
+
+        return this;
+    }
+
+    public QueryBuilder andGreaterEquals(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_AND, column,
+                QuerystringWrapper.QUERY_OPERATOR_GREATER_THAN_EQUALS, value);
+
+        return this;
+    }
+
+    public QueryBuilder andLess(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_AND, column,
+                QuerystringWrapper.QUERY_OPERATOR_LESS_THAN, value);
+
+        return this;
+    }
+
+    public QueryBuilder andLessEquals(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_AND, column,
+                QuerystringWrapper.QUERY_OPERATOR_LESS_THAN_EQUALS, value);
+
+        return this;
+    }
+
+    // OR
+
     public QueryBuilder orIs(String column, String value) {
         joinOperParam(QuerystringWrapper.QUERY_OPERATOR_OR, column,
                 QuerystringWrapper.QUERY_OPERATOR_EQUALS, value);
@@ -123,6 +179,34 @@ public class QueryBuilder {
     public QueryBuilder orNotLike(String column, String value) {
         joinOperParam(QuerystringWrapper.QUERY_OPERATOR_OR, column,
                 QuerystringWrapper.QUERY_OPERATOR_NOT_LIKE, value);
+
+        return this;
+    }
+
+    public QueryBuilder orGreater(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_OR, column,
+                QuerystringWrapper.QUERY_OPERATOR_GREATER_THAN, value);
+
+        return this;
+    }
+
+    public QueryBuilder orGreaterEquals(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_OR, column,
+                QuerystringWrapper.QUERY_OPERATOR_GREATER_THAN_EQUALS, value);
+
+        return this;
+    }
+
+    public QueryBuilder orLess(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_OR, column,
+                QuerystringWrapper.QUERY_OPERATOR_LESS_THAN, value);
+
+        return this;
+    }
+
+    public QueryBuilder orLessEquals(String column, String value) {
+        joinOperParam(QuerystringWrapper.QUERY_OPERATOR_OR, column,
+                QuerystringWrapper.QUERY_OPERATOR_LESS_THAN_EQUALS, value);
 
         return this;
     }

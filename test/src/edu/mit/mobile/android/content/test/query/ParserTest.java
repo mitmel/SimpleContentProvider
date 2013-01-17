@@ -61,6 +61,8 @@ public class ParserTest extends AndroidTestCase {
         assertEquals("(" + qIs("a") + " OR " + qIs("d") + ") AND (" + qIs("b") + " OR " + qIs("c")
                 + ")", sql);
 
+        // all operators
+
         sql = testParser("a~=foo", new String[] { "%foo%" });
         assertEquals("\"a\" LIKE ?", sql);
 
@@ -69,6 +71,18 @@ public class ParserTest extends AndroidTestCase {
 
         sql = testParser("a!=foo", new String[] { "foo" });
         assertEquals("\"a\" IS NOT ?", sql);
+
+        sql = testParser("a>1", new String[] { "1" });
+        assertEquals("\"a\" > ?", sql);
+
+        sql = testParser("a>=1", new String[] { "1" });
+        assertEquals("\"a\" >= ?", sql);
+
+        sql = testParser("a<1", new String[] { "1" });
+        assertEquals("\"a\" < ?", sql);
+
+        sql = testParser("a<=1", new String[] { "1" });
+        assertEquals("\"a\" <= ?", sql);
 
         sql = testParser("(((a~=foo|b!=bar)))", new String[] { "%foo%", "bar" });
         assertEquals("(((\"a\" LIKE ? OR \"b\" IS NOT ?)))", sql);

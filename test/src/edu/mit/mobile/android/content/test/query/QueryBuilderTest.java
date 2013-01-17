@@ -39,6 +39,63 @@ public class QueryBuilderTest extends AndroidTestCase {
 
         assertBuilderEquals("(a!=foo+bar+baz|a~=bar)&b=escape+%26+evade", qb);
 
+        // ///////// full sweep /////////
+
+        // is
+        qb.reset();
+
+        qb.is("a", "1").andIs("b", "2").orIs("c", "3");
+
+        assertBuilderEquals("a=1&b=2|c=3", qb);
+
+        // is not
+        qb.reset();
+
+        qb.isNot("a", "1").andIsNot("b", "2").orIsNot("c", "3");
+
+        assertBuilderEquals("a!=1&b!=2|c!=3", qb);
+
+        // like
+        qb.reset();
+
+        qb.like("a", "1").andLike("b", "2").orLike("c", "3");
+
+        assertBuilderEquals("a~=1&b~=2|c~=3", qb);
+
+        // not like
+        qb.reset();
+
+        qb.notLike("a", "1").andNotLike("b", "2").orNotLike("c", "3");
+
+        assertBuilderEquals("a!~=1&b!~=2|c!~=3", qb);
+
+        // >
+        qb.reset();
+
+        qb.greater("a", "1").andGreater("b", "2").orGreater("c", "3");
+
+        assertBuilderEquals("a>1&b>2|c>3", qb);
+
+        // >=
+        qb.reset();
+
+        qb.greaterEquals("a", "1").andGreaterEquals("b", "2").orGreaterEquals("c", "3");
+
+        assertBuilderEquals("a>=1&b>=2|c>=3", qb);
+
+        // <
+        qb.reset();
+
+        qb.less("a", "1").andLess("b", "2").orLess("c", "3");
+
+        assertBuilderEquals("a<1&b<2|c<3", qb);
+
+        // <=
+        qb.reset();
+
+        qb.lessEquals("a", "1").andLessEquals("b", "2").orLessEquals("c", "3");
+
+        assertBuilderEquals("a<=1&b<=2|c<=3", qb);
     }
 
     private void assertBuilderEquals(String expectedQueryString, QueryBuilder qb) {

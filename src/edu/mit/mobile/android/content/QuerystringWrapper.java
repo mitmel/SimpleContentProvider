@@ -114,6 +114,14 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     public static final String QUERY_OPERATOR_NOT_LIKE = "!~=";
 
+    public static final String QUERY_OPERATOR_GREATER_THAN = ">";
+
+    public static final String QUERY_OPERATOR_GREATER_THAN_EQUALS = ">=";
+
+    public static final String QUERY_OPERATOR_LESS_THAN = "<";
+
+    public static final String QUERY_OPERATOR_LESS_THAN_EQUALS = "<=";
+
     private final DBHelper mWrappedHelper;
 
     public QuerystringWrapper(DBHelper wrappedHelper) {
