@@ -28,6 +28,13 @@
 			<intent-filter>
 	            <action android:name="android.intent.action.SEARCH" />
     	    </intent-filter>
+
+			<!-- This tells Android that this class can handle loading a VIEW intent whose content is a list of messages. This is used to reload the content when a filter is triggered. -->
+			<intent-filter >
+			    <category android:name="android.intent.category.DEFAULT"/>
+			    <action android:name="android.intent.action.VIEW"/>
+			    <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.content.example.sampleprovider.message"/>
+			</intent-filter>
         
 			<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
 		</activity>

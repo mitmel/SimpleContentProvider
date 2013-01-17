@@ -2,10 +2,13 @@ package edu.mit.mobile.android.content.example;
 
 import java.util.Random;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,14 +21,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SimpleContentProviderExample extends ListActivity implements OnClickListener {
 
-    private ListAdapter mListAdapter;
+    private SimpleCursorAdapter mListAdapter;
 
     private static final String[] TITLES = { "Party Rock Anthem", "Give Me Everything",
             "Rolling In The Deep", "Last Friday Night (T.G.I.F.)", "Super Bass",
@@ -38,7 +42,21 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
             "what the heck????", "That wuz funny", "i love this video", "best vid eva!!!",
             "like kanye west version alot better", "you done an amzing job with the lyrics" };
 
+    private static final int DIALOG_FILTER = 100;
+
     private final Random mRand = new Random();
+
+    // the column names that data will be loaded from
+    private final static String[] FROM = new String[] { Message.TITLE, Message.BODY };
+
+    // the resource IDs that the data will be loaded into
+    private final static int[] TO = new int[] { android.R.id.text1, android.R.id.text2 };
+
+    // the columns to query.
+    private final static String[] PROJECTION = new String[] { Message._ID, Message.TITLE,
+            Message.BODY };
+
+    private final static String SORT_ORDER = Message.CREATED_DATE + " DESC";
 
     /** Called when the activity is first created. */
     // the deprecation here is due to the managedQuery() calls. In the latest Android version,
@@ -62,28 +80,26 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         findViewById(R.id.add_random).setOnClickListener(this);
         findViewById(R.id.clear).setOnClickListener(this);
 
-        // the column names that data will be loaded from
-        final String[] from = new String[] { Message.TITLE, Message.BODY };
 
-        // the resource IDs that the data will be loaded into
-        final int[] to = new int[] { android.R.id.text1, android.R.id.text2 };
+        // pull the desired content URI from the intent
+        Uri content = getIntent().getData();
 
-        // the columns to query.
-        final String[] projection = new String[] { Message._ID, Message.TITLE, Message.BODY };
-
-        final String sortOrder = Message.CREATED_DATE + " DESC";
-
-        // this makes the actual database query, returning a cursor that can be
-        // read directly
-        // or using an Adapter.
-        final Cursor c = managedQuery(Message.CONTENT_URI, projection, null, null, sortOrder);
+        // if there is none (as would be the case with a normal application launch from the
+        // launcher), set it to the default list of all items.
+        if (content == null) {
+            content = Message.CONTENT_URI;
+        }
 
         // This adapter binds the data from the cursor to the specified view.
         // Android provides two simple list views:
         // android.R.layout.simple_list_item_2 which has two text views
         // and android.R.layout.simple_list_item_1 which has only one
-        mListAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, c, from,
-                to);
+        mListAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, null,
+                FROM, TO);
+
+        // this makes the actual database query, returning a cursor that can be
+        // read directly or using an Adapter.
+        loadContent(content);
 
         // A ListActivity has a simple ListView by default and this tells it
         // which adapter to use
@@ -92,8 +108,8 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         registerForContextMenu(getListView());
     }
 
-    // this is called when the activity is re-started by the system with a new intent. This is only
-    // really used with the
+    // this is called when the activity is re-started by the system with a new intent. This is used
+    // with the filter and search.
     @Override
     protected void onNewIntent(Intent intent) {
         final String action = intent.getAction();
@@ -103,7 +119,7 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         // activity. The action is defined in the res/xml/searchable and the data is defined in the
         // SampleProvider's SearchDBHelper configuration.
         if (Intent.ACTION_VIEW.equals(action) && data != null
-                && Message.CONTENT_TYPE.equals(getContentResolver().getType(data))) {
+                && Message.CONTENT_TYPE_ITEM.equals(getContentResolver().getType(data))) {
 
             // the intent delivered to this activity contains extra component information that
             // forces this activity to be displayed. We don't actually want that (it's
@@ -117,9 +133,26 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
 
         } else if (Intent.ACTION_SEARCH.equals(action)) {
             // TODO add
+
+        }else if (Intent.ACTION_VIEW.equals(action) && data != null
+                && Message.CONTENT_TYPE_DIR.equals(getContentResolver().getType(data))){
+            loadContent(data);
         }
 
         setIntent(intent);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void loadContent(Uri data) {
+        try {
+            final Cursor c = managedQuery(data, PROJECTION, null, null, SORT_ORDER);
+            mListAdapter.swapCursor(c);
+
+        } catch (final IllegalArgumentException e) {
+            managedQuery(Message.CONTENT_URI, PROJECTION, null, null, SORT_ORDER);
+            Toast.makeText(this, "Filter string is invalid: " + e.getLocalizedMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -180,6 +213,7 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -199,10 +233,77 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
                 addManyItems();
                 return true;
 
+            case R.id.filter:
+                showDialog(DIALOG_FILTER);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
 
+    @Override
+    @Deprecated
+    protected Dialog onCreateDialog(int id, Bundle args) {
+        switch (id) {
+            case DIALOG_FILTER: {
+                final View view = getLayoutInflater().inflate(R.layout.dialog_filter, null, false);
+                final TextView filter = (TextView) view.findViewById(R.id.filter);
+
+                return new AlertDialog.Builder(this)
+                        .setView(view)
+                        .setCancelable(true)
+                        .setNegativeButton(android.R.string.cancel,
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // construct the filter URI based on user input. Note the
+                                        // use of encodedQuery here, as otherwise the encoder would
+                                        // escape our "|" and other such characters. Normally, in
+                                        // code, you'd just use {@link QueryBuilder} to ensure
+                                        // everything is properly escaped.
+                                        final Uri filterUri = Message.CONTENT_URI.buildUpon()
+                                                .encodedQuery(filter.getText().toString()).build();
+
+                                        // once the filter URI is created, launch it! This will be
+                                        // routed through Android (due to our declaration in our
+                                        // Mainifest) and then onNewIntent() will be called with the
+                                        // new URI.
+                                        startActivity(new Intent(Intent.ACTION_VIEW, filterUri));
+                                    }
+                                }).create();
+            }
+            default:
+                return super.onCreateDialog(id, args);
+        }
+    }
+
+    @Override
+    @Deprecated
+    protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+        switch (id) {
+            case DIALOG_FILTER: {
+                // this ensures that the pre-filled filter matches the currently-displayed content
+                final Uri data = getIntent().getData();
+                final String query = data != null ? data.getEncodedQuery() : "";
+                final EditText filter = ((EditText) dialog.findViewById(R.id.filter));
+                filter.setText(query);
+                filter.setSelection(query.length());
+            }
+                break;
+
+            default:
+                super.onPrepareDialog(id, dialog, args);
+        }
     }
 
     /**

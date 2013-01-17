@@ -18,4 +18,6 @@
     <string name="delete_confirm_prompt">Are you sure you want to delete this item?</string>
     <string name="search_hint">Title or body</string>
     <string name="search_settings_description">SimpleContentProvider example global search</string>
+    <string name="dialog_filter_message">Enter a QuerystringWrapper query string to limit the shown messages. Valid columns are \&quot;title\&quot;, \&quot;body\&quot;, and \&quot;created\&quot;. Try: body~=awesome|title~=rock</string>
+    <string name="dialog_filter_hint">query string</string>
 </resources>

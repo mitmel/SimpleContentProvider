@@ -62,6 +62,11 @@ public class Message implements ContentItem {
      * See {@link ProviderUtils#toItemType(String, String)} for details.
      * </p>
      */
-    public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd.edu.mit.mobile.android.content.example.sampleprovider.message";
+    public static final String CONTENT_TYPE_ITEM = "vnd.android.cursor.item/vnd.edu.mit.mobile.android.content.example.sampleprovider.message";
+
+    /**
+     * The content type representing a list of messages.
+     */
+    public static final String CONTENT_TYPE_DIR = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.content.example.sampleprovider.message";
 
 }

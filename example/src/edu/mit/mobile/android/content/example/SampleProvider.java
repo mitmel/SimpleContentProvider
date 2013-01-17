@@ -5,6 +5,7 @@ import android.net.Uri;
 import edu.mit.mobile.android.content.ContentItem;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.content.QuerystringWrapper;
 import edu.mit.mobile.android.content.SimpleContentProvider;
 import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
 
@@ -86,9 +87,13 @@ public class SampleProvider extends SimpleContentProvider {
         // queries. See Message for more info.
         final GenericDBHelper messageHelper = new GenericDBHelper(Message.class);
 
+        // By wrapping the main helper like so, this will translate the query portion of the URI
+        // (that is, the part after the "?") into a select statement to limit the results.
+        final QuerystringWrapper queryWrapper = new QuerystringWrapper(messageHelper);
+
         // This adds a mapping between the given content:// URI path and the
         // helper.
-        addDirAndItemUri(messageHelper, Message.PATH);
+        addDirAndItemUri(queryWrapper, Message.PATH);
 
         // the above statements can be repeated to create multiple data
         // stores. Each will have separate tables and URIs.
