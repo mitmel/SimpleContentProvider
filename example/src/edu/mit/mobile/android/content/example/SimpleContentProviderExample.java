@@ -134,6 +134,7 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         } else if (Intent.ACTION_SEARCH.equals(action)) {
             // TODO add
 
+            // this is called mostly by the filter dialog.
         }else if (Intent.ACTION_VIEW.equals(action) && data != null
                 && Message.CONTENT_TYPE_DIR.equals(getContentResolver().getType(data))){
             loadContent(data);
@@ -142,12 +143,20 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
         setIntent(intent);
     }
 
+    /**
+     * Loads the given content into the adapter.
+     *
+     * @param data
+     */
     @SuppressWarnings("deprecation")
     private void loadContent(Uri data) {
         try {
+            // none of the cursors need to be closed, as managedQuery will take care of this. Note:
+            // in later versions of Android, one should use a CursorLoader instead.
             final Cursor c = managedQuery(data, PROJECTION, null, null, SORT_ORDER);
             mListAdapter.swapCursor(c);
 
+            // this exception is triggered when there's an invalid filter.
         } catch (final IllegalArgumentException e) {
             managedQuery(Message.CONTENT_URI, PROJECTION, null, null, SORT_ORDER);
             Toast.makeText(this, "Filter string is invalid: " + e.getLocalizedMessage(),
