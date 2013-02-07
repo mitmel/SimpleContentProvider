@@ -60,7 +60,7 @@ The [Javadocs][9] try to be extensive. You should start at
 License
 -------
 Android Simple Content Provider  
-Copyright (C) 2011-2012 [MIT Mobile Experience Lab][7]
+Copyright (C) 2011-2013 [MIT Mobile Experience Lab][7]
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -79,8 +79,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 [1]: http://developer.android.com/intl/de/guide/topics/providers/content-providers.html
 [2]: https://www.djangoproject.com/
 [3]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/SimpleContentProvider.html
-[4]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/SampleProvider.html
-[5]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/edu/mit/mobile/android/content/example/Message.html
+[4]: https://github.com/mitmel/SimpleContentProvider/blob/master/example/src/edu/mit/mobile/android/content/example/SampleProvider.java
+[5]: https://github.com/mitmel/SimpleContentProvider/blob/master/example/src/edu/mit/mobile/android/content/example/Message.java
 [6]: https://github.com/mitmel/SimpleContentProvider/tree/master/example/
 [7]: http://mobile.mit.edu/
 [8]: http://en.wikipedia.org/wiki/Representational_State_Transfer
