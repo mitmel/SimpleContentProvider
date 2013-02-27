@@ -154,19 +154,17 @@ public class ProviderUtils {
     }
 
     /**
-     * Removes key from the given ContentValues and returns it in a new container.
+     * Removes key from the given ContentValues and returns it.
      *
      * @param cv
      *            the input ContentValues whose key will be removed
      * @param key
-     * @return a new {@link ContentValues} containing only the removed key's value.
+     * @return the value
      */
-    public static ContentValues extractContentValueItem(ContentValues cv, String key) {
-        final String val = cv.getAsString(key);
+    public static Object extractContentValueItem(ContentValues cv, String key) {
+        final Object val = cv.get(key);
         cv.remove(key);
-        final ContentValues cvNew = new ContentValues();
-        cvNew.put(key, val);
-        return cvNew;
+        return val;
     }
 
     /**
@@ -230,14 +228,14 @@ public class ProviderUtils {
      * Generates a complete MIME type string in the following format:
      * {@code vnd.android.cursor.item/vnd.AUTHORITY.SUFFIX}
      * </p>
-     * 
-     * 
+     *
+     *
      * <p>
      * SUFFIX is filtered so all invalid characters (see <a
      * href="http://tools.ietf.org/html/bcp13">BCP13</a>) are replaced with
      * {@link #MIME_INVALID_CHAR_REPLACEMENT}.
      * </p>
-     * 
+     *
      * @param authority
      *            the authority for this type
      * @param suffix
