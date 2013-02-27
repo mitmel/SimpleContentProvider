@@ -1,6 +1,7 @@
 package edu.mit.mobile.android.content.test.query;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import android.test.AndroidTestCase;
 import edu.mit.mobile.android.content.SQLGenerationException;
@@ -11,7 +12,7 @@ public class ParserTest extends AndroidTestCase {
 
     public void testParserBasic() throws IOException {
         final String query = "a=b";
-        final QuerystringParser q = new QuerystringParser(query);
+        final QuerystringParser q = new QuerystringParser(query, null);
 
         q.parse();
 
@@ -94,6 +95,20 @@ public class ParserTest extends AndroidTestCase {
         // symbols
         sql = testParser("a=__%283.14152+*+2%29", new String[] { "__(3.14152 * 2)" });
         assertEquals(qIs("a"), sql);
+    }
+
+    public void testColumnAlias() throws SQLGenerationException, ParseException, IOException {
+        String sql;
+        final HashMap<String, String> mapping = new HashMap<String, String>();
+        mapping.put("abbv", "abbreviation");
+        sql = testParser("abbv=1", new String[] { "1" }, mapping);
+
+        assertEquals("\"abbreviation\" IS ?", sql);
+
+        mapping.put("short", "long.column");
+        sql = testParser("short=yes", new String[] { "yes" }, mapping);
+
+        assertEquals("\"long\".\"column\" IS ?", sql);
     }
 
     public void testFailMissingOperators() throws IOException {
@@ -184,8 +199,14 @@ public class ParserTest extends AndroidTestCase {
 
     public String testParser(String query, String[] expectedParams) throws IOException,
             SQLGenerationException, ParseException {
+        return testParser(query, expectedParams, null);
+    }
 
-        final QuerystringParser q = new QuerystringParser(query);
+    public String testParser(String query, String[] expectedParams,
+            HashMap<String, String> columnMap) throws IOException,
+            SQLGenerationException, ParseException {
+
+        final QuerystringParser q = new QuerystringParser(query, columnMap);
 
         q.parse();
 
@@ -204,7 +225,7 @@ public class ParserTest extends AndroidTestCase {
 
     private void testExpectFailure(String query) throws IOException {
 
-        final QuerystringParser q = new QuerystringParser(query);
+        final QuerystringParser q = new QuerystringParser(query, null);
         boolean thrown = false;
         boolean parsed = false;
         try {

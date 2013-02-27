@@ -36,7 +36,7 @@ package edu.mit.mobile.android.content.query;
 /* "%code imports" blocks.  */
 
 /* Line 33 of lalr1.java  */
-/* Line 34 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 36 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 import java.io.IOException;
@@ -45,7 +45,9 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.StringBuilder;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import edu.mit.mobile.android.content.SQLGenUtils;
 import edu.mit.mobile.android.content.SQLGenerationException;
@@ -54,7 +56,7 @@ import edu.mit.mobile.android.content.SQLGenerationException;
 
 
 /* Line 33 of lalr1.java  */
-/* Line 58 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
+/* Line 60 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
 
 /**
  * A Bison parser, automatically generated from <tt>src/edu/mit/mobile/android/content/query/QuerystringParser.y</tt>.
@@ -118,7 +120,7 @@ public class QuerystringParser
 /* "%code lexer" blocks.  */
 
 /* Line 147 of lalr1.java  */
-/* Line 94 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 105 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
         private final StreamTokenizer mTokenizer;
         private String mLVal;
@@ -172,7 +174,7 @@ public class QuerystringParser
 
 
 /* Line 147 of lalr1.java  */
-/* Line 176 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
+/* Line 178 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
 
   }
 
@@ -180,14 +182,17 @@ public class QuerystringParser
   private Lexer yylexer;
   
   
+    /* User arguments.  */
+    protected final HashMap<String, String> columnAliases;
 
 
   /**
    * Instantiates the Bison-generated parser.
    */
-  public QuerystringParser (String query) {
+  public QuerystringParser (String query, HashMap<String, String> columnAliases) {
     this.yylexer = new YYLexer(query);
-    
+    this.columnAliases = columnAliases;
+	  
   }
 
 
@@ -195,9 +200,10 @@ public class QuerystringParser
    * Instantiates the Bison-generated parser.
    * @param yylexer The scanner that will supply tokens to the parser.
    */
-  protected QuerystringParser (Lexer yylexer) {
+  protected QuerystringParser (Lexer yylexer, HashMap<String, String> columnAliases) {
     this.yylexer = yylexer;
-    
+    this.columnAliases = columnAliases;
+	  
   }
 
   private java.io.PrintStream yyDebugStream = System.err;
@@ -366,7 +372,7 @@ public class QuerystringParser
   if (yyn == 8)
     
 /* Line 351 of lalr1.java  */
-/* Line 160 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 171 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append('('); };
   break;
     
@@ -375,7 +381,7 @@ public class QuerystringParser
   if (yyn == 9)
     
 /* Line 351 of lalr1.java  */
-/* Line 161 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 172 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(')'); };
   break;
     
@@ -384,7 +390,7 @@ public class QuerystringParser
   if (yyn == 10)
     
 /* Line 351 of lalr1.java  */
-/* Line 163 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 174 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" AND "); };
   break;
     
@@ -393,7 +399,7 @@ public class QuerystringParser
   if (yyn == 11)
     
 /* Line 351 of lalr1.java  */
-/* Line 164 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 175 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" OR "); };
   break;
     
@@ -402,7 +408,7 @@ public class QuerystringParser
   if (yyn == 20)
     
 /* Line 351 of lalr1.java  */
-/* Line 177 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 188 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" IS NOT ?"); };
   break;
     
@@ -411,7 +417,7 @@ public class QuerystringParser
   if (yyn == 21)
     
 /* Line 351 of lalr1.java  */
-/* Line 179 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 190 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" IS ?"); };
   break;
     
@@ -420,7 +426,7 @@ public class QuerystringParser
   if (yyn == 22)
     
 /* Line 351 of lalr1.java  */
-/* Line 181 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 192 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" > ?"); };
   break;
     
@@ -429,7 +435,7 @@ public class QuerystringParser
   if (yyn == 23)
     
 /* Line 351 of lalr1.java  */
-/* Line 182 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 193 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" >= ?"); };
   break;
     
@@ -438,7 +444,7 @@ public class QuerystringParser
   if (yyn == 24)
     
 /* Line 351 of lalr1.java  */
-/* Line 183 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 194 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" < ?"); };
   break;
     
@@ -447,7 +453,7 @@ public class QuerystringParser
   if (yyn == 25)
     
 /* Line 351 of lalr1.java  */
-/* Line 184 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 195 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" <= ?"); };
   break;
     
@@ -456,7 +462,7 @@ public class QuerystringParser
   if (yyn == 26)
     
 /* Line 351 of lalr1.java  */
-/* Line 186 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 197 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" LIKE ?"); };
   break;
     
@@ -465,7 +471,7 @@ public class QuerystringParser
   if (yyn == 28)
     
 /* Line 351 of lalr1.java  */
-/* Line 189 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 200 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" NOT"); };
   break;
     
@@ -474,8 +480,8 @@ public class QuerystringParser
   if (yyn == 29)
     
 /* Line 351 of lalr1.java  */
-/* Line 191 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { appendValidated(((String)(yystack.valueAt (1-(1))))); };
+/* Line 202 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { appendColumnName(((String)(yystack.valueAt (1-(1))))); };
   break;
     
 
@@ -483,7 +489,7 @@ public class QuerystringParser
   if (yyn == 30)
     
 /* Line 351 of lalr1.java  */
-/* Line 193 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 204 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add(URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8"));
@@ -500,7 +506,7 @@ public class QuerystringParser
   if (yyn == 31)
     
 /* Line 351 of lalr1.java  */
-/* Line 203 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 214 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add('%' + URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8") + '%');
@@ -516,7 +522,7 @@ public class QuerystringParser
 
 
 /* Line 351 of lalr1.java  */
-/* Line 520 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
+/* Line 526 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
 	default: break;
       }
 
@@ -1059,10 +1065,10 @@ public class QuerystringParser
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
-         0,   152,   152,   153,   155,   156,   157,   158,   160,   161,
-     163,   164,   167,   168,   170,   171,   172,   173,   174,   175,
-     177,   179,   181,   182,   183,   184,   186,   188,   189,   191,
-     193,   203
+         0,   163,   163,   164,   166,   167,   168,   169,   171,   172,
+     174,   175,   178,   179,   181,   182,   183,   184,   185,   186,
+     188,   190,   192,   193,   194,   195,   197,   199,   200,   202,
+     204,   214
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -1138,15 +1144,18 @@ public class QuerystringParser
 /* Unqualified %code blocks.  */
 
 /* Line 927 of lalr1.java  */
-/* Line 49 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 53 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
-private StringBuilder mSb = new StringBuilder();
-private LinkedList<String> mSelectionArgs = new LinkedList<String>();
+	private StringBuilder mSb = new StringBuilder();
+	private LinkedList<String> mSelectionArgs = new LinkedList<String>();
+
+    private final HashMap<String, String> mColumnAlias = new HashMap<String, String>();
+
 
 /**
  * Returns the resulting SQL query string generated by {@link #parse()}. Any
- * arguments passed in will be replaced with placeholders and can be retreived
+ * arguments passed in will be replaced with placeholders and can be retrieved
  * by {@link #getSelectionArgs()}.
  */
 public String getResult(){
@@ -1172,27 +1181,31 @@ public static class ParseException extends RuntimeException {
     }
 }
 
-private void appendValidated(String key){
+
+    private void appendColumnName(String key) {
     if (!SQLGenUtils.isValidName(key)) {
         throw new SQLGenerationException("illegal column name in query: '" + key
                                                 + "'");
     }
-    mSb.append('"');
-    mSb.append(key);
-    mSb.append('"');
-}
-
+        if (columnAliases != null && columnAliases.containsKey(key)) {
+            mSb.append(SQLGenUtils.escapeQualifiedColumn(columnAliases.get(key)));
+        } else {
+            mSb.append('"');
+            mSb.append(key);
+            mSb.append('"');
+        }
+	}
 
 
 
 /* Line 927 of lalr1.java  */
-/* Line 1190 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
+/* Line 1203 of "src/edu/mit/mobile/android/content/query/QuerystringParser.java"  */
 
 }
 
 
 /* Line 931 of lalr1.java  */
-/* Line 213 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 224 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 

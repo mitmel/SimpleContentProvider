@@ -30,10 +30,14 @@ import java.util.regex.Pattern;
  */
 public class SQLGenUtils {
 
+    private static final String VALID_NAME_STR = "([A-Za-z0-9_]+)";
     // this pattern defines what a valid name (table name, column name, etc.) is in SQLite.
-    private static final Pattern VALID_NAME = Pattern.compile("[A-Za-z0-9_]+");
+    private static final Pattern VALID_NAME = Pattern.compile(VALID_NAME_STR);
     // the inverse of the above pattern.
     private static final Pattern NON_NAME_CHARS = Pattern.compile("[^A-Za-z0-9_]+");
+
+    private static final Pattern VALID_QUALIFIED_COLUMN_NAME = Pattern.compile("(?:"
+            + VALID_NAME_STR + "\\.)?" + VALID_NAME_STR);
 
     /**
      * Creates a valid SQLite name from the Java classname, lowercased.
@@ -68,8 +72,19 @@ public class SQLGenUtils {
     }
 
     /**
+     * Unlike {@link #isValidName(String)}, this permits table prefixing of the supplied name. Eg.
+     * {@code foo.bar}, and {@code bar} are both valid.
+     *
+     * @param column
+     * @return
+     */
+    public static boolean isValidQualifiedColumnName(String column) {
+        return VALID_QUALIFIED_COLUMN_NAME.matcher(column).matches();
+    }
+
+    /**
      * Escapes table names so they can be used in SQL queries.
-     * 
+     *
      * @param tableName
      *            a plain table name
      * @return a quoted, escaped table name
@@ -79,5 +94,20 @@ public class SQLGenUtils {
     public static String escapeTableName(String tableName) {
         return '"' + tableName.replaceAll("\"", "\"\"") + '"';
 
+    }
+
+    /**
+     * Escapes a qualified column name, eg. {@code foo.bar} or {@code bar}.
+     *
+     * @param column
+     * @return
+     * @throws SQLGenerationException
+     */
+    public static String escapeQualifiedColumn(String column) throws SQLGenerationException {
+        if (!isValidQualifiedColumnName(column)) {
+            throw new SQLGenerationException("column name is not valid");
+        }
+
+        return VALID_NAME.matcher(column).replaceAll("\"$1\"");
     }
 }
