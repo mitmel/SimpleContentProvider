@@ -96,7 +96,7 @@ public class ParserTest extends AndroidTestCase {
         assertEquals(qIs("a"), sql);
     }
 
-    public void testFailures() throws IOException {
+    public void testFailMissingOperators() throws IOException {
 
         // missing operator
         testExpectFailure("a");
@@ -105,25 +105,39 @@ public class ParserTest extends AndroidTestCase {
         testExpectFailure("a=1(b=2)");
         testExpectFailure("(a=1)(b=2)");
         testExpectFailure("()");
+    }
 
+    public void testFailMissingValue() throws IOException {
         // missing value
         testExpectFailure("a=");
         testExpectFailure("a==");
 
+    }
+
+    public void testFailMissingColumn() throws IOException {
         // missing column
         testExpectFailure("=a");
         testExpectFailure("==a");
 
+    }
+
+    public void testFailMissingParen() throws IOException {
         // missing paren
         testExpectFailure("(a=b");
         testExpectFailure("a=b)");
         testExpectFailure("(a=b))");
 
+    }
+
+    public void testFailTooMany() throws IOException {
         // too many
         testExpectFailure("a==b");
         testExpectFailure("a======b");
         testExpectFailure("a~~=b");
 
+    }
+
+    public void testFailSymbolsOutOfPlace() throws IOException {
         // symbols out of place
         testExpectFailure("a~b");
         testExpectFailure("a!b");
@@ -137,14 +151,23 @@ public class ParserTest extends AndroidTestCase {
         testExpectFailure("a!!=b");
         testExpectFailure("a!!!!!=b");
 
+    }
+
+    public void testFailInvalidSymbols() throws IOException {
         // invalid symbols
         testExpectFailure("a='; drop students; //");
         testExpectFailure("a='");
         testExpectFailure("a=\"");
 
+    }
+
+    public void testFailBadColumnName() throws IOException {
         // bad column name
         testExpectFailure("a%b=c");
 
+    }
+
+    public void testFailWhitespace() throws IOException {
         // whitespace is invalid
         testExpectFailure("a=b c");
     }
