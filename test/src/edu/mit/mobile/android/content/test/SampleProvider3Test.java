@@ -26,7 +26,7 @@ public class SampleProvider3Test extends ProviderTestCase2<SampleProvider3> {
         PERSON1_NAME = "Marco Dahlqvist",
         PERSON2_NAME = "Akira Roudiere",
         PERSON3_NAME = "Charles Crew",
-        PERSON4_NAME = "Ernesto Nadir Crespo Keitel";
+        PERSON4_NAME = "Rheba Williams";
 
     public static final String
         PROJECT1_NAME = "Shufflestorm",
