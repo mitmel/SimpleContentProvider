@@ -104,17 +104,17 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  * <pre>
  * public class MyProvider extends SimpleContentProvider {
  *     public static final String AUTHORITY = &quot;edu.mit.mobile.android.content.test.sampleprovider1&quot;;
- * 
+ *
  *     public MyProvider() {
  *         // authority DB name DB ver
  *         super(AUTHORITY, &quot;myprovider&quot;, 1);
- * 
+ *
  *         // This helper creates the table and can do basic CRUD for items
  *         // that
  *         // use the dir/item scheme with the BaseColumns._ID integer primary
  *         // key.
  *         final DBHelper messageHelper = new GenericDBHelper(Message.class, Message.CONTENT_URI);
- * 
+ *
  *         // Adds a mapping between the given content:// URI path and the
  *         // helper.
  *         //
@@ -123,14 +123,14 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *         // helpers handle different SQL verbs (eg. use a GenericDBHelper for
  *         // basic insert, delete, update, but have a custom helper for
  *         // querying).
- * 
+ *
  *         // addDirUri(messageHelper, Message.PATH);
  *         // addItemUri(messageHelper, Message.PATH + &quot;/#&quot;);
- * 
+ *
  *         // or more simply:
- * 
+ *
  *         addDirAndItemUri(messageHelper, Message.PATH);
- * 
+ *
  *     }
  * }
  * </pre>
@@ -156,13 +156,13 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
     // /////////////////////// private fields
     private final String mAuthority;
-    private String mDBName;
-    private final int mDBVersion;
+    protected String mDBName;
+    protected final int mDBVersion;
 
     private final DBHelperMapper mDBHelperMapper;
 
     private static final UriMatcher MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-    private DatabaseHelper mDatabaseHelper;
+    private DatabaseOpenHelper mDatabaseHelper;
 
     private final List<DBHelper> mDBHelpers = new ArrayList<DBHelper>();
 
@@ -432,9 +432,9 @@ public abstract class SimpleContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         if (mDBName == null) {
-            mDBName = extractDBName();
+            mDBName = generateDBName();
         }
-        mDatabaseHelper = new DatabaseHelper(getContext(), mDBName, mDBVersion);
+        mDatabaseHelper = createDatabaseOpenHelper();
 
         return true;
     }
@@ -468,7 +468,6 @@ public abstract class SimpleContentProvider extends ContentProvider {
 
         return mDBHelperMapper.getType(match);
     }
-
 
     /**
      * This has been moved to {@link ProviderUtils#toDirType(String, String)}
@@ -659,14 +658,30 @@ public abstract class SimpleContentProvider extends ContentProvider {
      *
      * @return a valid name, based on the classname.
      */
-    private String extractDBName() {
+    protected String generateDBName() {
         return SQLGenUtils.toValidName(getClass());
+    }
+
+    /**
+     * Instantiate a new {@link DatabaseOpenHelper} for this provider.
+     *
+     * @return
+     */
+    protected DatabaseOpenHelper createDatabaseOpenHelper() {
+        return new DatabaseOpenHelper(getContext(), mDBName, mDBVersion);
     }
 
     // //////////////////// internal classes
 
-    private class DatabaseHelper extends SQLiteOpenHelper {
-        public DatabaseHelper(Context context, String name, int version) {
+    /**
+     * A basic database helper that will go through all the provider's registered database helpers
+     * and call creation/upgrades. This also turns on foreign keys if support is available.
+     *
+     * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
+     *
+     */
+    protected class DatabaseOpenHelper extends SQLiteOpenHelper {
+        public DatabaseOpenHelper(Context context, String name, int version) {
             super(context, name, null, version);
         }
 
