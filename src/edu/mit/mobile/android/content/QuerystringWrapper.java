@@ -20,6 +20,7 @@ package edu.mit.mobile.android.content;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -122,6 +123,8 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     public static final String QUERY_OPERATOR_LESS_THAN_EQUALS = "<=";
 
+    private final HashMap<String, String> mColumnAliases = new HashMap<String, String>();
+
     private final DBHelper mWrappedHelper;
 
     public QuerystringWrapper(DBHelper wrappedHelper) {
@@ -160,7 +163,7 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
      * @throws IllegalArgumentException
      *             if there are any errors parsing the query
      */
-    public static QueryStringResult queryStringToSelection(Uri uri, String selection,
+    public QueryStringResult queryStringToSelection(Uri uri, String selection,
             String[] selectionArgs) throws SQLGenerationException {
         final String query = uri.getEncodedQuery();
 
@@ -172,7 +175,7 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
         try {
             if (query != null) {
 
-                final QuerystringParser parser = new QuerystringParser(query);
+                final QuerystringParser parser = new QuerystringParser(query, mColumnAliases);
 
                 parser.parse();
 
@@ -197,6 +200,16 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
             throw se;
         }
         return new QueryStringResult(newSelection, newSelectionArgs);
+    }
+
+    /**
+     * Adds an alias for the input key in the querystring and outputs columnAlias instead.
+     *
+     * @param column
+     * @param columnAlias
+     */
+    public void addColumnAlias(String column, String columnAlias) {
+        mColumnAliases.put(column, columnAlias);
     }
 
     @Override

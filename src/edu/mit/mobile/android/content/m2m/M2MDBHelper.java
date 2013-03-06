@@ -200,6 +200,13 @@ public class M2MDBHelper extends DBHelper {
                 new String[] { Long.toString(to), Long.toString(from) });
     }
 
+    public int removeRelation(SQLiteDatabase db, long from, String selection, String[] selectionArgs){
+        return db.delete(mJoinTableEscaped + " JOIN " + mToTableEscaped + " ON ("
+                + mJoinTableEscaped + "." + M2MColumns.TO_ID + "=" + mToTableEscaped + "."
+                + BaseColumns._ID + ")", M2MColumns.TO_ID + "=? AND " + M2MColumns.FROM_ID + "=?",
+                new String[] {Long.toString(from) });
+    }
+
     @Override
     public Uri insertDir(SQLiteDatabase db, ContentProvider provider, Uri uri, ContentValues values) {
 
