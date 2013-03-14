@@ -26,7 +26,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import edu.mit.mobile.android.content.column.DBColumn.Extractor;
+import edu.mit.mobile.android.content.annotation.SQLExtractor;
 
 /**
  * Provides basic CRUD database calls to handle very simple object types, eg:
@@ -45,7 +45,7 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
     private final String mTable;
     private final Class<? extends ContentItem> mDataItem;
     private final String mSortOrder;
-    private final Extractor mExtractor;
+    private final SQLExtractor mExtractor;
 
     /**
      * @param contentItem
@@ -53,7 +53,7 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
      */
     public GenericDBHelper(Class<? extends ContentItem> contentItem) {
         mDataItem = contentItem;
-        mExtractor = new Extractor(contentItem);
+        mExtractor = new SQLExtractor(contentItem);
         mTable = mExtractor.getTableName();
 
         mSortOrder = extractSortOrder();
