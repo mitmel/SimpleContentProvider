@@ -27,16 +27,20 @@ public class AndroidVersions {
     public static final String SQLITE_VERSION = getSqliteVersion();
     private static final long SQLITE_VERSION_CODE = versionToCode(SQLITE_VERSION);
 
+    private static final long SQLITE_VERSION_3_6_19 = versionToCode("3.6.19");
+
     /**
      * if true, the installed version of SQLite supports foreign keys
      */
-    public static final boolean SQLITE_SUPPORTS_FOREIGN_KEYS = SQLITE_VERSION_CODE >= versionToCode("3.6.19");
+    public static final boolean SQLITE_SUPPORTS_FOREIGN_KEYS = SQLITE_VERSION_CODE >= SQLITE_VERSION_3_6_19;
+
+    public static final boolean SQLITE_SUPPORTS_IS_ISNOT = SQLITE_VERSION_CODE >= SQLITE_VERSION_3_6_19;
 
     /**
      * @return the version string returned by sqlite_version()
      * @see <a href="http://stackoverflow.com/questions/2421189/version-of-sqlite-used-in-android">StackOverflow Version of SQLite used in Android?</a>
      */
-    private static final String getSqliteVersion(){
+    private static final String getSqliteVersion() {
         final SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(":memory:", null);
         final Cursor cursor = db.rawQuery("select sqlite_version() AS sqlite_version", null);
         String sqliteVersion = "";
@@ -45,6 +49,7 @@ public class AndroidVersions {
         }
         cursor.close();
         db.close();
+
         return sqliteVersion;
     }
 

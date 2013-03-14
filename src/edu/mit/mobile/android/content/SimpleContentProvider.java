@@ -709,6 +709,10 @@ public abstract class SimpleContentProvider extends ContentProvider {
                     && AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
                 db.execSQL("PRAGMA foreign_keys = ON;");
             }
+
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "SQLite version is: " + AndroidVersions.SQLITE_VERSION);
+            }
         }
 
         @Override

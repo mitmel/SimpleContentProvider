@@ -36,7 +36,7 @@ package edu.mit.mobile.android.content.query;
 /* "%code imports" blocks.  */
 
 /* Line 33 of lalr1.java  */
-/* Line 36 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 37 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 import java.io.IOException;
@@ -47,8 +47,8 @@ import java.lang.StringBuilder;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Locale;
 
+import edu.mit.mobile.android.content.AndroidVersions;
 import edu.mit.mobile.android.content.SQLGenUtils;
 import edu.mit.mobile.android.content.SQLGenerationException;
 
@@ -120,7 +120,7 @@ public class QuerystringParser
 /* "%code lexer" blocks.  */
 
 /* Line 147 of lalr1.java  */
-/* Line 105 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 106 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
         private final StreamTokenizer mTokenizer;
         private String mLVal;
@@ -372,7 +372,7 @@ public class QuerystringParser
   if (yyn == 8)
     
 /* Line 351 of lalr1.java  */
-/* Line 171 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 172 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append('('); };
   break;
     
@@ -381,7 +381,7 @@ public class QuerystringParser
   if (yyn == 9)
     
 /* Line 351 of lalr1.java  */
-/* Line 172 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 173 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(')'); };
   break;
     
@@ -390,7 +390,7 @@ public class QuerystringParser
   if (yyn == 10)
     
 /* Line 351 of lalr1.java  */
-/* Line 174 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 175 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" AND "); };
   break;
     
@@ -399,7 +399,7 @@ public class QuerystringParser
   if (yyn == 11)
     
 /* Line 351 of lalr1.java  */
-/* Line 175 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 176 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" OR "); };
   break;
     
@@ -408,8 +408,8 @@ public class QuerystringParser
   if (yyn == 20)
     
 /* Line 351 of lalr1.java  */
-/* Line 188 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { mSb.append(" IS NOT ?"); };
+/* Line 189 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(AndroidVersions.SQLITE_SUPPORTS_IS_ISNOT ? " IS NOT ?" : " != ?"); };
   break;
     
 
@@ -417,8 +417,8 @@ public class QuerystringParser
   if (yyn == 21)
     
 /* Line 351 of lalr1.java  */
-/* Line 190 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
-    { mSb.append(" IS ?"); };
+/* Line 191 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+    { mSb.append(AndroidVersions.SQLITE_SUPPORTS_IS_ISNOT ? " IS ?" : " = ?"); };
   break;
     
 
@@ -426,7 +426,7 @@ public class QuerystringParser
   if (yyn == 22)
     
 /* Line 351 of lalr1.java  */
-/* Line 192 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 193 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" > ?"); };
   break;
     
@@ -435,7 +435,7 @@ public class QuerystringParser
   if (yyn == 23)
     
 /* Line 351 of lalr1.java  */
-/* Line 193 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 194 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" >= ?"); };
   break;
     
@@ -444,7 +444,7 @@ public class QuerystringParser
   if (yyn == 24)
     
 /* Line 351 of lalr1.java  */
-/* Line 194 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 195 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" < ?"); };
   break;
     
@@ -453,7 +453,7 @@ public class QuerystringParser
   if (yyn == 25)
     
 /* Line 351 of lalr1.java  */
-/* Line 195 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 196 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" <= ?"); };
   break;
     
@@ -462,7 +462,7 @@ public class QuerystringParser
   if (yyn == 26)
     
 /* Line 351 of lalr1.java  */
-/* Line 197 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 198 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" LIKE ?"); };
   break;
     
@@ -471,7 +471,7 @@ public class QuerystringParser
   if (yyn == 28)
     
 /* Line 351 of lalr1.java  */
-/* Line 200 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 201 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { mSb.append(" NOT"); };
   break;
     
@@ -480,7 +480,7 @@ public class QuerystringParser
   if (yyn == 29)
     
 /* Line 351 of lalr1.java  */
-/* Line 202 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 203 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     { appendColumnName(((String)(yystack.valueAt (1-(1))))); };
   break;
     
@@ -489,7 +489,7 @@ public class QuerystringParser
   if (yyn == 30)
     
 /* Line 351 of lalr1.java  */
-/* Line 204 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 205 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add(URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8"));
@@ -506,7 +506,7 @@ public class QuerystringParser
   if (yyn == 31)
     
 /* Line 351 of lalr1.java  */
-/* Line 214 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 215 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
     {
     try {
         mSelectionArgs.add('%' + URLDecoder.decode(((String)(yystack.valueAt (1-(1)))), "utf-8") + '%');
@@ -1065,10 +1065,10 @@ public class QuerystringParser
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
-         0,   163,   163,   164,   166,   167,   168,   169,   171,   172,
-     174,   175,   178,   179,   181,   182,   183,   184,   185,   186,
-     188,   190,   192,   193,   194,   195,   197,   199,   200,   202,
-     204,   214
+         0,   164,   164,   165,   167,   168,   169,   170,   172,   173,
+     175,   176,   179,   180,   182,   183,   184,   185,   186,   187,
+     189,   191,   193,   194,   195,   196,   198,   200,   201,   203,
+     205,   215
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -1144,7 +1144,7 @@ public class QuerystringParser
 /* Unqualified %code blocks.  */
 
 /* Line 927 of lalr1.java  */
-/* Line 53 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 54 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 	private StringBuilder mSb = new StringBuilder();
@@ -1205,7 +1205,7 @@ public static class ParseException extends RuntimeException {
 
 
 /* Line 931 of lalr1.java  */
-/* Line 224 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
+/* Line 225 of "src/edu/mit/mobile/android/content/query/QuerystringParser.y"  */
 
 
 

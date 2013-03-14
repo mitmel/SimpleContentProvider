@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import android.test.AndroidTestCase;
+import edu.mit.mobile.android.content.AndroidVersions;
 import edu.mit.mobile.android.content.SQLGenerationException;
 import edu.mit.mobile.android.content.query.QuerystringParser;
 import edu.mit.mobile.android.content.query.QuerystringParser.ParseException;
 
 public class ParserTest extends AndroidTestCase {
+
+    private static final String IS = AndroidVersions.SQLITE_SUPPORTS_IS_ISNOT ? "IS" : "=";
+    private static final String IS_NOT = AndroidVersions.SQLITE_SUPPORTS_IS_ISNOT ? "IS NOT" : "!=";
 
     public void testParserBasic() throws IOException {
         final String query = "a=b";
@@ -30,11 +34,11 @@ public class ParserTest extends AndroidTestCase {
 
         // one parameter
         sql = testParser("a=b", new String[] { "b" });
-        assertEquals("\"a\" IS ?", sql);
+        assertEquals("\"a\" " + IS + " ?", sql);
 
         // longer keywords and reserved words
         sql = testParser("select=insert", new String[] { "insert" });
-        assertEquals("\"select\" IS ?", sql);
+        assertEquals("\"select\" " + IS + " ?", sql);
 
         sql = testParser("a=foo&b=bar", new String[] { "foo", "bar" });
         assertEquals(qIs("a") + " AND " + qIs("b"), sql);
@@ -71,7 +75,7 @@ public class ParserTest extends AndroidTestCase {
         assertEquals("\"a\" NOT LIKE ?", sql);
 
         sql = testParser("a!=foo", new String[] { "foo" });
-        assertEquals("\"a\" IS NOT ?", sql);
+        assertEquals("\"a\" " + IS_NOT + " ?", sql);
 
         sql = testParser("a>1", new String[] { "1" });
         assertEquals("\"a\" > ?", sql);
@@ -86,7 +90,7 @@ public class ParserTest extends AndroidTestCase {
         assertEquals("\"a\" <= ?", sql);
 
         sql = testParser("(((a~=foo|b!=bar)))", new String[] { "%foo%", "bar" });
-        assertEquals("(((\"a\" LIKE ? OR \"b\" IS NOT ?)))", sql);
+        assertEquals("(((\"a\" LIKE ? OR \"b\" " + IS_NOT + " ?)))", sql);
 
         // unicode
         sql = testParser("a=flambée&b=☃♥⃠☀", new String[] { "flambée", "☃♥⃠☀" });
@@ -103,12 +107,12 @@ public class ParserTest extends AndroidTestCase {
         mapping.put("abbv", "abbreviation");
         sql = testParser("abbv=1", new String[] { "1" }, mapping);
 
-        assertEquals("\"abbreviation\" IS ?", sql);
+        assertEquals(qIs("abbreviation"), sql);
 
         mapping.put("short", "long.column");
         sql = testParser("short=yes", new String[] { "yes" }, mapping);
 
-        assertEquals("\"long\".\"column\" IS ?", sql);
+        assertEquals("\"long\".\"column\" " + IS + " ?", sql);
     }
 
     public void testFailMissingOperators() throws IOException {
@@ -194,7 +198,7 @@ public class ParserTest extends AndroidTestCase {
      * @return
      */
     private String qIs(String params) {
-        return "\"" + params + "\" IS ?";
+        return "\"" + params + "\" " + IS + " ?";
     }
 
     public String testParser(String query, String[] expectedParams) throws IOException,

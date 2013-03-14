@@ -44,8 +44,8 @@ import java.lang.StringBuilder;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Locale;
 
+import edu.mit.mobile.android.content.AndroidVersions;
 import edu.mit.mobile.android.content.SQLGenUtils;
 import edu.mit.mobile.android.content.SQLGenerationException;
 
@@ -186,9 +186,9 @@ comparison: equals
 		  | lt
 		  | lte
 
-not_equals: '!' '=' { mSb.append(" IS NOT ?"); }
+not_equals: '!' '=' { mSb.append(AndroidVersions.SQLITE_SUPPORTS_IS_ISNOT ? " IS NOT ?" : " != ?"); }
 
-equals: '=' { mSb.append(" IS ?"); }
+equals: '=' { mSb.append(AndroidVersions.SQLITE_SUPPORTS_IS_ISNOT ? " IS ?" : " = ?"); }
 
 gt:  '>'     { mSb.append(" > ?"); }
 gte: '>' '=' { mSb.append(" >= ?"); }
