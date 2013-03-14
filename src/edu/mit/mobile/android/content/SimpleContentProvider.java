@@ -34,6 +34,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.dbhelper.SearchDBHelper;
@@ -703,8 +704,21 @@ public abstract class SimpleContentProvider extends ContentProvider {
         public void onOpen(SQLiteDatabase db) {
             super.onOpen(db);
 
-            if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
+            // starting with JB, use onConfigure()
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN
+                    && AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
                 db.execSQL("PRAGMA foreign_keys = ON;");
+            }
+        }
+
+        @Override
+        public void onConfigure(SQLiteDatabase db) {
+            super.onConfigure(db);
+
+            // this check is still in place so that other the M2M classes will be feature-matched
+            // with this variable's status.
+            if (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS) {
+                db.setForeignKeyConstraintsEnabled(true);
             }
         }
     }
