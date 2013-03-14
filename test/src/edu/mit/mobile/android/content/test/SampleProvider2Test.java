@@ -478,7 +478,8 @@ public class SampleProvider2Test extends ProviderTestCase2<SampleProvider2> {
             createdInitial = created;
             modifiedInitial = modified;
 
-            assertEquals(created, modified);
+            // for instances where this takes too long.
+            assertTrue(Math.abs(created - modified) < 2);
         } finally {
             post1.close();
         }
