@@ -57,6 +57,15 @@ public class SampleProvider5Test extends ProviderTestCase2<SampleProvider5> {
 
         assertTrue(tags.containsAll(Arrays.asList(new String[] { "code", "git", "development" })));
 
+        final ContentResolver cr = getMockContentResolver();
+
+        assertEquals(1, cr.delete(stackOverflow, null, null));
+
+        tags = queryBookmarkTags(github);
+
+        assertEquals(3, tags.size());
+
+        assertTrue(tags.containsAll(Arrays.asList(new String[] { "code", "git", "development" })));
     }
 
     private Set<String> queryBookmarkTags(Uri bookmark) {
@@ -77,22 +86,12 @@ public class SampleProvider5Test extends ProviderTestCase2<SampleProvider5> {
 
         final ArrayList<ContentProviderOperation> cpos = new ArrayList<ContentProviderOperation>();
 
-        //cpos.add(ContentProviderOperation.newInsert(Bookmark.CONTENT_URI).withValue(Bookmark.TITLE, title).withValue(Bookmark.URL, url).build());
-
         if (tags.length > 0){
 
             for (final String tag : tags){
-                cpos.add(ContentProviderOperation.newUpdate(Bookmark.TAGS.getUri(bookmark))
-                        .withValue(Tag.NAME, tag)
-                        .withSelection(Tag.NAME + "=?", new String[] { tag })
-                        .build());
 
-                //
-                // .withSelection("NOT EXISTS (SELECT 1 FROM tag WHERE " + Tag.NAME + "=?)",
-                // new String[] { tag }
                 cpos.add(ContentProviderOperation.newInsert(Bookmark.TAGS.getUri(bookmark))
                         .withValue(Tag.NAME, tag).build());
-                //cpos.add(ContentProviderOperation.newInsert(Tag.BOOKMARKS.getUri(Uri.withAppendedPath(Bookmark.CONTENT_URI, "#"))).withValue(Tag.NAME, tag).withValueBackReference(Tag., previousResult).build());
             }
 
             final ContentProviderResult[] results = cr.applyBatch(SampleProvider5.AUTHORITY, cpos);
