@@ -40,6 +40,7 @@ public class M2MDBHelper extends DBHelper {
     private final String mToDefaultSortOrder;
     private final String mToTableEscaped;
     private final String mJoinTableEscaped;
+    private final GenericDBHelper mTo;
 
     public M2MDBHelper(GenericDBHelper from, GenericDBHelper to) {
         this(from, to, (Uri) null);
@@ -58,6 +59,7 @@ public class M2MDBHelper extends DBHelper {
             IdenticalChildFinder identicalChildFinder) {
         mFromTable = from.getTable();
         mToTable = to.getTable();
+        mTo = to;
         mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
         mToDefaultSortOrder = getToDefaultSortOrder(to);
         mJoinTable = genJoinTableName(mFromTable, mToTable);
@@ -69,14 +71,17 @@ public class M2MDBHelper extends DBHelper {
 
     // constructors based on table names instead of GenericDBHelpers
 
+    @Deprecated
     public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder) {
         this(fromTable, toTable, identicalChildFinder, null);
     }
 
+    @Deprecated
     public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder,
             Uri toContentUri) {
         mFromTable = fromTable;
         mToTable = toTable;
+        mTo = null;
         mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
         mToDefaultSortOrder = null;
         mJoinTable = genJoinTableName(mFromTable, mToTable);
@@ -200,11 +205,11 @@ public class M2MDBHelper extends DBHelper {
                 new String[] { Long.toString(to), Long.toString(from) });
     }
 
-    public int removeRelation(SQLiteDatabase db, long from, String selection, String[] selectionArgs){
+    public int removeRelation(SQLiteDatabase db, long from, String selection, String[] selectionArgs) {
         return db.delete(mJoinTableEscaped + " JOIN " + mToTableEscaped + " ON ("
                 + mJoinTableEscaped + "." + M2MColumns.TO_ID + "=" + mToTableEscaped + "."
                 + BaseColumns._ID + ")", M2MColumns.TO_ID + "=? AND " + M2MColumns.FROM_ID + "=?",
-                new String[] {Long.toString(from) });
+                new String[] { Long.toString(from) });
     }
 
     @Override
@@ -254,9 +259,14 @@ public class M2MDBHelper extends DBHelper {
                     newItem = provider.insert(mToContentUri, values);
                     childId = ContentUris.parseId(newItem);
                 } else {
-                    childId = db.insert(mToTable, null, values);
-                    if (childId != -1) {
-                        newItem = ContentUris.withAppendedId(parentChildDir, childId);
+                    if (mTo != null) {
+                        newItem = mTo.insertDir(db, provider, parentChildDir, values);
+                        childId = ContentUris.parseId(newItem);
+                    } else {
+                        childId = db.insert(mToTable, null, values);
+                        if (childId != -1) {
+                            newItem = ContentUris.withAppendedId(parentChildDir, childId);
+                        }
                     }
                 }
             }
