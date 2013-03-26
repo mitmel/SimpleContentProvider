@@ -1,5 +1,21 @@
 package edu.mit.mobile.android.content.m2m;
 
+/*
+ * Copyright (C) 2011-2013 MIT Mobile Experience Lab
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License version 2.1 as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, visit
+ * http://www.gnu.org/licenses/lgpl.html
+ */
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -24,7 +40,7 @@ public class M2MManager implements Manager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.mit.mobile.android.content.m2m.Manager#getUri(android.net.Uri)
      */
     @Override
@@ -34,7 +50,7 @@ public class M2MManager implements Manager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.mit.mobile.android.content.m2m.Manager#insert(android.content.ContentResolver,
      * android.net.Uri, android.content.ContentValues)
      */
@@ -45,7 +61,7 @@ public class M2MManager implements Manager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.mit.mobile.android.content.m2m.Manager#query(android.content.ContentResolver,
      * android.net.Uri, java.lang.String[])
      */
@@ -56,7 +72,7 @@ public class M2MManager implements Manager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.mit.mobile.android.content.m2m.Manager#getSortOrder()
      */
     @Override
@@ -66,7 +82,7 @@ public class M2MManager implements Manager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see edu.mit.mobile.android.content.m2m.Manager#getPath()
      */
     @Override

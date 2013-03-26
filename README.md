@@ -64,8 +64,7 @@ Copyright (C) 2011-2013 [MIT Mobile Experience Lab][7]
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+License version 2.1 as published by the Free Software Foundation
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -74,7 +73,7 @@ Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+[gnu.org/licenses/lgpl.html][11]
 
 [1]: http://developer.android.com/intl/de/guide/topics/providers/content-providers.html
 [2]: https://www.djangoproject.com/
@@ -86,3 +85,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 [8]: http://en.wikipedia.org/wiki/Representational_State_Transfer
 [9]: http://mel-tools.mit.edu/code/SimpleContentProvider/doc/
 [10]: https://play.google.com/store/apps/details?id=edu.mit.mobile.android.content.example
+[11]: http://www.gnu.org/licenses/lgpl.html
