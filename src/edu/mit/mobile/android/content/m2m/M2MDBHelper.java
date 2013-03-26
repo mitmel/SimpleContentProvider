@@ -56,6 +56,10 @@ public class M2MDBHelper extends ContentItemDBHelper {
     private final String mToTableEscaped;
     private final String mJoinTableEscaped;
     private final ContentItemDBHelper mTo;
+    private final ContentItemDBHelper mFrom;
+
+    private boolean mCreatedTables = false;
+
 
     public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to) {
         this(from, to, (Uri) null);
@@ -72,16 +76,18 @@ public class M2MDBHelper extends ContentItemDBHelper {
 
     public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to, Uri toContentUri,
             IdenticalChildFinder identicalChildFinder) {
-        this(from.getTargetTable(), to, toContentUri, identicalChildFinder);
+        this(from.getTargetTable(), from, to, toContentUri, identicalChildFinder);
     }
 
-    private M2MDBHelper(String fromTable, ContentItemDBHelper to, Uri toContentUri,
+    private M2MDBHelper(String fromTable, ContentItemDBHelper from, ContentItemDBHelper to,
+            Uri toContentUri,
             IdenticalChildFinder identicalChildFinder) {
         super(to.getContentItem(false), to.getContentItem(true));
 
         mFromTable = fromTable;
         mToTable = to.getTargetTable();
         mTo = to;
+        mFrom = from;
         mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
         mToDefaultSortOrder = getToDefaultSortOrder(to);
         mJoinTable = genJoinTableName(mFromTable, mToTable);
@@ -150,6 +156,10 @@ public class M2MDBHelper extends ContentItemDBHelper {
      */
     @Override
     public void createTables(SQLiteDatabase db) {
+        // the instanceof below is a hack. This whole M2M thing needs to be reworked.
+        if (mCreatedTables || mFrom instanceof M2MDBHelper) {
+            return;
+        }
         db.execSQL("CREATE TABLE "
                 + mJoinTableEscaped
                 + " ("
@@ -164,6 +174,7 @@ public class M2MDBHelper extends ContentItemDBHelper {
                 + " INTEGER"
                 + (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ? " REFERENCES '" + mFromTable
                         + "' (" + BaseColumns._ID + ")" + " ON DELETE CASCADE" : "") + ");");
+        mCreatedTables = true;
     }
 
     /**

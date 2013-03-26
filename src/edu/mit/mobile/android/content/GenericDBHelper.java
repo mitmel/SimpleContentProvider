@@ -44,6 +44,8 @@ public class GenericDBHelper extends ContentItemDBHelper {
     private final String mTable;
     private final SQLExtractor mExtractor;
 
+    private boolean mCreatedTables = false;
+
     /**
      * @param contentItem
      *            the class that defines the content item that will be managed by this helper.
@@ -92,9 +94,13 @@ public class GenericDBHelper extends ContentItemDBHelper {
 
     @Override
     public void createTables(SQLiteDatabase db) throws SQLGenerationException {
+        if (mCreatedTables) {
+            return;
+        }
         for (final String sqlExpression : mExtractor.getTableCreation()) {
             db.execSQL(sqlExpression);
         }
+        mCreatedTables = true;
     }
 
     protected ContentValues callOnPreSaveListener(SQLiteDatabase db, Uri uri, ContentValues values) {
