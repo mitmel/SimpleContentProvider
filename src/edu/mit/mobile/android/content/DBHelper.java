@@ -77,6 +77,8 @@ public abstract class DBHelper {
     public abstract void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
             throws SQLGenerationException;
 
+    public abstract String getTargetTable();
+
     protected OnSaveListener mOnSaveListener;
 
     /**

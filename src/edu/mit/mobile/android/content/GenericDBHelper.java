@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import edu.mit.mobile.android.content.annotation.SQLExtractor;
+import edu.mit.mobile.android.content.dbhelper.ContentItemDBHelper;
 
 /**
  * Provides basic CRUD database calls to handle very simple object types, eg:
@@ -40,11 +41,9 @@ import edu.mit.mobile.android.content.annotation.SQLExtractor;
  * @author <a href="mailto:spomeroy@mit.edu">Steve Pomeroy</a>
  *
  */
-public class GenericDBHelper extends DBHelper implements ContentItemRegisterable {
+public class GenericDBHelper extends ContentItemDBHelper {
 
     private final String mTable;
-    private final Class<? extends ContentItem> mDataItem;
-    private final String mSortOrder;
     private final SQLExtractor mExtractor;
 
     /**
@@ -52,25 +51,9 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
      *            the class that defines the content item that will be managed by this helper.
      */
     public GenericDBHelper(Class<? extends ContentItem> contentItem) {
-        mDataItem = contentItem;
+        super(contentItem);
         mExtractor = new SQLExtractor(contentItem);
         mTable = mExtractor.getTableName();
-
-        mSortOrder = extractSortOrder();
-    }
-
-    private String extractSortOrder() {
-        final DBSortOrder sortOrder = mDataItem.getAnnotation(DBSortOrder.class);
-        return sortOrder != null ? sortOrder.value() : null;
-    }
-
-    /**
-     * Gets the sort order that was specified by the @{@link DBSortOrder} annotation.
-     *
-     * @return the default sort order on null if there was none specified
-     */
-    public String getDefaultSortOrder() {
-        return mSortOrder;
     }
 
     /**
@@ -91,6 +74,11 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
     }
 
     @Override
+    public String getTargetTable() {
+        return getTable();
+    }
+
+    @Override
     public String getDirType(String authority, String path) {
         return ProviderUtils.toDirType(authority, mTable);
     }
@@ -101,7 +89,7 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
     }
 
     public Class<? extends ContentItem> getContentItem() {
-        return mDataItem;
+        return mContentItem;
     }
 
     @Override
@@ -180,10 +168,5 @@ public class GenericDBHelper extends DBHelper implements ContentItemRegisterable
                 ProviderUtils.addExtraWhere(selection, BaseColumns._ID + "=?"),
                 ProviderUtils.addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()), null,
                 null, sortOrder == null ? mSortOrder : sortOrder);
-    }
-
-    @Override
-    public Class<? extends ContentItem> getContentItem(boolean isItem) {
-        return mDataItem;
     }
 }

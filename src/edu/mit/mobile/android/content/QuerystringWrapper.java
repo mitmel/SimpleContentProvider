@@ -204,7 +204,7 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
 
     /**
      * Adds an alias for the input key in the query string and outputs the specified column instead.
-     * 
+     *
      * @param columnAlias
      *            the input name. This is the key from the query string.
      * @param column
@@ -273,6 +273,11 @@ public class QuerystringWrapper extends DBHelper implements ContentItemRegistera
     public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
             throws SQLGenerationException {
         mWrappedHelper.upgradeTables(db, oldVersion, newVersion);
+    }
+
+    @Override
+    public String getTargetTable() {
+        return mWrappedHelper.getTargetTable();
     }
 
     @Override

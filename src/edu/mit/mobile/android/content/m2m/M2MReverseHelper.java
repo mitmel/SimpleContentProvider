@@ -75,6 +75,11 @@ public class M2MReverseHelper extends DBHelper {
         // the wrapped helper will handle this.
     }
 
+    @Override
+    public String getTargetTable() {
+        return mFromTable;
+    }
+
     /**
      * Selects rows from the FROM table that have a relation from any of the items in the TO table.
      * The ID of the item in the TO table that matches can be selected using

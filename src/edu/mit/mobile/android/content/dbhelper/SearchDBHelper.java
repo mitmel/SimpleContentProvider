@@ -307,6 +307,11 @@ public class SearchDBHelper extends DBHelper {
     }
 
     @Override
+    public String getTargetTable() {
+        return null;
+    }
+
+    @Override
     public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion)
             throws SQLGenerationException {
         // unused

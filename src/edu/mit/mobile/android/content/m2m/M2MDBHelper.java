@@ -8,10 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import edu.mit.mobile.android.content.AndroidVersions;
-import edu.mit.mobile.android.content.DBHelper;
-import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.SQLGenUtils;
+import edu.mit.mobile.android.content.dbhelper.ContentItemDBHelper;
 
 /**
  * Database helper to make it easier to create many-to-many relationships between two arbitrary
@@ -31,7 +30,7 @@ import edu.mit.mobile.android.content.SQLGenUtils;
  * @author steve
  *
  */
-public class M2MDBHelper extends DBHelper {
+public class M2MDBHelper extends ContentItemDBHelper {
     private static final String WILDCARD_PATH_SEGMENT = "*";
     private final String mFromTable, mToTable, mJoinTable;
     private final Uri mToContentUri;
@@ -40,25 +39,32 @@ public class M2MDBHelper extends DBHelper {
     private final String mToDefaultSortOrder;
     private final String mToTableEscaped;
     private final String mJoinTableEscaped;
-    private final GenericDBHelper mTo;
+    private final ContentItemDBHelper mTo;
 
-    public M2MDBHelper(GenericDBHelper from, GenericDBHelper to) {
+    public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to) {
         this(from, to, (Uri) null);
     }
 
-    public M2MDBHelper(GenericDBHelper from, GenericDBHelper to, Uri toContentUri) {
+    public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to, Uri toContentUri) {
         this(from, to, toContentUri, null);
     }
 
-    public M2MDBHelper(GenericDBHelper from, GenericDBHelper to,
+    public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to,
             IdenticalChildFinder identicalChildFinder) {
         this(from, to, null, identicalChildFinder);
     }
 
-    public M2MDBHelper(GenericDBHelper from, GenericDBHelper to, Uri toContentUri,
+    public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to, Uri toContentUri,
             IdenticalChildFinder identicalChildFinder) {
-        mFromTable = from.getTable();
-        mToTable = to.getTable();
+        this(from.getTargetTable(), to, toContentUri, identicalChildFinder);
+    }
+
+    private M2MDBHelper(String fromTable, ContentItemDBHelper to, Uri toContentUri,
+            IdenticalChildFinder identicalChildFinder) {
+        super(to.getContentItem(false), to.getContentItem(true));
+
+        mFromTable = fromTable;
+        mToTable = to.getTargetTable();
         mTo = to;
         mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
         mToDefaultSortOrder = getToDefaultSortOrder(to);
@@ -69,29 +75,7 @@ public class M2MDBHelper extends DBHelper {
         mToContentUri = toContentUri;
     }
 
-    // constructors based on table names instead of GenericDBHelpers
-
-    @Deprecated
-    public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder) {
-        this(fromTable, toTable, identicalChildFinder, null);
-    }
-
-    @Deprecated
-    public M2MDBHelper(String fromTable, String toTable, IdenticalChildFinder identicalChildFinder,
-            Uri toContentUri) {
-        mFromTable = fromTable;
-        mToTable = toTable;
-        mTo = null;
-        mToTableEscaped = SQLGenUtils.escapeTableName(mToTable);
-        mToDefaultSortOrder = null;
-        mJoinTable = genJoinTableName(mFromTable, mToTable);
-        mJoinTableEscaped = SQLGenUtils.escapeTableName(mJoinTable);
-
-        mIdenticalChildFinder = identicalChildFinder;
-        mToContentUri = toContentUri;
-    }
-
-    private String getToDefaultSortOrder(GenericDBHelper to) {
+    private String getToDefaultSortOrder(ContentItemDBHelper to) {
 
         String sortOrder = to.getDefaultSortOrder();
 
@@ -138,6 +122,11 @@ public class M2MDBHelper extends DBHelper {
      */
     public String getToTable() {
         return mToTable;
+    }
+
+    @Override
+    public String getTargetTable() {
+        return getToTable();
     }
 
     /**
