@@ -1,4 +1,5 @@
 package edu.mit.mobile.android.content.m2m;
+
 /*
  * Copyright (C) 2011-2013 MIT Mobile Experience Lab
  *
@@ -60,7 +61,6 @@ public class M2MDBHelper extends ContentItemDBHelper {
 
     private boolean mCreatedTables = false;
 
-
     public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to) {
         this(from, to, (Uri) null);
     }
@@ -80,8 +80,7 @@ public class M2MDBHelper extends ContentItemDBHelper {
     }
 
     private M2MDBHelper(String fromTable, ContentItemDBHelper from, ContentItemDBHelper to,
-            Uri toContentUri,
-            IdenticalChildFinder identicalChildFinder) {
+            Uri toContentUri, IdenticalChildFinder identicalChildFinder) {
         super(to.getContentItem(false), to.getContentItem(true));
 
         mFromTable = fromTable;
@@ -216,16 +215,45 @@ public class M2MDBHelper extends ContentItemDBHelper {
                 new String[] { Long.toString(from) });
     }
 
+    /**
+     * Removes the relationship from `from' to `to'.
+     *
+     * @param db
+     * @param from
+     *            ID of the from item
+     * @param to
+     *            ID of the to item
+     * @return the count of deleted relations
+     */
     public int removeRelation(SQLiteDatabase db, long from, long to) {
         return db.delete(mJoinTable, M2MColumns.TO_ID + "=? AND " + M2MColumns.FROM_ID + "=?",
                 new String[] { Long.toString(to), Long.toString(from) });
     }
 
+    /**
+     * <p>
+     * Removes a relationship from `from' to any items matching the given selection. An inner select
+     * is probably needed to do anything fancy:
+     * </p>
+     *
+     * {@code
+     * removeRelation(db, id, mTags.getJoinTableName() + "." + M2MColumns.TO_ID
+     *                      + " IN (SELECT " + Tag._ID + " FROM " + tagTable + " WHERE " + tagTable
+     * + "." + Tag.COL_NAME + "=?" + ")", new String[] tag });
+     *
+     * }
+     *
+     *
+     * @param db
+     * @param from
+     * @param selection
+     * @param selectionArgs
+     * @return
+     */
     public int removeRelation(SQLiteDatabase db, long from, String selection, String[] selectionArgs) {
-        return db.delete(mJoinTableEscaped + " JOIN " + mToTableEscaped + " ON ("
-                + mJoinTableEscaped + "." + M2MColumns.TO_ID + "=" + mToTableEscaped + "."
-                + BaseColumns._ID + ")", M2MColumns.TO_ID + "=? AND " + M2MColumns.FROM_ID + "=?",
-                new String[] { Long.toString(from) });
+        return db.delete(mJoinTable, ProviderUtils.addExtraWhere(selection, M2MColumns.FROM_ID
+                + "=?"), ProviderUtils.addExtraWhereArgs(selectionArgs,
+                new String[] { Long.toString(from) }));
     }
 
     @Override
