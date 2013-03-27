@@ -59,6 +59,8 @@ public class M2MDBHelper extends ContentItemDBHelper {
     private final ContentItemDBHelper mTo;
     private final ContentItemDBHelper mFrom;
 
+    private String mTableConstraint = null;
+
     private boolean mCreatedTables = false;
 
     public M2MDBHelper(ContentItemDBHelper from, ContentItemDBHelper to) {
@@ -150,6 +152,10 @@ public class M2MDBHelper extends ContentItemDBHelper {
         return getToTable();
     }
 
+    public void setTableConstraint(String tableConstraint) {
+        mTableConstraint = tableConstraint;
+    }
+
     /**
      * Generates a join table.
      */
@@ -172,7 +178,8 @@ public class M2MDBHelper extends ContentItemDBHelper {
                 + M2MColumns.FROM_ID
                 + " INTEGER"
                 + (AndroidVersions.SQLITE_SUPPORTS_FOREIGN_KEYS ? " REFERENCES '" + mFromTable
-                        + "' (" + BaseColumns._ID + ")" + " ON DELETE CASCADE" : "") + ");");
+                        + "' (" + BaseColumns._ID + ")" + " ON DELETE CASCADE" : "")
+                + (mTableConstraint != null ? "," + mTableConstraint : "") + ");");
         mCreatedTables = true;
     }
 
