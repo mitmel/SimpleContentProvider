@@ -154,7 +154,11 @@ public class SimpleContentProviderExample extends ListActivity implements OnClic
             // none of the cursors need to be closed, as managedQuery will take care of this. Note:
             // in later versions of Android, one should use a CursorLoader instead.
             final Cursor c = managedQuery(data, PROJECTION, null, null, SORT_ORDER);
-            mListAdapter.swapCursor(c);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            	mListAdapter.changeCursor(c);
+            } else {
+            	mListAdapter.swapCursor(c);
+            }
 
             // this exception is triggered when there's an invalid filter.
         } catch (final IllegalArgumentException e) {
