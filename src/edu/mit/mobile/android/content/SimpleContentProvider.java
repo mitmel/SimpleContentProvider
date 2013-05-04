@@ -52,7 +52,7 @@ import edu.mit.mobile.android.content.m2m.M2MDBHelper;
  *
  * <p>
  * {@link ContentItem}s describe the data that you wish to be persisted. In SQL terms, these would
- * be your tables or in Java terms, your objects. Unlike ORMs which have typed fields, these are
+ * be your tables or in Java terms, your classes. Unlike ORMs which have typed fields, these are
  * constructed using classes with numerous static fields that describe the data. This is done in
  * order to avoid creation of short-lived data objects, which would lead to considerable garbage
  * collector churn.
