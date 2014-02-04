@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.Application;
 import android.app.SearchManager;
 import android.content.ContentProvider;
@@ -714,6 +715,7 @@ public abstract class SimpleContentProvider extends ContentProvider {
             }
         }
 
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onConfigure(SQLiteDatabase db) {
             super.onConfigure(db);
