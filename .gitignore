@@ -6,3 +6,5 @@ test/.project
 test/.classpath
 local.properties
 build.xml
+.metadata
+.settings
