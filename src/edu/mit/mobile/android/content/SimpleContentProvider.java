@@ -670,6 +670,15 @@ public abstract class SimpleContentProvider extends ContentProvider {
     protected DatabaseOpenHelper createDatabaseOpenHelper() {
         return new DatabaseOpenHelper(getContext(), mDBName, mDBVersion);
     }
+    
+    /**
+     * Return our instantiated {@link DatabaseOpenHelper} for this provider.
+     * 
+     * @return this providers DatabaseOpenHelper.
+     */
+    protected DatabaseOpenHelper getDatabaseHelper() {
+        return this.mDatabaseHelper;
+    }
 
     // //////////////////// internal classes
 
